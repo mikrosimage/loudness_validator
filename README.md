@@ -1,8 +1,11 @@
 PLoud Validator version 1.0
 ==================
 
-PLoudValidator is a software to validate file with correct loudness.
-It can validate at EBU R128, ATSC A85 and CST-Ficam spacification for France.
+PLoudValidator is a software to validate audio files with correct loudness.
+It can validate various specifications:
+* EBU R128
+* ATSC A85
+* CST-Ficam specification for France.
 
 License
 -------
