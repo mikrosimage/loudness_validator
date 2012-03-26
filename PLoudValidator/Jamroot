@@ -1,0 +1,52 @@
+##############################################################################
+##                          PLoudValidator                                   #
+##                                                                           #
+##############################################################################
+
+import os ;
+import type ;
+
+local JAMDATE = [ modules.peek : JAMDATE ] ;
+
+re = "([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)" ;
+date = [ MATCH $(re) : [ modules.peek : JAMDATE ] ] ;
+
+project PLoudValidator :
+	requirements
+	<include>src
+	<include>/usr/include
+	<include>/usr/include/QtGui/
+	<os>LINUX:<cxxflags>-fPIC
+	<define>PLOUDVALIDATOR_VERSION=\"\\\"1.0\\\"\"
+	<define>PLOUDVALIDATOR_DAY=\"\\\"$(date[3])\\\"\"
+	<define>PLOUDVALIDATOR_MONTH=\"\\\"$(date[2])\\\"\"
+	<define>PLOUDVALIDATOR_YEAR=\"\\\"$(date[1])\\\"\"
+	:
+	build-dir .build/
+;
+
+use-project /r128library : ../loudnessLibrary ;
+use-project /rlm         : ../rlm ;
+
+
+
+exe PLoudValidator :
+	[ glob src/*.cpp ]
+	[ glob src/*.h : src/SoundFile.h src/license.h src/licence_to_run.h ]
+	src/application.qrc
+	/r128library/<link>static
+	/qt//QtCore/<variant>release
+	/qt//QtGui/<variant>release
+	/rlm
+	:
+	<library>/project-config//libsndfile
+	;
+
+install dist :
+	PLoudValidator
+	:
+	 <install-dependencies>on
+	 <install-type>EXE
+	 <variant>debug:<location>dist/debug
+	 <variant>release:<location>dist/release
+	;

@@ -1,0 +1,20 @@
+
+import os ;
+
+local BOOST_ROOT_PATH = [ modules.peek : BOOST_ROOT ] ; 
+
+project :
+	 requirements
+	 <include>include
+	 <include>src
+	 <include>$(BOOST_ROOT_PATH)
+	:
+	 usage-requirements
+	 <include>include
+	:
+	 build-dir .build/
+	;
+
+lib loudnessLibrary :
+	[ glob src/*.cpp ]
+	;
