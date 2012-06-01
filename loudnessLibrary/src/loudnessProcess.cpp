@@ -17,6 +17,7 @@ namespace Loudness{
 float LoudnessProcess::_channelGain [MAX_CHANNELS] = { 1.0f, 1.0f, 1.0f, 1.41f, 1.41f };
 
 LoudnessProcess::LoudnessProcess( float absoluteThresholdValue, float relativeThresholdValue ) :
+	s_measureLoudness   ( eCorrectionLoudness, absoluteThresholdValue, relativeThresholdValue, -200, 20, 0.01 ),
 	s_shortTermLoudness ( eShortTermLoudness, absoluteThresholdValue, relativeThresholdValue ),
 	s_momentaryLoudness ( eMomentaryLoudness, absoluteThresholdValue, relativeThresholdValue )
 {
@@ -55,8 +56,6 @@ void LoudnessProcess::reset ( )
 	for (int c = 0; c < MAX_CHANNELS; c++)
 		_filters [c].reset ();
 }
-
-
 
 void LoudnessProcess::setUpsamplingFrequencyForTruePeak ( const size_t frequency )
 {

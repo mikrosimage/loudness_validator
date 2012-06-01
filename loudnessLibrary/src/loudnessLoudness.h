@@ -21,7 +21,7 @@ using namespace boost::accumulators;
 namespace Loudness{
 
 enum ELoudnessType{
-	eIntegratedLoudness = 0,
+	eCorrectionLoudness = 0,
 	eShortTermLoudness,
 	eMomentaryLoudness
 };
@@ -30,7 +30,7 @@ enum ELoudnessType{
 class LoudnessLoudness
 {
 public:
-	LoudnessLoudness( ELoudnessType loudnessType, float absoluteThresholdValue, float relativeThresholdValue );
+	LoudnessLoudness( ELoudnessType loudnessType, float absoluteThresholdValue, float relativeThresholdValue,  float minHistrogramValue = -70.0, float maxHistrogramValue = 5.0, float stepHistrogramValue = 0.01 );
 	~LoudnessLoudness();
 
 	/**

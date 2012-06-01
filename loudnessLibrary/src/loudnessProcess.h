@@ -71,7 +71,7 @@ public:
 
 private:
 	// process on a bloc of 50ms, compute the loudness value, and the found the TruePeak on the buffer
-	float       detectProcess                ( const int numberOfFrames, float& truePeakValue );
+	float       detectProcess                     ( const int numberOfFrames, float& truePeakValue );
 
 	int                   _numberOfChannels;        // Number of channels, 2 or 5.
 	float                 _frequencySampling;       // Sample rate.
@@ -94,6 +94,9 @@ private:
 	// TruePeakMeter
 	LoudnessTruePeakMeter _truePeakMeter      [MAX_CHANNELS];
 
+	
+	LoudnessLoudness      s_measureLoudness;
+	
 	LoudnessLoudness      s_shortTermLoudness;
 	LoudnessLoudness      s_momentaryLoudness;
 
