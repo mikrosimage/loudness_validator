@@ -11,7 +11,7 @@
 
 namespace Loudness{
 
-class LoudnessFilter
+class Filter
 {
 public:
 	void reset ( ) { _z1 = _z2 = _z3 = _z4 = 0; }

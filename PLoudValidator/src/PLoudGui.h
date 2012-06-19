@@ -5,6 +5,7 @@
 #include <Properties.h>
 #include <AudioFile.h>
 #include <DropAudio.h>
+#include "PLoudProcess.hpp"
 
 class QtVectorViewer;
 class QtVectorHistogram;
@@ -21,6 +22,8 @@ public:
 	PLoudGui( QWidget* parent = 0 );
 	virtual ~PLoudGui();
 	
+	static void callbackProgress( void* object, int value );
+	
 private:
 	bool rlmSesame();
 	
@@ -28,26 +31,30 @@ private slots:
 	void openSeparatedFiles   ( );
 	void openMultichannelFile ( );
 	void updateInterface      ( );
+	void openNewFile          ( );
 	
 	void openPropetiesDialog  ( );
 	void openHelpDialog       ( );
 	void openAboutDialog      ( );
 	
 	void correctionProcessing ( );
+
+private slots:
+	void closePropetiesDialog ( int standard );
 	
 private:
+	PLoudProcess              *ploudProc;
 	
-	Loudness::LoudnessLibrary *ploudMeter;
 	
 	float           programDuration;
-	bool            channelIsActive  [6];
+	bool            channelIsActive[6];
 	
 	QPalette        paletteGreen;
 	QPalette        paletteOrange;
 	QPalette        paletteRed;
 	QPalette        paletteGray;
 	
-	QtVectorViewer *temporalViewer;
+	QtVectorViewer    *temporalViewer;
 	QtVectorHistogram *histogramViewer;
 	
 	
@@ -85,7 +92,11 @@ private:
 	
 	Properties      properties;
 	
+	QLabel          progressMsg;
 	QProgressBar    progressBar;
+	
+	QLabel          labelStandard;
+	QLabel          labelStandardUsed;
 	
 	QLabel          labelProgramType;
 	QLabel          labelProgramShortLong;
@@ -104,6 +115,9 @@ private:
 	QLCDNumber      momentaryLoudness;
 	QLCDNumber      truePeak;
 	
+	QLabel          labelFinalResult;
+	QLabel          labelFinalResultResponse;
+	
 	QPushButton     processSeparatedFiles;
 	QPushButton     processMultiChannelFile;
 	
@@ -111,10 +125,11 @@ private:
 	QPushButton     correctMultiChannelFile;
 	
 	AudioFile       multichannelFile;
-	
-	AudioFile      *audioFiles       [6];
+	AudioFile      *audioFiles[6];
 	
 	DropAudio       dropAudio;
+	
+	bool            correctedFile;
 };
 
 #endif // PLoudGui_H

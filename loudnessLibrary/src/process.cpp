@@ -6,7 +6,8 @@
  *              MikrosImage R&D
  */
 
-#include "loudnessProcess.h"
+#include "process.h"
+#include "common.h"
 
 #include <iostream>
 #include <cstring>
@@ -14,21 +15,20 @@
 
 namespace Loudness{
 
-float LoudnessProcess::_channelGain [MAX_CHANNELS] = { 1.0f, 1.0f, 1.0f, 1.41f, 1.41f };
+float Process::_channelGain [MAX_CHANNELS] = { 1.0f, 1.0f, 1.0f, 1.41f, 1.41f };
 
-LoudnessProcess::LoudnessProcess( float absoluteThresholdValue, float relativeThresholdValue ) :
+Process::Process( float absoluteThresholdValue, float relativeThresholdValue ) :
 	s_measureLoudness   ( eCorrectionLoudness, absoluteThresholdValue, relativeThresholdValue, -200, 20, 0.01 ),
 	s_shortTermLoudness ( eShortTermLoudness, absoluteThresholdValue, relativeThresholdValue ),
 	s_momentaryLoudness ( eMomentaryLoudness, absoluteThresholdValue, relativeThresholdValue )
 {
-	reset();
 }
 
-LoudnessProcess::~LoudnessProcess()
+Process::~Process()
 {
 }
 
-void LoudnessProcess::init ( const int numberOfChannels, const float frequencySampling )
+void Process::init ( const int numberOfChannels, const float frequencySampling )
 {
 	_numberOfChannels  = numberOfChannels;
 	_frequencySampling = frequencySampling;
@@ -43,21 +43,26 @@ void LoudnessProcess::init ( const int numberOfChannels, const float frequencySa
 	reset();
 }
 
-void LoudnessProcess::reset ( )
+void Process::reset ( )
 {
 	_fragmentCount          = _fragmentSize;
 	_fragmentPower          = 1e-30f;
 	_writeIndex             = 0;
 	_truePeakValue          = 0;
-	memset ( _power, 0, FRAGMENT_SIZE * sizeof (float) );
 
 	_countTruePeakPeriod  = 0;
 
+	_vectorOfTruePeakValue.clear();
+	
 	for (int c = 0; c < MAX_CHANNELS; c++)
 		_filters [c].reset ();
+	
+	s_measureLoudness.reset();
+	s_shortTermLoudness.reset();
+	s_momentaryLoudness.reset();
 }
 
-void LoudnessProcess::setUpsamplingFrequencyForTruePeak ( const size_t frequency )
+void Process::setUpsamplingFrequencyForTruePeak ( const size_t frequency )
 {
 	for( size_t i=0; i< MAX_CHANNELS; i++)
 	{
@@ -65,9 +70,9 @@ void LoudnessProcess::setUpsamplingFrequencyForTruePeak ( const size_t frequency
 	}
 }
 
-void LoudnessProcess::process ( int numberOfFrames, float *inputData [] )
+void Process::process ( int numberOfFrames, float *inputData [] )
 {
-	int  i, samplesForOneBloc;
+	int i, samplesForOneBloc;
 
 	for (i = 0; i < _numberOfChannels; i++)
 		_inputPointerData [i] = inputData [i];
@@ -78,6 +83,8 @@ void LoudnessProcess::process ( int numberOfFrames, float *inputData [] )
 
 		_fragmentPower += detectProcess ( samplesForOneBloc, _tmpTruePeakValue );
 
+		//PLOUD_COUT_VAR( _fragmentPower );
+		
 		_fragmentCount -= samplesForOneBloc;
 		if ( _fragmentCount == 0 )
 		{
@@ -92,11 +99,9 @@ void LoudnessProcess::process ( int numberOfFrames, float *inputData [] )
 					_truePeakMeter[channel].resetMaxValue();
 			}
 
-
-			_power [_writeIndex++] = _fragmentPower / _fragmentSize;
-
 			s_momentaryLoudness.addFragment( _fragmentPower / _fragmentSize );
 			s_shortTermLoudness.addFragment( _fragmentPower / _fragmentSize );
+			s_measureLoudness  .addFragment( _fragmentPower / _fragmentSize );
 
 			_fragmentCount = _fragmentSize;
 			_fragmentPower = 1e-30f;
@@ -110,7 +115,7 @@ void LoudnessProcess::process ( int numberOfFrames, float *inputData [] )
 	}
 }
 
-float LoudnessProcess::detectProcess ( const int numberOfFrames, float& truePeakValue )
+float Process::detectProcess ( const int numberOfFrames, float& truePeakValue )
 {
 	// process on a bloc of 50ms, compute the loudness value, and the found the TruePeak on the buffer
 	int   channel, frame;

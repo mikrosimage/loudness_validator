@@ -14,7 +14,8 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/rolling_mean.hpp>
 
-#include "loudnessHistogram.h"
+#include "histogram.h"
+#include "loudnessLibrary.h"
 
 using namespace boost::accumulators;
 
@@ -27,12 +28,18 @@ enum ELoudnessType{
 };
 
 
-class LoudnessLoudness
+class Loudness
 {
+	typedef accumulator_set<float, stats<tag::rolling_sum> > RollSum;
 public:
-	LoudnessLoudness( ELoudnessType loudnessType, float absoluteThresholdValue, float relativeThresholdValue,  float minHistrogramValue = -70.0, float maxHistrogramValue = 5.0, float stepHistrogramValue = 0.01 );
-	~LoudnessLoudness();
+	Loudness( ELoudnessType loudnessType, float absoluteThresholdValue, float relativeThresholdValue,  float minHistrogramValue = -70.0, float maxHistrogramValue = 5.0, float stepHistrogramValue = 0.01 );
+	~Loudness();
 
+	/**
+	 * reset histogram data
+	 */
+	void reset();
+	
 	/**
 	 * add fragment value
 	 * a fragment is a loudness value on a windows of 50ms
@@ -45,6 +52,8 @@ public:
 	void processIntegrationValues( float& integratedLoudness, float& integratedThreshold );
 
 	void processRangeValues();
+	
+	float getCorrectionGain( const LoudnessLevels &levels, const bool isShortProgram, const float truePeakValue );
 
 	std::vector<int>   getHistogram     () { return _histogram.getHistogram(); }
 	std::vector<float> getTemporalValues() { return _temporalValues; }
@@ -56,24 +65,27 @@ public:
 	float getMaxRange()       const    { return _maxRange; }
 	float getThresholdRange() const    { return _thresholdRange; }
 	float getLoudnessRange()  const    { return _minRange - _maxRange; }
-
+	
 private:
 	float              _minLoudness;        ///< minimum loudness value found for loudness type
 	float              _maxLoudness;        ///< maximum loudness value found for loudness type
 
 	float              _absoluteThreshold;  ///< absolute threshold (defined by norm: tipycaly -70.0 LUFS)
 	float              _relativeThreshold;  ///< relative threshold (defined by norm: tipycaly -10.0 LU)
+	
 	float              _thresholdRange;     ///< relative threshold determined for the current sound
 
-	float              _minRange;     ///<
-	float              _maxRange;     ///<
+	float              _minRange;           ///<
+	float              _maxRange;           ///<
 
 	int                _numberOfFragments;  ///< number of fragments added
 
+	size_t             _counterOfFragments;
+	
 	ELoudnessType      _loudnessType;       ///< type of loudness compute with this class
-	LoudnessHistogram   _histogram;          ///< the associate histogram of the meseaure
+	Histogram          _histogram;          ///< the associate histogram of the meseaure
 
-	accumulator_set<float, stats<tag::rolling_sum> > _rollingSum; ///< rolling sum on fragments
+	RollSum            _rollingSum;         ///< rolling sum on fragments
 
 	std::vector<float> _temporalValues;     ///< use to return ShortTerm values
 };

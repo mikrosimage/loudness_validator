@@ -8,7 +8,6 @@
 
 #include <vector>
 #include <iostream>
-#include <cmath>
 
 #ifndef LOUDNESS_TRUE_PEAK_METER_H
 #define LOUDNESS_TRUE_PEAK_METER_H
@@ -17,10 +16,10 @@
 
 namespace Loudness{
 
-class LoudnessTruePeakMeter
+class TruePeakMeter
 {
 public:
-	LoudnessTruePeakMeter();
+	TruePeakMeter();
 
 	void initialize( const int frequencySampling );
 

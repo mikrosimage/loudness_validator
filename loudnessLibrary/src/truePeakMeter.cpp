@@ -6,7 +6,7 @@
  *              MikrosImage R&D
  */
 
-#include "loudnessTruePeakMeter.h"
+#include "truePeakMeter.h"
 
 #include <iostream>
 #include <cmath>
@@ -15,7 +15,7 @@
 namespace Loudness{
 
 
-LoudnessTruePeakMeter::LoudnessTruePeakMeter():
+TruePeakMeter::TruePeakMeter():
 	_z1                  ( 0 ),
 	_z2                  ( 0 ),
 	_z3                  ( 0 ),
@@ -27,7 +27,7 @@ LoudnessTruePeakMeter::LoudnessTruePeakMeter():
 {
 }
 
-void LoudnessTruePeakMeter::initialize( const int frequencySampling )
+void TruePeakMeter::initialize( const int frequencySampling )
 {
 	_frequencySampling = frequencySampling;
 	_factor = _upsamplingFrequency / _frequencySampling;
@@ -55,7 +55,7 @@ void LoudnessTruePeakMeter::initialize( const int frequencySampling )
 
 }
 
-float LoudnessTruePeakMeter::processSample( const double& sample )
+float TruePeakMeter::processSample( const double& sample )
 {
 	_historySamples.erase( _historySamples.begin() );
 	_historySamples.push_back( sample );

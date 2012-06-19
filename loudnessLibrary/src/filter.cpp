@@ -6,7 +6,7 @@
  *              MikrosImage R&D
  */
 
-#include "loudnessFilter.h"
+#include "filter.h"
 
 //#define PRINT_FILTERS_COEFFICIENTS
 
@@ -39,7 +39,7 @@ namespace Loudness{
 #define  Q_RLB_FILTER    0.5003270373238773
 
 
-void LoudnessFilter::initializeFilterCoefficients ( const float& frequencySampling )
+void Filter::initializeFilterCoefficients ( const float& frequencySampling )
 {
 	double preFilterOmega       = std::tan( M_PI * FC_PRE_FILTER / frequencySampling );
 	double preFilterOmega2      = preFilterOmega * preFilterOmega; // omega ^ 2
@@ -81,7 +81,7 @@ void LoudnessFilter::initializeFilterCoefficients ( const float& frequencySampli
 #endif
 }
 
-float LoudnessFilter::processSample( const float& sample )
+float Filter::processSample( const float& sample )
 {
 	// process sampler in the filter
 	double x = sample - _preA1 * _z1 - _preA2 * _z2 ;

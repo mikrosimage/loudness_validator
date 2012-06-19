@@ -17,13 +17,15 @@
 namespace Loudness
 {
 
-class LoudnessHistogram
+class Histogram
 {
 public:
 
-	LoudnessHistogram  ( float minValue, float maxValue, float step );
-	~LoudnessHistogram ( );
+	Histogram  ( float minValue, float maxValue, float step );
+	~Histogram ( );
 
+	void reset();
+	
 	void addValue( const float value );
 
 	float integratedValue( const float fromValue, const float toValue );
@@ -47,6 +49,8 @@ public:
 	float foundMaxPercentageFrom( float percentile, float fromValue, float toValue );
 
 	std::vector<int> getHistogram();
+	
+	void applyGain( float gainInDb );
 
 private:
 	int   convertDbToIndex( float value );

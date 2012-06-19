@@ -15,9 +15,9 @@ project PLoudValidator :
 	requirements
 	<include>src
 	<include>/usr/include
-	<include>/usr/include/QtGui/
+	<include>/usr/include/QtGui
 	<os>LINUX:<cxxflags>-fPIC
-	<define>PLOUDVALIDATOR_VERSION=\"\\\"1.0\\\"\"
+	<define>PLOUDVALIDATOR_VERSION=\"\\\"1.1\\\"\"
 	<define>PLOUDVALIDATOR_DAY=\"\\\"$(date[3])\\\"\"
 	<define>PLOUDVALIDATOR_MONTH=\"\\\"$(date[2])\\\"\"
 	<define>PLOUDVALIDATOR_YEAR=\"\\\"$(date[1])\\\"\"
@@ -31,22 +31,23 @@ use-project /rlm         : ../rlm ;
 
 
 exe PLoudValidator :
-	[ glob src/*.cpp ]
-	[ glob src/*.h : src/SoundFile.h src/license.h src/licence_to_run.h ]
-	src/application.qrc
-	/r128library/<link>static
-	/qt//QtCore/<variant>release
-	/qt//QtGui/<variant>release
-	/rlm
+		[ glob src/*.cpp ]
+		[ glob src/*.h : src/SoundFile.h src/license.h src/licence_to_run.h ]
+		src/application.qrc
+		/qt//QtCore/<variant>release
+		/qt//QtGui/<variant>release
+		/rlm
 	:
-	<library>/project-config//libsndfile
+		<library>/project-config//libsndfile
+		<library>/r128library
 	;
 
 install dist :
-	PLoudValidator
+		PLoudValidator
 	:
-	 <install-dependencies>on
-	 <install-type>EXE
-	 <variant>debug:<location>dist/debug
-	 <variant>release:<location>dist/release
+		<install-dependencies>on
+		<install-type>EXE
+		<install-type>LIB
+		<variant>debug:<location>dist/debug
+		<variant>release:<location>dist/release
 	;

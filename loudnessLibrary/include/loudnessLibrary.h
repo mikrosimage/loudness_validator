@@ -11,7 +11,6 @@
 #include <cstdlib>
 #include <vector>
 #include <memory>
-#include <cmath>
 #include <limits>
 
 namespace Loudness
@@ -21,67 +20,101 @@ namespace Loudness
 
 struct LoudnessLevels
 {
-	float programLoudnessLongProgramMaxValue;
-	float programLoudnessLongProgramMinValue;
-	float shortTermLoudnessLongProgramMaxValue;
-	float shortTermLoudnessLongProgramMinValue;
+	const float programLoudnessLongProgramMaxValue;
+	const float programLoudnessLongProgramMinValue;
+	const float programLoudnessLongProgramTargetLevel;
+	const float programLoudnessLongProgramTargetMaxLevel;
+	const float programLoudnessLongProgramTargetMinLevel;
+	
+	const float shortTermLoudnessLongProgramMaxValue;
+	const float shortTermLoudnessLongProgramMinValue;
+	
+	const float programLoudnessShortProgramMaxValue;
+	const float programLoudnessShortProgramMinValue;
+	const float programLoudnessShortProgramTargetLevel;
+	const float programLoudnessShortProgramTargetMaxLevel;
+	const float programLoudnessShortProgramTargetMinLevel;
+	
+	const float shortTermLoudnessShortProgramMaxValue;
 
-	float programLoudnessShortProgramMaxValue;
-	float programLoudnessShortProgramMinValue;
-	float shortTermLoudnessShortProgramMaxValue;
+	const float truePeakMaxValue;
+	const float truePeakTargetLevel;
+	const float truePeakTargetMaxLevel;
 
-	float truePeakMaxValue;
+	const float absoluteThresholdValue;
+	const float relativeThresholdValue;
 
-	float absoluteThresholdValue;
-	float relativeThresholdValue;
-
-	float maximalLoudnessRange;
-	float minimalLoudnessRange;
+	const float maximalLoudnessRange;
+	const float minimalLoudnessRange;
 
 	// custom levels
 	LoudnessLevels(
 		float ProgramLoudnessLongProgramMaxValue,
 		float ProgramLoudnessLongProgramMinValue,
+		float ProgramLoudnessLongProgramTargetLevel,
+		float ProgramLoudnessLongProgramTargetMaxLevel,
+		float ProgramLoudnessLongProgramTargetMinLevel,
 		float ShortTermLoudnessLongProgramMaxValue,
 		float ShortTermLoudnessLongProgramMinValue,
 		float ProgramLoudnessShortProgramMaxValue,
 		float ProgramLoudnessShortProgramMinValue,
+		float ProgramLoudnessShortProgramTargetLevel,
+		float ProgramLoudnessShortProgramTargetMaxLevel,
+		float ProgramLoudnessShortProgramTargetMinLevel,
 		float ShortTermLoudnessShortProgramMaxValue,
 		float TruePeakMaxValue,
+		float TruePeakTargetLevel,
+		float TruePeakTargetMaxLevel,
 		float AbsoluteThresholdValue,
 		float RelativeThresholdValue,
 		float MaximalLoudnessRange,
 		float MinimalLoudnessRange ) :
-	programLoudnessLongProgramMaxValue    ( ProgramLoudnessLongProgramMaxValue ),
-	programLoudnessLongProgramMinValue    ( ProgramLoudnessLongProgramMinValue ),
-	shortTermLoudnessLongProgramMaxValue  ( ShortTermLoudnessLongProgramMaxValue ),
-	shortTermLoudnessLongProgramMinValue  ( ShortTermLoudnessLongProgramMinValue ),
-	programLoudnessShortProgramMaxValue   ( ProgramLoudnessShortProgramMaxValue ),
-	programLoudnessShortProgramMinValue   ( ProgramLoudnessShortProgramMinValue ),
-	shortTermLoudnessShortProgramMaxValue ( ShortTermLoudnessShortProgramMaxValue ),
-	truePeakMaxValue                      ( TruePeakMaxValue ),
-	absoluteThresholdValue                ( AbsoluteThresholdValue ),
-	relativeThresholdValue                ( RelativeThresholdValue ),
-	maximalLoudnessRange                  ( MaximalLoudnessRange ),
-	minimalLoudnessRange                  ( MinimalLoudnessRange )
+	programLoudnessLongProgramMaxValue        ( ProgramLoudnessLongProgramMaxValue ),
+	programLoudnessLongProgramMinValue        ( ProgramLoudnessLongProgramMinValue ),
+	programLoudnessLongProgramTargetLevel     ( ProgramLoudnessLongProgramTargetLevel ),
+	programLoudnessLongProgramTargetMaxLevel  ( ProgramLoudnessLongProgramTargetMaxLevel ),
+	programLoudnessLongProgramTargetMinLevel  ( ProgramLoudnessLongProgramTargetMinLevel ),
+	shortTermLoudnessLongProgramMaxValue      ( ShortTermLoudnessLongProgramMaxValue ),
+	shortTermLoudnessLongProgramMinValue      ( ShortTermLoudnessLongProgramMinValue ),
+	programLoudnessShortProgramMaxValue       ( ProgramLoudnessShortProgramMaxValue ),
+	programLoudnessShortProgramMinValue       ( ProgramLoudnessShortProgramMinValue ),
+	programLoudnessShortProgramTargetLevel    ( ProgramLoudnessShortProgramTargetLevel ),
+	programLoudnessShortProgramTargetMaxLevel ( ProgramLoudnessShortProgramTargetMaxLevel ),
+	programLoudnessShortProgramTargetMinLevel ( ProgramLoudnessShortProgramTargetMinLevel ),
+	shortTermLoudnessShortProgramMaxValue     ( ShortTermLoudnessShortProgramMaxValue ),
+	truePeakMaxValue                          ( TruePeakMaxValue ),
+	truePeakTargetLevel                       ( TruePeakTargetLevel ),
+	truePeakTargetMaxLevel                    ( TruePeakTargetMaxLevel ),
+	absoluteThresholdValue                    ( AbsoluteThresholdValue ),
+	relativeThresholdValue                    ( RelativeThresholdValue ),
+	maximalLoudnessRange                      ( MaximalLoudnessRange ),
+	minimalLoudnessRange                      ( MinimalLoudnessRange )
 	{
 	}
 
 	static LoudnessLevels Loudness_CST_R017( )
 	{
 		LoudnessLevels levels(
-			-22.f,   // programLoudnessLongProgramMaxValue
-			-24.f,   // programLoudnessLongProgramMinValue
+			-22.0,   // programLoudnessLongProgramMaxValue
+			-24.0,   // programLoudnessLongProgramMinValue
+			-23.0,   // programLoudnessLongProgramTargetLevel
+			-22.5,   // programLoudnessLongProgramTargetMaxLevel
+			-23.5,   // programLoudnessLongProgramTargetMinLevel
 			LOUDNESS_NAN, // shortTermLoudnessLongProgramMaxValue
 			LOUDNESS_NAN, // shortTermLoudnessLongProgramMinValue
-			-23.f,   // programLoudnessShortProgramMaxValue
-			-24.f,   // programLoudnessShortProgramMinValue
-			+ 3.f,   // shortTermLoudnessShortProgramMaxValue
-			- 3.f,   // truePeakMaxValue
-			-70.f,   // absoluteThresholdValue
-			-10.f,   // relativeThresholdValue
-			+20.f,   // maximalLoudnessRange
-			+ 5.f    // minimalLoudnessRange
+			-23.0,   // programLoudnessShortProgramMaxValue
+			-24.0,   // programLoudnessShortProgramMinValue
+			-23.5,   // programLoudnessShortProgramTargetLevel
+			-23.2,   // programLoudnessShortProgramTargetMaxLevel
+			-23.8,   // programLoudnessShortProgramTargetMinLevel
+			+ 3.0,   // shortTermLoudnessShortProgramMaxValue
+			- 3.0,   // truePeakMaxValue
+			- 3.0,   // truePeakTargetLevel
+			- 3.0,   // truePeakTargetMaxLevel
+			-70.0,   // absoluteThresholdValue
+			-10.0,   // relativeThresholdValue
+			+20.0,   // maximalLoudnessRange
+			+ 5.0    // minimalLoudnessRange
 		);
 		return levels;
 	}
@@ -91,12 +124,20 @@ struct LoudnessLevels
 		LoudnessLevels levels(
 			-22.0,   // programLoudnessLongProgramMaxValue
 			-24.0,   // programLoudnessLongProgramMinValue
+			-23.0,   // programLoudnessLongProgramTargetLevel
+			-22.5,   // programLoudnessLongProgramTargetMaxLevel
+			-23.5,   // programLoudnessLongProgramTargetMinLevel
 			LOUDNESS_NAN, // shortTermLoudnessLongProgramMaxValue
 			LOUDNESS_NAN, // shortTermLoudnessLongProgramMinValue
 			-22.0,   // programLoudnessShortProgramMaxValue
 			-24.0,   // programLoudnessShortProgramMinValue
+			-23.0,   // programLoudnessShortProgramTargetLevel
+			-22.5,   // programLoudnessShortProgramTargetMaxLevel
+			-23.5,   // programLoudnessShortProgramTargetMinLevel
 			LOUDNESS_NAN, // shortTermLoudnessShortProgramMaxValue
 			- 1.0,   // truePeakMaxValue
+			- 1.5,   // truePeakTargetLevel
+			- 1.5,   // truePeakTargetMaxLevel
 			-70.0,   // absoluteThresholdValue
 			-10.0,   // relativeThresholdValue
 			LOUDNESS_NAN, // maximalLoudnessRange
@@ -110,12 +151,20 @@ struct LoudnessLevels
 		LoudnessLevels levels(
 			-22.0,   // programLoudnessLongProgramMaxValue
 			-26.0,   // programLoudnessLongProgramMinValue
+			-24.0,   // programLoudnessLongProgramTargetLevel
+			-23.0,   // programLoudnessLongProgramTargetMaxLevel
+			-25.0,   // programLoudnessLongProgramTargetMinLevel
 			LOUDNESS_NAN, // shortTermLoudnessLongProgramMaxValue
 			LOUDNESS_NAN, // shortTermLoudnessLongProgramMinValue
 			-22.0,   // programLoudnessShortProgramMaxValue
 			-26.0,   // programLoudnessShortProgramMinValue
+			-24.0,   // programLoudnessLongProgramTargetLevel
+			-23.0,   // programLoudnessLongProgramTargetMaxLevel
+			-25.0,   // programLoudnessLongProgramTargetMinLevel
 			LOUDNESS_NAN, // shortTermLoudnessShortProgramMaxValue
 			- 2.0,   // truePeakMaxValue
+			- 2.0,   // truePeakTargetLevel
+			- 2.0,   // truePeakTargetMaxLevel
 			-70.0,   // absoluteThresholdValue
 			- 8.0,   // relativeThresholdValue
 			LOUDNESS_NAN, // maximalLoudnessRange
@@ -133,12 +182,12 @@ enum ELoudnessResult
 	eNoImportance = 3                 ///< when levels are set to LOUDNESS_NAN, disable levels checks
 };
 
-class LoudnessProcess;
+class Process;
 
 class LoudnessLibrary
 {
 public:
-	LoudnessLibrary( LoudnessLevels levels );
+	LoudnessLibrary( LoudnessLevels& levels );
 
 	/**
 	 * Initialize and start the Loudness meter (Integrated, Momentary and Short-Term, LRA)
@@ -167,110 +216,115 @@ public:
 	 * Return if the program is a Short Program or a Long Program ( > 2'00 )
 	 * \param integratedLoudnessValue Integrated Loudness (same as the Program Loudness) in LUFS
 	**/
-	void getIsShortProgram                  ( bool& isShortProgram );
+	bool isShortProgram( );
 
 	/**
 	 * Get result of Integrated Loudness, is also called Program Loudness
 	 * \param integratedLoudnessValue Integrated Loudness (same as the Program Loudness) in LUFS
 	**/
-	void getIntegratedLoudness              ( double& integratedLoudnessValue );
+	double getIntegratedLoudness( );
 
 	/**
 	 * Get result of LRA in LoudnessUnit
 	 * \param integratedRange Loudness Range (LRA) in LU
 	**/
-	void getIntegratedRange                 ( double& integratedRange );
+	double getIntegratedRange( );
 
 	/**
 	 * Get result of maximal Short-Term Loudness value
 	 * \param maxShortTermLoudnessValue Short-Term in LUFS ( 3 seconds integrated time )
 	**/
-	void getMaxShortTermLoudness            ( double& maxShortTermLoudnessValue );
+	double getMaxShortTermLoudness( );
 
 	/**
 	 * Get result of minimal Short-Term Loudness value
 	 * \param minShortTermLoudnessValue Short-Term in LUFS ( 3 seconds integrated time )
 	**/
-	void getMinShortTermLoudness            ( double& minShortTermLoudnessValue );
+	double getMinShortTermLoudness( );
 
 	/**
 	 * Get result of Momentary Loudness
 	 * \param momentaryLoudnessValue Momentary  in LUFS ( 400 milli-seconds integrated time )
 	**/
-	void getMomentaryLoudness               ( double& momentaryLoudnessValue);
+	double getMomentaryLoudness( );
 
 	/**
 	 * Get result of TruePeak meter ( max value of the upsampled signal )
 	 * \param truePeakValueInDb TruePeak value [no unit]
 	**/
-	void getTruePeakValue                   ( double& truePeakValue );
+	double getTruePeakValue( );
 
 	/**
 	 * Get result of TruePeak meter ( in dBTP )
 	 * \param truePeakValueInDb TruePeak value [dBTP]
 	**/
-	void getTruePeakInDbTP                  ( double& truePeakValueInDb );
+	double getTruePeakInDbTP( );
 
 	/**
 	 * Get TruePeak history values
 	 * \return vector of TruePeak values (each 1 second)
 	**/
-	std::vector<float> getTruePeakValues                 ( );
+	std::vector<float> getTruePeakValues( );
 
 	/**
 	 * Get Short-Term histy values
 	 * \return vector of Short-Term values
 	**/
-	std::vector<float> getShortTermValues                 ( );
+	std::vector<float> getShortTermValues( );
 
 	/**
 	 * Get Short-Term histogram
 	 * \return datas of histogram
 	**/
-	std::vector<int> getShortTermHistogram                ( );
-
+	std::vector<int> getShortTermHistogram( );
 
 
 	/**
-	 * Print result of Loudness on standard outpu: Integrated, Momentary and Short-Term and LRA
+	 * Print result of Loudness on standard output Integrated, Momentary and Short-Term and LRA
 	**/
-	void               printPloudValues                   ( );
+	void printPloudValues( );
 
 	/**
 	 * Return if the Loudness is valid
 	**/
-	ELoudnessResult     isIntegratedLoudnessValid          ( );
+	ELoudnessResult     isIntegratedLoudnessValid( );
 
 	/**
 	 * Return if the Loudness Range (LRA) is valid
 	**/
-	ELoudnessResult     isIntegratedLoudnessRangeValid     ( );
+	ELoudnessResult     isIntegratedLoudnessRangeValid( );
 
 	/**
 	 * Return if the maximum Short-Term Loudness is valid
 	**/
-	ELoudnessResult     isMaxShortTermLoudnessValid        ( );
+	ELoudnessResult     isMaxShortTermLoudnessValid( );
 
 	/**
 	 * Return if the minimum Short-Term Loudness is valid
 	**/
-	ELoudnessResult     isMinShortTermLoudnessValid        ( );
+	ELoudnessResult     isMinShortTermLoudnessValid( );
 
 	/**
 	 * Return if the Momentary Loudness is valid
 	**/
-	ELoudnessResult     isMomentaryLoudnessValid           ( );
+	ELoudnessResult     isMomentaryLoudnessValid( );
 
 	/**
 	 * Return if the TruePeak is valid
 	**/
-	ELoudnessResult     isTruePeakValid                    ( );
+	ELoudnessResult     isTruePeakValid( );
+	
+	/**
+	 * Return gain to correct loudness to a valid value
+	 * if it return 0.0 and loudness is invalid, this means it's impossible to correct without a remix
+	**/
+	float               getCorrectionGain( );
 
-private:
-	std::auto_ptr<LoudnessProcess> p_LoudnessProcess;
-	size_t                         s_durationInSamples;
-	size_t                         s_frequency;
-	LoudnessLevels                 s_levels;
+protected:
+	std::auto_ptr<Process> p_process;
+	size_t                 s_durationInSamples;
+	size_t                 s_frequency;
+	LoudnessLevels         s_levels;
 };
 
 }

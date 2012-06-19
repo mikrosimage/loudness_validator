@@ -6,15 +6,15 @@
  *              MikrosImage R&D
  */
 
-#include "loudnessHistogram.h"
+#include "histogram.h"
 #include <cmath>
-#include <cstring>
-#include <iostream>
+//#include <cstring>
+#include "common.h"
 
 namespace Loudness
 {
 
-LoudnessHistogram::LoudnessHistogram( float minValue, float maxValue, float step ) :
+Histogram::Histogram( float minValue, float maxValue, float step ) :
 	_minValue      ( minValue ),
 	_maxValue      ( maxValue ),
 	_step          ( step ),
@@ -25,13 +25,30 @@ LoudnessHistogram::LoudnessHistogram( float minValue, float maxValue, float step
 	_histogram.resize( _size, 0 );
 }
 
-LoudnessHistogram::~LoudnessHistogram( )
+Histogram::~Histogram( )
 {
 
 }
 
-void LoudnessHistogram::addValue( const float value )
+void Histogram::reset( )
 {
+	_outOfScope    = 0;
+	_sumOfElements = 0;
+	_histogram.clear();
+	_histogram.resize( _size, 0 );
+	/*
+	PLOUD_COUT_VAR( _minValue );
+	PLOUD_COUT_VAR( _maxValue );
+	PLOUD_COUT_VAR( _step );
+	PLOUD_COUT_VAR( _size );
+	PLOUD_COUT_VAR( _outOfScope );
+	PLOUD_COUT_VAR( _sumOfElements );
+	PLOUD_COUT_VAR( _histogram.size() );*/
+}
+
+void Histogram::addValue( const float value )
+{
+	//PLOUD_COUT_VAR(value);
 	if( !( value > _minValue && value < _maxValue ) )
 	{
 		_outOfScope++;
@@ -44,7 +61,7 @@ void LoudnessHistogram::addValue( const float value )
 	_sumOfElements++;
 }
 
-float LoudnessHistogram::integratedValue( const float fromValue, const float toValue )
+float Histogram::integratedValue( const float fromValue, const float toValue )
 {
 	int fromIndex = std::max( 0,                      convertDbToIndex( fromValue ) );
 	int toIndex   = std::min( (int)_histogram.size(), convertDbToIndex( toValue   ) );
@@ -66,7 +83,7 @@ float LoudnessHistogram::integratedValue( const float fromValue, const float toV
 }
 
 
-float LoudnessHistogram::foundMinPercentageFrom( float percentile, float fromValue, float toValue )
+float Histogram::foundMinPercentageFrom( float percentile, float fromValue, float toValue )
 {
 	int fromIndex = std::max( 0,                      convertDbToIndex( fromValue ) );
 	int toIndex   = std::min( (int)_histogram.size(), convertDbToIndex( toValue   ) );
@@ -99,7 +116,7 @@ float LoudnessHistogram::foundMinPercentageFrom( float percentile, float fromVal
 	return convertIndexToDb( correctIndex );
 }
 
-float LoudnessHistogram::foundMaxPercentageFrom( float percentile, float fromValue, float toValue )
+float Histogram::foundMaxPercentageFrom( float percentile, float fromValue, float toValue )
 {
 	int fromIndex = std::max( 0,                      convertDbToIndex( fromValue ) );
 	int toIndex   = std::min( (int)_histogram.size(), convertDbToIndex( toValue   ) );
@@ -123,17 +140,36 @@ float LoudnessHistogram::foundMaxPercentageFrom( float percentile, float fromVal
 	return convertIndexToDb( i );
 }
 
-std::vector<int> LoudnessHistogram::getHistogram()
+std::vector<int> Histogram::getHistogram()
 {
 	return _histogram;
 }
 
-int LoudnessHistogram::convertDbToIndex( float value )
+void Histogram::applyGain( float gainInDb )
+{
+	std::vector<int> histogram;
+	histogram.resize( _size, 0 );
+	for( size_t i=0; i < _histogram.size(); i++ )
+	{
+		float value = convertIndexToDb( i );
+		value += gainInDb;
+		if( value > _minValue && value < _maxValue )
+		{
+			histogram.at( convertDbToIndex( value ) ) = _histogram.at(i);
+		}
+	}
+	for( size_t i=0; i < _histogram.size(); i++ )
+	{
+		_histogram.at( i ) = histogram.at(i);
+	}
+}
+
+int Histogram::convertDbToIndex( float value )
 {
 	return ( value - _minValue ) * _size / ( _maxValue - _minValue );
 }
 
-float LoudnessHistogram::convertIndexToDb( int index )
+float Histogram::convertIndexToDb( int index )
 {
 	return 1.f * index * ( _maxValue - _minValue ) / ( 1.0 * _size ) + _minValue;
 }

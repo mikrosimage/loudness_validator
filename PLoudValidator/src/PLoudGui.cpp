@@ -42,7 +42,7 @@ enum ChannelId
 
 PLoudGui::PLoudGui( QWidget* parent ) :
 	QMainWindow                ( parent ),
-	ploudMeter                 ( NULL ),
+	ploudProc                  ( NULL ),
 	/// main component (Frame ,Grid)
 	mainFrame                  ( this ),
 	mainGrid                   ( &mainFrame ),
@@ -75,10 +75,13 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	/// Propeties
 	properties                 ( ),
 	/// Progress bar
-	progressBar                ( ),
+	progressMsg( ),
+	progressBar( ),
 	/// labels for results
+	labelStandard              ( tr( "Standard" ) ),
+	labelStandardUsed          ( tr( "<h1><font color='green'>France CST RT 017</font><font color='gray'><br/>EBU R 128<br/>ATSC A/85<br/>custom </font></h1>" ) ),
 	labelProgramType           ( tr( "Program" ) ),
-	labelProgramShortLong      ( tr( "<font color='gray'>Short / Long</font>" ) ),
+	labelProgramShortLong      ( tr( "<h1><font color='gray'>Short / Long</font></h1>" ) ),
 	labelProgramLoudness       ( tr( "Program Loudness"        ) ),
 	labelProgramRange          ( tr( "Loudness Range - LRA"    ) ),
 	labelMaxShortTermLoudness  ( tr( "Max Short-Term Loudness" ) ),
@@ -92,6 +95,8 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	minShortTermLoudness       ( 10 ),
 	momentaryLoudness          ( 10 ),
 	truePeak                   ( 10 ),
+	labelFinalResult           ( tr( "Result" ) ),
+	labelFinalResultResponse   ( tr( "<h1><font color='gray'>Valid / Invalid</font></h1>" ) ),
 	/// process buttons
 	processSeparatedFiles      ( QIcon( ":/icons/view-refresh.png" ), tr( "Process" ) ),
 	processMultiChannelFile    ( QIcon( ":/icons/view-refresh.png" ), tr( "Process" ) ),
@@ -99,9 +104,10 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	correctSeparatedFiles      ( QIcon( ":/icons/view-refresh.png" ), tr( "Correct" ) ),
 	correctMultiChannelFile    ( QIcon( ":/icons/view-refresh.png" ), tr( "Correct" ) ),
 	/// AudioFile
-	multichannelFile           ( tr( "File" ), statusBar() ),
+	multichannelFile           ( tr( "" ), statusBar(), ":/icons/multichannel.png", 100 ),
 	/// DropAudio button
-	dropAudio                  ( QIcon( ":/icons/list-add.png" ), tr( "Add files" ), statusBar() )
+	dropAudio                  ( QIcon( ":/iupdateInterfacecons/list-add.png" ), tr( "Add files (drop here)" ), statusBar() ),
+	correctedFile              ( false )
 {
 	setMinimumWidth  ( 600 );
 	setMinimumHeight ( 600 );
@@ -114,11 +120,13 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	correctSeparatedFiles.setEnabled   ( false );
 	correctMultiChannelFile.setEnabled ( false );
 	
-	processSeparatedFiles  .setMinimumHeight ( 30 );
-	processMultiChannelFile.setMinimumHeight ( 30 );
+	processSeparatedFiles  .setMinimumHeight ( 40 );
+	processMultiChannelFile.setMinimumHeight ( 40 );
 	
-	correctSeparatedFiles  .setMinimumHeight ( 30 );
-	correctMultiChannelFile.setMinimumHeight ( 30 );
+	correctSeparatedFiles  .setMinimumHeight ( 40 );
+	correctMultiChannelFile.setMinimumHeight ( 40 );
+	
+	progressMsg.setAlignment( Qt::AlignHCenter );
 	
 	temporalViewer  = new QtVectorViewer();
 	histogramViewer = new QtVectorHistogram();
@@ -126,19 +134,25 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	mainTabulation.addTab( &frameTab1, tr( "separated files"   ) );
 	mainTabulation.addTab( &frameTab2, tr( "multichannel file" ) );
 	
-	for( size_t i=0; i<6; i++)
-	{
-		audioFiles[i] = new AudioFile( tr(channelName[i]), statusBar(), this );
-	}
+	audioFiles[0] = new AudioFile( tr(channelName[0]), statusBar(), ":/icons/left.png" );
+	audioFiles[1] = new AudioFile( tr(channelName[1]), statusBar(), ":/icons/right.png" );
+	audioFiles[2] = new AudioFile( tr(channelName[2]), statusBar(), ":/icons/center.png" );
+	audioFiles[3] = new AudioFile( tr(channelName[3]), statusBar(), ":/icons/surLeft.png" );
+	audioFiles[4] = new AudioFile( tr(channelName[4]), statusBar(), ":/icons/surRight.png" );
+	audioFiles[5] = new AudioFile( tr(channelName[5]), statusBar(), ":/icons/lfe.png" );
 	
 	std::size_t line = 0;
-	gridTab1.addWidget( &dropAudio               , line++, 1 );
-	for( size_t i=0; i<6; i++)
-	{
-		gridTab1.addWidget( audioFiles[i]          , line++, 1 );
-	}
-	gridTab1.addWidget( &processSeparatedFiles   , line++, 1 );
-	gridTab1.addWidget( &correctSeparatedFiles   , line++, 1 );
+	gridTab1.addWidget( &dropAudio             , line++, 0, 1, 3 );
+	
+	gridTab1.addWidget( audioFiles[0]          , line, 0 ); // left
+	gridTab1.addWidget( audioFiles[1]          , line, 2 ); // right
+	gridTab1.addWidget( audioFiles[2]          , line, 1); // center
+	gridTab1.addWidget( audioFiles[3]          , line + 2, 0 ); // surround left
+	gridTab1.addWidget( audioFiles[4]          , line + 2, 2 ); // surround right
+	gridTab1.addWidget( audioFiles[5]          , line + 1, 1 ); // LFE
+	line += 3;
+	gridTab1.addWidget( &processSeparatedFiles   , line++, 0, 1, 3 );
+	gridTab1.addWidget( &correctSeparatedFiles   , line++, 0, 1, 3 );
 	
 	line = 0;
 	gridTab2.addWidget( &multichannelFile        , line++, 0 );
@@ -146,11 +160,22 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	gridTab2.addWidget( &correctMultiChannelFile , line++, 0 );
 	
 	mainGrid.addWidget( &mainTabulation );
+	mainGrid.addWidget( &progressMsg );
 	mainGrid.addWidget( &progressBar );
 	
 	setCentralWidget( &mainFrame );
 	
+	labelStandardUsed.setTextFormat ( Qt::RichText );
+	labelStandardUsed.setAlignment( Qt::AlignCenter );
+	labelStandardUsed.setObjectName("result");
+			
 	labelProgramShortLong.setTextFormat ( Qt::RichText );
+	labelProgramShortLong.setAlignment( Qt::AlignCenter );
+	labelProgramShortLong.setObjectName("result");
+	
+	labelFinalResultResponse.setAlignment( Qt::AlignCenter );
+	labelFinalResultResponse.setTextFormat ( Qt::RichText );
+	labelFinalResultResponse.setObjectName("result");
 	
 	programLoudness      .setSegmentStyle( QLCDNumber::Flat );
 	programRange         .setSegmentStyle( QLCDNumber::Flat );
@@ -191,6 +216,7 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	truePeak             .setPalette( paletteGreen );
 	
 	line = 0;
+	layoutResults.addWidget( &labelStandard            , line++, 0 );
 	layoutResults.addWidget( &labelProgramType         , line++, 0 );
 	layoutResults.addWidget( &labelProgramLoudness     , line++, 0 );
 	layoutResults.addWidget( &labelProgramRange        , line++, 0 );
@@ -198,8 +224,10 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	layoutResults.addWidget( &labelMinShortTermLoudness, line++, 0 );
 	layoutResults.addWidget( &labelMomentaryLoudness   , line++, 0 );
 	layoutResults.addWidget( &labelTruePeak            , line++, 0 );
+	layoutResults.addWidget( &labelFinalResult         , line++, 0 );
 	
 	line = 0;
+	layoutResults.addWidget( &labelStandardUsed        , line++, 1 );
 	layoutResults.addWidget( &labelProgramShortLong    , line++, 1 );
 	layoutResults.addWidget( &programLoudness          , line++, 1 );
 	layoutResults.addWidget( &programRange             , line++, 1 );
@@ -207,6 +235,10 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	layoutResults.addWidget( &minShortTermLoudness     , line++, 1 );
 	layoutResults.addWidget( &momentaryLoudness        , line++, 1 );
 	layoutResults.addWidget( &truePeak                 , line++, 1 );
+	layoutResults.addWidget( &labelFinalResultResponse , line++, 1 );
+	
+	layoutResults.setColumnStretch( 0, 0 );
+	layoutResults.setColumnStretch( 1, 100 );
 	
 	programLoudness      .display( "---.- LUFS" );
 	programRange         .display( "---.- LU  " );
@@ -231,9 +263,9 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	dockDigitResults.raise( );
 	
 	/*menuFile.addAction( &aOpen );
-  menuFile.addAction( &aSave );
-  menuFile.addAction( &aClose );
-  menuFile.addSeparator();*/
+	menuFile.addAction( &aSave );
+	menuFile.addAction( &aClose );
+	menuFile.addSeparator();*/
 	menuFile.addAction( &aQuit );
 	
 	menuSettings.addAction ( &aOpenPropertiesDialog );
@@ -257,12 +289,20 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	//connect( &correctSeparatedFiles   , SIGNAL( clicked( )  ), SLOT( correctionProcessing() ) );
 	connect( &correctMultiChannelFile , SIGNAL( clicked( )  ), SLOT( correctionProcessing() ) );
 	
+	connect( &properties, SIGNAL( close( int ) ), SLOT( closePropetiesDialog( int ) ) );
+	
 	connect( &dropAudio               , SIGNAL( leftChannelWasDropped          ( QString ) ), audioFiles[0], SLOT( setFilename( QString ) ) );
 	connect( &dropAudio               , SIGNAL( rightChannelWasDropped         ( QString ) ), audioFiles[1], SLOT( setFilename( QString ) ) );
 	connect( &dropAudio               , SIGNAL( centerChannelWasDropped        ( QString ) ), audioFiles[2], SLOT( setFilename( QString ) ) );
 	connect( &dropAudio               , SIGNAL( leftSurroundChannelWasDropped  ( QString ) ), audioFiles[3], SLOT( setFilename( QString ) ) );
 	connect( &dropAudio               , SIGNAL( rightSurroundChannelWasDropped ( QString ) ), audioFiles[4], SLOT( setFilename( QString ) ) );
 	connect( &dropAudio               , SIGNAL( lfeChannelWasDropped           ( QString ) ), audioFiles[5], SLOT( setFilename( QString ) ) );
+	
+	for( size_t i=0; i<6; i++)
+	{
+		connect( audioFiles[i], SIGNAL( fileWasSelected() ), SLOT( openNewFile() ) );
+	}
+	connect ( &multichannelFile, SIGNAL( fileWasSelected() ), SLOT( openNewFile() ) );
 	
 	if( rlmSesame() )
 	{
@@ -273,10 +313,10 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 
 PLoudGui::~PLoudGui()
 {
-	if ( ploudMeter != NULL )
+	if ( ploudProc != NULL )
 	{
-		delete ploudMeter;
-		ploudMeter = NULL;
+		delete ploudProc;
+		ploudProc = NULL;
 	}
 	
 	for( size_t i=0; i<6; i++)
@@ -288,46 +328,106 @@ PLoudGui::~PLoudGui()
 	delete histogramViewer;
 }
 
+void PLoudGui::callbackProgress( void* object, int value )
+{
+	QProgressBar* pb = static_cast<QProgressBar*>(object);
+	pb->setValue( value );
+}
+
+void analyseFiles( SoundFile* audioFile, size_t channels, Loudness::LoudnessLibrary* ploudMeter, QProgressBar& progressBar, double gain = 1.0 )
+{
+	int cumulOfSamples = 0;
+	int bufferSize = audioFile[0].rate() / 5;
+	
+	float *data [ channels ];
+
+	for( size_t i = 0; i< channels; i++ )
+		data [i] = new float [bufferSize];
+	
+	ploudMeter->initAndStart( channels, audioFile[0].rate() );
+	
+	while (true)
+	{
+		int  samples = 0;
+		
+		for( size_t i = 0; i < channels; i++ )
+		{
+			samples = audioFile[i].read( data[i], bufferSize );
+		}
+		if (samples == 0) break;
+
+		for (int i = 0; i < samples; i++)
+		{
+			for(size_t c = 0; c < channels; c++ )
+				data [c][i] = data [c][i] * gain;
+		}
+		
+		cumulOfSamples += samples;
+		progressBar.setValue( cumulOfSamples );
+		ploudMeter->processSamples( data, samples );
+	}
+	
+	for( size_t i=0; i< channels; i++ )
+		delete[] data[i];
+}
+
 void PLoudGui::openSeparatedFiles( )
 {
 	processSeparatedFiles.setText( "Wait ..." );
 	processSeparatedFiles.setIcon( QIcon( ":/icons/document-encrypt.png" ) );
 	std::cout << "Processing..." << std::endl;
-
-	if ( ploudMeter != NULL )
+	
+	Loudness::LoudnessLevels levels (
+		properties.programLoudnessLongProgramMaxValue,
+		properties.programLoudnessLongProgramMinValue,
+		properties.programLoudnessLongProgramTargetLevel,
+		properties.programLoudnessLongProgramTargetMaxLevel,
+		properties.programLoudnessLongProgramTargetMinLevel,
+		properties.shortTermLoudnessLongProgramMaxValue,
+		properties.shortTermLoudnessLongProgramMinValue,
+		properties.programLoudnessShortProgramMaxValue,
+		properties.programLoudnessShortProgramMinValue,
+		properties.programLoudnessShortProgramTargetLevel,
+		properties.programLoudnessShortProgramTargetMaxLevel,
+		properties.programLoudnessShortProgramTargetMinLevel,
+		properties.shortTermLoudnessShortProgramMaxValue,
+		properties.truePeakMaxValue,
+		properties.truePeakTargetLevel,
+		properties.truePeakTargetMaxLevel,
+		properties.absoluteThreshold,
+		properties.relativeThreshold,
+		properties.maximalLoudnessRange,
+		properties.minimalLoudnessRange
+	);
+	
+	if ( ploudProc != NULL )
 	{
-		delete ploudMeter;
-		ploudMeter = NULL;
+		delete ploudProc;
+		ploudProc = NULL;
 	}
 	
-	switch( properties.normalisation )
+	ploudProc = new PLoudProcess( levels, properties.getFrequencyTruePeak() );
+	
+	std::vector<std::string> files;
+	
+	for(size_t i=0; i<6; i++)
 	{
-		case 0: ploudMeter = new Loudness::LoudnessLibrary( Loudness::LoudnessLevels::Loudness_CST_R017( ) ); break;
-		case 1: ploudMeter = new Loudness::LoudnessLibrary( Loudness::LoudnessLevels::Loudness_EBU_R128( ) ); break;
-		case 2: ploudMeter = new Loudness::LoudnessLibrary( Loudness::LoudnessLevels::Loudness_ATSC_A85( ) ); break;
-		case 3:
+		if( audioFiles[i]->getFilename().toLatin1().size() != 0 )
 		{
-			Loudness::LoudnessLevels levels (
-					properties.programLoudnessLongProgramMaxValue,
-					properties.programLoudnessLongProgramMinValue,
-					properties.shortTermLoudnessLongProgramMaxValue,
-					properties.shortTermLoudnessLongProgramMinValue,
-					properties.programLoudnessShortProgramMaxValue,
-					properties.programLoudnessShortProgramMinValue,
-					properties.shortTermLoudnessShortProgramMaxValue,
-					properties.truePeakMaxValue,
-					properties.maximalLoudnessRange,
-					properties.minimalLoudnessRange,
-					properties.relativeThreshold,
-					properties.absoluteThreshold
-					);
-			ploudMeter = new Loudness::LoudnessLibrary( levels ); break;
+			files.push_back( audioFiles[i]->getFilename().toLatin1().constData() );
 		}
-		default: ploudMeter = new Loudness::LoudnessLibrary( Loudness::LoudnessLevels::Loudness_CST_R017( ) ); break;
 	}
+	
+        if( ! ploudProc->openAudioFiles( files ) )
+	{
+		QString msg  = "Error to open files\n";
 
-	ploudMeter->setUpsamplingFrequencyForTruePeak( properties.getFrequencyTruePeak() );
-
+		QMessageBox::critical( this, "Error in files", msg );
+		processMultiChannelFile.setText( "Process" );
+		return;
+	}
+	
+	
 	SoundFile audioInputFile [5];
 	size_t    numberOfChannels = 0;
 
@@ -402,38 +502,20 @@ void PLoudGui::openSeparatedFiles( )
 		return;
 	}
 
-	size_t channelsInBuffer = std::min((size_t) 5, numberOfChannels );
-
-	int bufferSize = rate / 5;
-	float *data [ channelsInBuffer ];
-	for( size_t i=0; i<channelsInBuffer; i++ )
-	  data [i] = new float [bufferSize];
-
+	//size_t channelsInBuffer = std::min((size_t) 5, numberOfChannels );
+	
+	//ploudMeter->initAndStart( channelsInBuffer, rate );
+	
 	progressBar.setMaximum ( audioInputFile[0].size() ),
 	progressBar.setMinimum ( 0 );
-
-	ploudMeter->initAndStart( channelsInBuffer, rate );
-	int cumulOfSamples = 0;
-	while (true)
-	{
-		int samples = 0;
-		for( size_t i=0; i<channelsInBuffer; i++ )
-		{
-			samples = audioInputFile[i].read ( data[i], bufferSize );
-		}
-
-		if (samples == 0) break;
-		cumulOfSamples += samples;
-		progressBar.setValue( cumulOfSamples );
-		ploudMeter->processSamples( data, samples );
-	}
+	
+	//analyseFiles( audioInputFile, channelsInBuffer, ploudMeter, progressBar );
 
 	programDuration = audioInputFile[0].size() / audioInputFile[0].rate() ;
 
 	for( size_t i=0; i<numberOfChannels; i++ )
 	{
 		audioInputFile[i].close();
-		delete[] data[i];
 	}
 
 	this->updateInterface();
@@ -443,8 +525,7 @@ void PLoudGui::openMultichannelFile( )
 {
 	processMultiChannelFile.setText("Wait ...");
 	processMultiChannelFile.setIcon( QIcon( ":/icons/document-encrypt.png" ) );
-	std::cout << "Processing..." << std::endl;
-
+	
 	if( multichannelFile.getFilename().toLatin1().size() == 0 )
 	{
 		QString msg  = "No input file was loaded.\n";
@@ -453,44 +534,42 @@ void PLoudGui::openMultichannelFile( )
 		processMultiChannelFile.setText( "Process" );
 		return;
 	}
+	
+	Loudness::LoudnessLevels levels (
+		properties.programLoudnessLongProgramMaxValue,
+		properties.programLoudnessLongProgramMinValue,
+		properties.programLoudnessLongProgramTargetLevel,
+		properties.programLoudnessLongProgramTargetMaxLevel,
+		properties.programLoudnessLongProgramTargetMinLevel,
+		properties.shortTermLoudnessLongProgramMaxValue,
+		properties.shortTermLoudnessLongProgramMinValue,
+		properties.programLoudnessShortProgramMaxValue,
+		properties.programLoudnessShortProgramMinValue,
+		properties.programLoudnessShortProgramTargetLevel,
+		properties.programLoudnessShortProgramTargetMaxLevel,
+		properties.programLoudnessShortProgramTargetMinLevel,
+		properties.shortTermLoudnessShortProgramMaxValue,
+		properties.truePeakMaxValue,
+		properties.truePeakTargetLevel,
+		properties.truePeakTargetMaxLevel,
+		properties.absoluteThreshold,
+		properties.relativeThreshold,
+		properties.maximalLoudnessRange,
+		properties.minimalLoudnessRange
+	);
 
-	if ( ploudMeter != NULL )
+	if ( ploudProc != NULL )
 	{
-		delete ploudMeter;
-		ploudMeter = NULL;
+		delete ploudProc;
+		ploudProc = NULL;
 	}
 	
-	switch( properties.normalisation )
-	{
-		case 0: ploudMeter = new Loudness::LoudnessLibrary( Loudness::LoudnessLevels::Loudness_CST_R017( ) ); break;
-		case 1: ploudMeter = new Loudness::LoudnessLibrary( Loudness::LoudnessLevels::Loudness_EBU_R128( ) ); break;
-		case 2: ploudMeter = new Loudness::LoudnessLibrary( Loudness::LoudnessLevels::Loudness_ATSC_A85( ) ); break;
-		case 3:
-		{
-			Loudness::LoudnessLevels levels (
-				properties.programLoudnessLongProgramMaxValue,
-				properties.programLoudnessLongProgramMinValue,
-				properties.shortTermLoudnessLongProgramMaxValue,
-				properties.shortTermLoudnessLongProgramMinValue,
-				properties.programLoudnessShortProgramMaxValue,
-				properties.programLoudnessShortProgramMinValue,
-				properties.shortTermLoudnessShortProgramMaxValue,
-				properties.truePeakMaxValue,
-				properties.maximalLoudnessRange,
-				properties.minimalLoudnessRange,
-				properties.relativeThreshold,
-				properties.absoluteThreshold
-			);
-			ploudMeter = new Loudness::LoudnessLibrary( levels ); break;
-		}
-		default: ploudMeter = new Loudness::LoudnessLibrary( Loudness::LoudnessLevels::Loudness_CST_R017( ) ); break;
-	}
+	ploudProc = new PLoudProcess( levels, properties.getFrequencyTruePeak() );
+	
+	std::vector<std::string> files;
+	files.push_back( multichannelFile.getFilename().toLatin1().constData() );
 
-	ploudMeter->setUpsamplingFrequencyForTruePeak( properties.getFrequencyTruePeak() );
-
-	SoundFile audioInputFile;
-
-	if ( audioInputFile.open_read ( multichannelFile.getFilename().toLatin1() ) != 0 )
+        if( ! ploudProc->openAudioFiles( files ) )
 	{
 		QString msg  = "Error to open file :\n";
 		msg += multichannelFile.getFilename();
@@ -500,44 +579,17 @@ void PLoudGui::openMultichannelFile( )
 		processMultiChannelFile.setText( "Process" );
 		return;
 	}
-
-	int bufferSize = audioInputFile.rate () / 5;
-	size_t channelsInBuffer = std::min( 5, audioInputFile.chan() );
-
-	float *data [ channelsInBuffer ];
-	float* inpb = new float [audioInputFile.chan() * bufferSize];
-
-	for( size_t i=0; i<channelsInBuffer; i++ )
-		data [i] = new float [bufferSize];
-
-	ploudMeter->initAndStart( channelsInBuffer, audioInputFile.rate() );
-
-	progressBar.setMaximum ( audioInputFile.size() ),
+	
+	progressBar.setMaximum ( ploudProc->getProgramLength() );
 	progressBar.setMinimum ( 0 );
+	progressMsg.setText( "Analyse" );
 
-	int cumulOfSamples = 0;
-	while (true)
-	{
-		int  samples = audioInputFile.read (inpb, bufferSize);
-		if (samples == 0) break;
-
-		cumulOfSamples += samples;
-		progressBar.setValue( cumulOfSamples );
-		float* p = inpb;
-		for (int i = 0; i < samples; i++)
-		{
-			for(size_t c = 0; c < channelsInBuffer; c++ )
-				data [c][i] = *p++;
-		}
-		ploudMeter->processSamples( data, samples );
-	}
-	programDuration = audioInputFile.size() / audioInputFile.rate() ;
-
-	audioInputFile.close();
-	for( int i=0; i<audioInputFile.chan(); i++ )
-		delete[] data[i];
-
-	this->updateInterface();
+	ploudProc->processAnalyseFile( callbackProgress, (void*)&progressBar );
+	
+	programDuration = ploudProc->getProgramDuration() ;
+	ploudProc->closeAudioFiles();
+	
+	this->updateInterface( );
 }
 
 bool PLoudGui::rlmSesame()
@@ -591,64 +643,61 @@ bool PLoudGui::rlmSesame()
 	return sesame;
 }
 
-void PLoudGui::updateInterface()
+void PLoudGui::updateInterface( )
 {
-	bool   isShortProgram;
-	double integratedLoudnessValue;
-	double integratedRange;
-	double maxShortTermLoudnessValue;
-	double minShortTermLoudnessValue;
-	double momentaryLoudnessValue;
-	double truePeakValue;
-	double truePeakValueInDb;
-
 	std::vector<float> shortTermValues;
-	ploudMeter -> getIsShortProgram       ( isShortProgram            );
-	ploudMeter -> getIntegratedLoudness   ( integratedLoudnessValue   );
-	ploudMeter -> getIntegratedRange      ( integratedRange           );
-	ploudMeter -> getMinShortTermLoudness ( minShortTermLoudnessValue );
-	ploudMeter -> getMaxShortTermLoudness ( maxShortTermLoudnessValue );
-	ploudMeter -> getMomentaryLoudness    ( momentaryLoudnessValue    );
-	ploudMeter -> getTruePeakValue        ( truePeakValue             );
-	ploudMeter -> getTruePeakInDbTP       ( truePeakValueInDb         );
 
-	ploudMeter -> printPloudValues();
+	ploudProc->printPloudValues();
 
-	isShortProgram ? labelProgramShortLong.setText( tr( "<font color='green'>Short</font><font color='gray'> / Long</font>" ) ) :
-	labelProgramShortLong.setText( tr( "<font color='gray'>Short / </font><font color='green'>Long</font>" ) );
+	ploudProc->isShortProgram( ) ? labelProgramShortLong.setText( tr( "<h1><font color='green'>Short</font><font color='gray'> / Long</font></h1>" ) ) :
+	labelProgramShortLong.setText( tr( "<h1><font color='gray'>Short / </font><font color='green'>Long</font></h1>" ) );
 
-	programLoudness       .display( QString::number( integratedLoudnessValue   , 'f', 1 ) + " LUFS" );
-	programRange          .display( QString::number( integratedRange           , 'f', 1 ) + " LU  " );
-	maxShortTermLoudness  .display( QString::number( maxShortTermLoudnessValue , 'f', 1 ) + " LUFS" );
-	minShortTermLoudness  .display( QString::number( minShortTermLoudnessValue , 'f', 1 ) + " LUFS" );
-	momentaryLoudness     .display( QString::number( momentaryLoudnessValue    , 'f', 1 ) + " LUFS" );
-	truePeak              .display( QString::number( truePeakValueInDb         , 'f', 1 ) + " dBFS" );
+	programLoudness       .display( QString::number( ploudProc->getIntegratedLoudness( ), 'f', 1 ) + " LUFS" );
+	programRange          .display( QString::number( ploudProc->getIntegratedRange( ), 'f', 1 ) + " LU  " );
+	maxShortTermLoudness  .display( QString::number( ploudProc->getMaxShortTermLoudness( ), 'f', 1 ) + " LUFS" );
+	minShortTermLoudness  .display( QString::number( ploudProc->getMinShortTermLoudness( ), 'f', 1 ) + " LUFS" );
+	momentaryLoudness     .display( QString::number( ploudProc->getMomentaryLoudness( ), 'f', 1 ) + " LUFS" );
+	truePeak              .display( QString::number( ploudProc->getTruePeakInDbTP( ), 'f', 1 ) + " dBFS" );
 
-	( ploudMeter -> isIntegratedLoudnessValid() == Loudness::eValidResult ) ? programLoudness.setPalette( paletteGreen ) :
-		( ploudMeter -> isIntegratedLoudnessValid() == Loudness::eNotValidResult ) ? programLoudness.setPalette( paletteRed ) :
-			( ploudMeter -> isIntegratedLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? programLoudness.setPalette( paletteOrange) : programLoudness.setPalette( paletteGray ) ;
+	( ploudProc->isIntegratedLoudnessValid() == Loudness::eValidResult ) ? programLoudness.setPalette( paletteGreen ) :
+		( ploudProc->isIntegratedLoudnessValid() == Loudness::eNotValidResult ) ? programLoudness.setPalette( paletteRed ) :
+			( ploudProc->isIntegratedLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? programLoudness.setPalette( paletteOrange) : programLoudness.setPalette( paletteGray ) ;
 
-	( ploudMeter -> isIntegratedLoudnessRangeValid() == Loudness::eValidResult ) ? programRange.setPalette( paletteGreen ) :
-		( ploudMeter -> isIntegratedLoudnessRangeValid() == Loudness::eNotValidResult ) ? programRange.setPalette( paletteRed ) :
-			( ploudMeter -> isIntegratedLoudnessRangeValid() == Loudness::eNotValidResultButNotIllegal ) ? programRange.setPalette( paletteOrange ) : programRange.setPalette( paletteGray ) ;
+	( ploudProc->isIntegratedLoudnessRangeValid() == Loudness::eValidResult ) ? programRange.setPalette( paletteGreen ) :
+		( ploudProc->isIntegratedLoudnessRangeValid() == Loudness::eNotValidResult ) ? programRange.setPalette( paletteRed ) :
+			( ploudProc->isIntegratedLoudnessRangeValid() == Loudness::eNotValidResultButNotIllegal ) ? programRange.setPalette( paletteOrange ) : programRange.setPalette( paletteGray ) ;
 
-	( ploudMeter -> isMaxShortTermLoudnessValid() == Loudness::eValidResult ) ? maxShortTermLoudness.setPalette( paletteGreen ) :
-		( ploudMeter -> isMaxShortTermLoudnessValid() == Loudness::eNotValidResult ) ? maxShortTermLoudness.setPalette( paletteRed ) :
-			( ploudMeter -> isMaxShortTermLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? maxShortTermLoudness.setPalette( paletteOrange ) : maxShortTermLoudness.setPalette( paletteGray ) ;
+	( ploudProc->isMaxShortTermLoudnessValid() == Loudness::eValidResult ) ? maxShortTermLoudness.setPalette( paletteGreen ) :
+		( ploudProc->isMaxShortTermLoudnessValid() == Loudness::eNotValidResult ) ? maxShortTermLoudness.setPalette( paletteRed ) :
+			( ploudProc->isMaxShortTermLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? maxShortTermLoudness.setPalette( paletteOrange ) : maxShortTermLoudness.setPalette( paletteGray ) ;
 
-	( ploudMeter -> isMinShortTermLoudnessValid() == Loudness::eValidResult ) ? minShortTermLoudness.setPalette( paletteGreen ) :
-		( ploudMeter -> isMinShortTermLoudnessValid() == Loudness::eNotValidResult ) ? minShortTermLoudness.setPalette( paletteRed ) :
-			( ploudMeter -> isMinShortTermLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? minShortTermLoudness.setPalette( paletteOrange ) : minShortTermLoudness.setPalette( paletteGray ) ;
+	( ploudProc->isMinShortTermLoudnessValid() == Loudness::eValidResult ) ? minShortTermLoudness.setPalette( paletteGreen ) :
+		( ploudProc->isMinShortTermLoudnessValid() == Loudness::eNotValidResult ) ? minShortTermLoudness.setPalette( paletteRed ) :
+			( ploudProc->isMinShortTermLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? minShortTermLoudness.setPalette( paletteOrange ) : minShortTermLoudness.setPalette( paletteGray ) ;
 
-	( ploudMeter -> isMomentaryLoudnessValid() == Loudness::eValidResult ) ? momentaryLoudness.setPalette( paletteGreen ) :
-		( ploudMeter -> isMomentaryLoudnessValid() == Loudness::eNotValidResult ) ? momentaryLoudness.setPalette( paletteRed ) :
-			( ploudMeter -> isMomentaryLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? momentaryLoudness.setPalette( paletteOrange ) : momentaryLoudness.setPalette( paletteGray ) ;
+	( ploudProc->isMomentaryLoudnessValid() == Loudness::eValidResult ) ? momentaryLoudness.setPalette( paletteGreen ) :
+		( ploudProc->isMomentaryLoudnessValid() == Loudness::eNotValidResult ) ? momentaryLoudness.setPalette( paletteRed ) :
+			( ploudProc->isMomentaryLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? momentaryLoudness.setPalette( paletteOrange ) : momentaryLoudness.setPalette( paletteGray ) ;
 
-	( ploudMeter -> isTruePeakValid() == Loudness::eValidResult ) ? truePeak.setPalette( paletteGreen ) :
-		( ploudMeter -> isTruePeakValid() == Loudness::eNotValidResult ) ? truePeak.setPalette( paletteRed ) :
-			( ploudMeter -> isTruePeakValid() == Loudness::eNotValidResultButNotIllegal ) ? truePeak.setPalette( paletteOrange ) : truePeak.setPalette( paletteGray ) ;
+	( ploudProc->isTruePeakValid() == Loudness::eValidResult ) ? truePeak.setPalette( paletteGreen ) :
+		( ploudProc->isTruePeakValid() == Loudness::eNotValidResult ) ? truePeak.setPalette( paletteRed ) :
+			( ploudProc->isTruePeakValid() == Loudness::eNotValidResultButNotIllegal ) ? truePeak.setPalette( paletteOrange ) : truePeak.setPalette( paletteGray ) ;
 
-	shortTermValues = ploudMeter->getShortTermValues();
+	if(    ploudProc->isIntegratedLoudnessValid() != Loudness::eNotValidResult
+		&& ploudProc->isIntegratedLoudnessRangeValid() != Loudness::eNotValidResult
+		&& ploudProc->isMaxShortTermLoudnessValid() != Loudness::eNotValidResult
+		&& ploudProc->isMinShortTermLoudnessValid() != Loudness::eNotValidResult
+		&& ploudProc->isMomentaryLoudnessValid() != Loudness::eNotValidResult
+		&& ploudProc->isTruePeakValid() != Loudness::eNotValidResult )
+	{
+		labelFinalResultResponse.setText( tr( "<h1><font color='green'>Valid</font><font color='gray'> / Invalid</font></h1>" ) );
+	}
+	else
+	{
+		labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / </font><font color='red'>Invalid</font></h1>" ) );
+	}
+	
+	shortTermValues = ploudProc->getShortTermValues();
 
 	QFile f("/homes/mrn/logPLoudValidator.txt");
 	f.open( QIODevice::WriteOnly );
@@ -660,7 +709,7 @@ void PLoudGui::updateInterface()
 	}
 	f.close();
 
-	std::vector<int> tmpHist = ploudMeter->getShortTermHistogram();
+	std::vector<int> tmpHist = ploudProc->getShortTermHistogram();
 	std::vector<int> tmpHist750;
 
 	for( int i=0; i< 750; i++ )
@@ -678,8 +727,8 @@ void PLoudGui::updateInterface()
 
 
 	histogramViewer->addData( tmpHist750,  84, 160, 207, 190 );
-	temporalViewer->addData( ploudMeter->getTruePeakValues()     , 255,   0,   0, 128 );
-	temporalViewer->addData( ploudMeter->getShortTermValues()    ,  84, 160, 207, 190 );
+	temporalViewer->addData( ploudProc->getTruePeakValues()     , 255,   0,   0, 128 );
+	temporalViewer->addData( ploudProc->getShortTermValues()    ,  84, 160, 207, 190 );
 	temporalViewer->update();
 	histogramViewer->update();
 
@@ -692,9 +741,28 @@ void PLoudGui::updateInterface()
 	correctMultiChannelFile.setEnabled ( true );
 }
 
+void PLoudGui::openNewFile          ( )
+{
+	correctSeparatedFiles.setEnabled   ( false );
+	correctMultiChannelFile.setEnabled ( false );
+	correctedFile = false;
+}
+
 void PLoudGui::openPropetiesDialog()
 {
-  properties.open();
+	properties.open();
+}
+
+void PLoudGui::closePropetiesDialog( int standard )
+{
+	switch ( standard )
+	{
+		case 0:labelStandardUsed.setText( tr( "<h1><font color='green'>France CST RT 017</font><font color='gray'><br/>EBU R 128<br/>ATSC A/85<br/>custom</font></h1>" ) ); break;
+		case 1:labelStandardUsed.setText( tr( "<h1><font color='gray'>France CST RT 017<br/></font><font color='green'>EBU R 128</font><font color='gray'><br/>ATSC A/85<br/>custom</font></h1>" ) ); break;
+		case 2:labelStandardUsed.setText( tr( "<h1><font color='gray'>France CST RT 017<br/>EBU R 128<br/></font><font color='green'>ATSC A/85</font><font color='gray'><br/>custom</font></h1>" ) ); break;
+		case 3:labelStandardUsed.setText( tr( "<h1><font color='gray'>France CST RT 017<br/>EBU R 128<br/>ATSC A/85<br/></font><font color='green'>custom</font></h1>" ) ); break;
+		default : labelStandardUsed.setText( tr( "<h1><font color='gray'>France CST RT 017<br/>EBU R 128<br/>ATSC A/85<br/>custom </font></h1>" ) ); break;
+	}
 }
 
 void PLoudGui::openHelpDialog ( )
@@ -725,15 +793,17 @@ void PLoudGui::openAboutDialog ( )
 	h.exec();
 }
 
-
 void PLoudGui::correctionProcessing( )
 {
-	SoundFile audioInputFile;
-	SoundFile audioOutputFile;
-
-	std::string filename = multichannelFile.getFilename().toStdString();
+	if( correctedFile )
+		return;
 	
-	if ( audioInputFile.open_read ( filename.c_str() ) != 0 )
+	std::string filename = multichannelFile.getFilename().toStdString();
+
+	std::vector<std::string> files;
+	files.push_back( filename );
+	
+        if( ! ploudProc->openAudioFiles( files ) )
 	{
 		QString msg  = "Error to open file :\n";
 		msg += multichannelFile.getFilename();
@@ -744,53 +814,22 @@ void PLoudGui::correctionProcessing( )
 		return;
 	}
 	
-	filename.insert( filename.length()-4, "_corrected" );
-	std::cout << filename << std::endl;
+	progressMsg.setText( "Multi pass analysis for correction" );
+	double newGain = 0;
+	//ploudProc->analyseToFindCorrectionGain( callbackProgress, (void*)&progressBar, newGain );
+	newGain = ploudProc->getCorrectionGain();
+	std::cout.precision(6);
+	std::cout << "writing with gain = " << newGain << " (" << 20.0 * std::log10( newGain ) << ")" << std::endl;
+	std::cout.precision(1);
 	
-	audioOutputFile.open_write ( filename.c_str(), audioInputFile.type(), audioInputFile.form(), audioInputFile.rate(), audioInputFile.chan() );
+	// copy input and write with a new gain
+	progressMsg.setText( "Wrinting file" );
 	
-	int bufferSize = audioInputFile.rate () / 5;
-	size_t channelsInBuffer = std::min( 5, audioInputFile.chan() );
-
-	float *data [ channelsInBuffer ];
-	float* inpb  = new float [audioInputFile.chan() * bufferSize];
-
-	for( size_t i=0; i<channelsInBuffer; i++ )
-		data [i] = new float [bufferSize];
+	ploudProc->writeFile( callbackProgress, (void*)&progressBar, newGain );
+	ploudProc->closeAudioFiles();
 	
-	progressBar.setMaximum ( audioInputFile.size() ),
-	progressBar.setMinimum ( 0 );
-	int cumulOfSamples = 0;
-	
-	double integratedLoudnessValue = -23.0f;
-	ploudMeter->getIntegratedLoudness( integratedLoudnessValue );
-	
-	double correction = - ( integratedLoudnessValue  + 23.0 );
-	correction = pow( 10.f, correction * 0.1f );
-	
-	std::cout << "multiply by: " << correction << std::endl;
-	while (true)
-	{
-		int  samples = audioInputFile.read( inpb, bufferSize );
-		if (samples == 0) break;
-		float* ptr = inpb;
-		for( int i=0; i< samples; i++ )
-		{
-			*ptr = (*ptr) * correction;
-			ptr++;
-		}
-		
-		
-		samples = audioOutputFile.write( inpb, samples );
-		cumulOfSamples += samples;
-		progressBar.setValue( cumulOfSamples );
-	}
-	
-	for( int i=0; i<audioInputFile.chan(); i++ )
-		delete[] data[i];
-	
-	audioInputFile.close();
-	audioOutputFile.close();
+	progressMsg.setText( "Finish" );
+	correctedFile = true;
 }
 
 

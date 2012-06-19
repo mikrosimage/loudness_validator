@@ -9,10 +9,10 @@
 #ifndef LOUDNESS_PROCESS_H
 #define LOUDNESS_PROCESS_H
 
-#include "loudnessLoudness.h"
-#include "loudnessFilter.h"
-#include "loudnessHistogram.h"
-#include "loudnessTruePeakMeter.h"
+#include "loudness.h"
+#include "filter.h"
+#include "histogram.h"
+#include "truePeakMeter.h"
 
 #include <vector>
 #include <cmath>
@@ -22,12 +22,13 @@ namespace Loudness{
 #define MAX_CHANNELS 5
 #define FRAGMENT_SIZE 64
 
+class LoudnessLevels;
 
-class LoudnessProcess
+class Process
 {
 public:
-	LoudnessProcess( float absoluteThresholdValue, float relativeThresholdValue );
-	~LoudnessProcess();
+	Process( float absoluteThresholdValue, float relativeThresholdValue );
+	~Process();
 
 
 	void        init                              ( const int numberOfChannels, const float frequencySampling );
@@ -46,17 +47,17 @@ public:
 							return _integratedLoudness; }
 
 	float       getIntegratedThreshold            ( ) { float _integratedLoudness, _integratedThreshold;
-							    s_momentaryLoudness.processIntegrationValues( _integratedLoudness, _integratedThreshold );
-							    return _integratedThreshold; }
+							s_momentaryLoudness.processIntegrationValues( _integratedLoudness, _integratedThreshold );
+							return _integratedThreshold; }
 
 	float       getRangeMin                       ( ) { s_shortTermLoudness.processRangeValues();
-							    return s_shortTermLoudness.getMinRange(); }
+							return s_shortTermLoudness.getMinRange(); }
 
 	float       getRangeMax                       ( ) { s_shortTermLoudness.processRangeValues();
-							    return s_shortTermLoudness.getMaxRange(); }
+							return s_shortTermLoudness.getMaxRange(); }
 
 	float       getRangeThreshold                 ( ) { s_shortTermLoudness.processRangeValues();
-							    return s_shortTermLoudness.getThresholdRange(); }
+							return s_shortTermLoudness.getThresholdRange(); }
 
 	float       getTruePeakValue                  ( ) const { return _truePeakValue; }
 	float       getTruePeakValueInDb              ( ) const { return 20.0 * std::log10( _truePeakValue ); }
@@ -69,6 +70,8 @@ public:
 	const std::vector<int> getHistogramShortTerm  ( ) { return s_shortTermLoudness.getHistogram(); }
 
 
+	float       getCorrectionGain                 ( const LoudnessLevels& levels, const bool isShortProgram ) { return s_measureLoudness.getCorrectionGain( levels, isShortProgram, getTruePeakValueInDb() ); }
+	
 private:
 	// process on a bloc of 50ms, compute the loudness value, and the found the TruePeak on the buffer
 	float       detectProcess                     ( const int numberOfFrames, float& truePeakValue );
@@ -78,7 +81,6 @@ private:
 	int                   _fragmentSize;            // Fragments size, 1/20 second.
 	int                   _fragmentCount;           // Number of samples remaining in current fragment.
 	float                 _fragmentPower;           // Power accumulated for current fragment.
-	float                 _power [FRAGMENT_SIZE];   // Array of fragment powers.
 	int                   _writeIndex;              // Write index into _frpwr
 
 	float                 _tmpTruePeakValue;        // TruePeak on window size (for example on 500ms )
@@ -89,19 +91,19 @@ private:
 
 	float*                _inputPointerData   [MAX_CHANNELS];
 	// pre-filters
-	LoudnessFilter        _filters            [MAX_CHANNELS];
+	Filter                _filters            [MAX_CHANNELS];
 
 	// TruePeakMeter
-	LoudnessTruePeakMeter _truePeakMeter      [MAX_CHANNELS];
+	TruePeakMeter         _truePeakMeter      [MAX_CHANNELS];
 
 	
-	LoudnessLoudness      s_measureLoudness;
+	Loudness              s_measureLoudness;
 	
-	LoudnessLoudness      s_shortTermLoudness;
-	LoudnessLoudness      s_momentaryLoudness;
+	Loudness              s_shortTermLoudness;
+	Loudness              s_momentaryLoudness;
 
 	// Default channel gains.
-	static float         _channelGain        [MAX_CHANNELS];
+	static float          _channelGain        [MAX_CHANNELS];
 };
 
 }
