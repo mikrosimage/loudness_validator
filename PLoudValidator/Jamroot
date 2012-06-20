@@ -38,8 +38,8 @@ exe PLoudValidator :
 		/qt//QtGui/<variant>release
 		/rlm
 	:
-		<library>/project-config//libsndfile
-		<library>/r128library
+		<library>/r128library//loudnessLibrary
+		<library>/r128library//soundFile
 	;
 
 install dist :

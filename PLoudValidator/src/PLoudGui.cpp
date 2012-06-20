@@ -418,7 +418,7 @@ void PLoudGui::openSeparatedFiles( )
 		}
 	}
 	
-        if( ! ploudProc->openAudioFiles( files ) )
+	if( ! ploudProc->openAudioFiles( files ) )
 	{
 		QString msg  = "Error to open files\n";
 
@@ -569,7 +569,7 @@ void PLoudGui::openMultichannelFile( )
 	std::vector<std::string> files;
 	files.push_back( multichannelFile.getFilename().toLatin1().constData() );
 
-        if( ! ploudProc->openAudioFiles( files ) )
+	if( ! ploudProc->openAudioFiles( files ) )
 	{
 		QString msg  = "Error to open file :\n";
 		msg += multichannelFile.getFilename();

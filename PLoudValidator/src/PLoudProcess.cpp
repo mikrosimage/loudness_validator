@@ -21,15 +21,15 @@ bool PLoudProcess::openAudioFiles( std::vector<std::string>& files )
 	{
 		filenames.push_back( files.at( i ) );
 		SoundFile* audioFile = new SoundFile();
-                bool tmpRet = audioFile->open_read ( files.at( i ).c_str() );
-                tmpRet = !tmpRet;
-                if( tmpRet )
+		bool tmpRet = audioFile->open_read ( files.at( i ).c_str() );
+		tmpRet = !tmpRet;
+		if( tmpRet )
 		{
 			audioFiles.push_back( audioFile );
 		}
 		else
 		{
-                        delete audioFile;
+			delete audioFile;
 			ret = false;
 		}
 	}
@@ -64,24 +64,24 @@ int PLoudProcess::getProgramLength()
 
 void PLoudProcess::processAnalyseFile( void (*callback)(void*, int), void* object, double gain )
 {
-        int cumulOfSamples = 0;
-        SoundFile* audioFile = audioFiles.at(0);
-
-        size_t channelsInBuffer = std::min( 5, audioFile->chan() );
-        int bufferSize = audioFile->rate () / 5;
+	int cumulOfSamples = 0;
+	SoundFile* audioFile = audioFiles.at(0);
+	
+	size_t channelsInBuffer = std::min( 5, audioFile->chan() );
+	int bufferSize = audioFile->rate () / 5;
 	float *data [ channelsInBuffer ];
-        float* inpb = new float [ audioFile->chan() * bufferSize ];
-
+	float* inpb = new float [ audioFile->chan() * bufferSize ];
+	
 	for( size_t i = 0; i< channelsInBuffer; i++ )
 		data [i] = new float [bufferSize];
 	
-        initAndStart( channelsInBuffer, audioFile->rate() );
+	initAndStart( channelsInBuffer, audioFile->rate() );
 	
-        audioFile->seek( 0 );
+	audioFile->seek( 0 );
 	
 	while (true)
 	{
-                int  samples = audioFile->read( inpb, bufferSize );
+		int  samples = audioFile->read( inpb, bufferSize );
 		if (samples == 0) break;
 
 		cumulOfSamples += samples;
@@ -97,7 +97,7 @@ void PLoudProcess::processAnalyseFile( void (*callback)(void*, int), void* objec
 	}
 	
 	delete[] inpb;
-        for( int i=0; i< audioFile->chan(); i++ )
+	for( int i=0; i< audioFile->chan(); i++ )
 		delete[] data[i];
 }
 
