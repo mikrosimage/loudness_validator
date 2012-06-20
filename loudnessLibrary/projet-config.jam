@@ -1,0 +1,14 @@
+project project-config ;
+
+lib libsndfile
+	: # sources files
+	: # dynamic library
+		<os>LINUX,<address-model>32:<file>/usr/lib/libsndfile.so
+		<os>LINUX,<address-model>64:<file>/usr/lib64/libsndfile.so
+		<os>NT:<file>"C:/Program Files/Mega-Nerd/libsndfile/lib/libsndfile-1.lib"
+		<os>NT:<file>"C:/Program Files/Mega-Nerd/libsndfile/bin/libsndfile-1.dll"
+	:
+	: # usage-requirements
+		<os>LINUX:<include>usr/include
+		<os>NT:<include>"C:/Program Files/Mega-Nerd/libsndfile/include"
+	;

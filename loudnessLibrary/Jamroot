@@ -4,17 +4,37 @@ import os ;
 local BOOST_ROOT_PATH = [ modules.peek : BOOST_ROOT ] ; 
 
 project :
-	 requirements
-	 <include>include
-	 <include>src
-	 <include>$(BOOST_ROOT_PATH)
+		requirements
+		<include>include
+		<include>src
+		<include>tool/io
+		<include>$(BOOST_ROOT_PATH)
 	:
-	 usage-requirements
-	 <include>include
+		usage-requirements
+		<include>include
+		<include>tool/io
 	:
-	 build-dir .build/
+		build-dir .build/
 	;
 
 lib loudnessLibrary :
 	[ glob src/*.cpp ]
+	;
+	
+lib soundFile :
+		[ glob tool/io/*.cpp ]
+	:
+		<library>/project-config//libsndfile
+	;
+
+exe loudness-analyser :
+	[ glob tool/analyser/*.cpp ]
+	soundFile
+	loudnessLibrary
+	;
+
+
+explicit
+	loudnessLibrary
+	soundFile
 	;
