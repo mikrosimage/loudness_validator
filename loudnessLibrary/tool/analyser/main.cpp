@@ -1,84 +1,20 @@
 
 #include <iostream>
-#include <fstream>
 #include <cstring>
 #include <vector>
+
 #include <loudnessLibrary.h>
 #include <SoundFile.h>
+#include <WriteXml.h>
+#include <ProcessFile.h>
 
 bool showProgress = false;
 bool showResults = false;
-
-std::string convertValid( Loudness::ELoudnessResult result )
-{
-	switch( result )
-	{
-		case Loudness::eValidResult : return "status=\"valid\""; break;
-		case Loudness::eNotValidResult : return "status=\"illegal\""; break;
-		case Loudness::eNotValidResultButNotIllegal : return "status=\"not illegal\""; break;
-		case Loudness::eNoImportance : return "status=\"\""; break;
-	}
-}
-
-void writeResults( const char* filename, Loudness::LoudnessLibrary& analyser )
-{
-	std::ofstream stat;
-	stat.precision( 1 );
-	stat.setf( std::ios::fixed, std::ios::floatfield );
-	stat.open( filename );
-	stat << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
-	stat << "<Program>\n";
-	stat << "\t<ProgramLoudness " << convertValid( analyser.isIntegratedLoudnessValid() ) << ">" << analyser.getIntegratedLoudness() << "</ProgramLoudness>\n";
-	stat << "\t<LRA " << convertValid( analyser.isIntegratedLoudnessRangeValid() ) << ">" << analyser.getIntegratedRange() << "</LRA>\n";
-	stat << "\t<MaxMomentaryLoudness " << convertValid( analyser.isMomentaryLoudnessValid() ) << ">" << analyser.getMomentaryLoudness() << "</MaxMomentaryLoudness>\n";
-	stat << "\t<MaxShortTermLoudness " << convertValid( analyser.isMaxShortTermLoudnessValid() ) << ">" << analyser.getMaxShortTermLoudness() << "</MaxShortTermLoudness>\n";
-	stat << "\t<MinShortTermLoudness " << convertValid( analyser.isMinShortTermLoudnessValid() ) << ">" << analyser.getMinShortTermLoudness() << "</MinShortTermLoudness>\n";
-	stat << "\t<TruePeak " << convertValid( analyser.isTruePeakValid() ) << ">" << analyser.getTruePeakInDbTP() << "</TruePeak>\n";
-	stat << "</Program>\n";
-	stat.close();
-}
 
 void progress( int p )
 {
 	if( showProgress )
 		std::cout << "[" << p << "%]\r" << std::flush;
-}
-
-void processAnalyseFile( Loudness::LoudnessLibrary& analyser, SoundFile& audioFile, void (*callback)(int) )
-{
-	int cumulOfSamples = 0;
-	int length = audioFile.size();
-	size_t channelsInBuffer = std::min( 5, audioFile.chan() );
-	int bufferSize = audioFile.rate () / 5;
-	float* data [ channelsInBuffer ];
-	float* inpb = new float [ audioFile.chan() * bufferSize ];
-	
-	for( size_t i = 0; i< channelsInBuffer; i++ )
-		data [i] = new float [bufferSize];
-	
-	analyser.initAndStart( channelsInBuffer, audioFile.rate() );
-	
-	audioFile.seek( 0 );
-	
-	while (true)
-	{
-		int  samples = audioFile.read( inpb, bufferSize );
-		if (samples == 0) break;
-
-		cumulOfSamples += samples;
-		callback( (float)cumulOfSamples / length * 100 );
-		float* p = inpb;
-		for (int i = 0; i < samples; i++)
-		{
-			for(size_t c = 0; c < channelsInBuffer; c++ )
-				data [c][i] = (*p++);
-		}
-		analyser.processSamples( data, samples );
-	}
-	
-	delete[] inpb;
-	for( int i=0; i< audioFile.chan(); i++ )
-		delete[] data[i];
 }
 
 
@@ -100,21 +36,21 @@ int main( int argc, char** argv )
 			showProgress = true;
 			showResults = true;
 		}
-		if( strncmp ( argv[i],"standard=", 9 ) == 0 )
+		if( strncmp ( argv[i],"--standard=", 11 ) == 0 )
 		{
-			if( strncmp ( argv[i],"standard=ebu", 12 ) == 0 )
+			if( strcmp ( argv[i],"--standard=cst" ) == 0 )
 			{
 				standard = 0;
 			}
 			else
 			{
-				if( strncmp ( argv[i],"standard=cst", 12 ) == 0 )
+				if( strcmp ( argv[i],"--standard=ebu" ) == 0 )
 				{
 					standard = 1;
 				}
 				else
 				{
-					if( strncmp ( argv[i],"standard=atsc", 13 ) == 0 )
+					if( strcmp ( argv[i],"--standard=atsc" ) == 0 )
 					{
 						standard = 2;
 					}
