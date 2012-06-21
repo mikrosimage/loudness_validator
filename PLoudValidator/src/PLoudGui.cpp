@@ -683,18 +683,17 @@ void PLoudGui::updateInterface( )
 		( ploudProc->isTruePeakValid() == Loudness::eNotValidResult ) ? truePeak.setPalette( paletteRed ) :
 			( ploudProc->isTruePeakValid() == Loudness::eNotValidResultButNotIllegal ) ? truePeak.setPalette( paletteOrange ) : truePeak.setPalette( paletteGray ) ;
 
-	if(    ploudProc->isIntegratedLoudnessValid() != Loudness::eNotValidResult
-		&& ploudProc->isIntegratedLoudnessRangeValid() != Loudness::eNotValidResult
-		&& ploudProc->isMaxShortTermLoudnessValid() != Loudness::eNotValidResult
-		&& ploudProc->isMinShortTermLoudnessValid() != Loudness::eNotValidResult
-		&& ploudProc->isMomentaryLoudnessValid() != Loudness::eNotValidResult
-		&& ploudProc->isTruePeakValid() != Loudness::eNotValidResult )
+	switch( ploudProc->isValidProgram() )
 	{
-		labelFinalResultResponse.setText( tr( "<h1><font color='green'>Valid</font><font color='gray'> / Invalid</font></h1>" ) );
+		case eValidResult: labelFinalResultResponse.setText( tr( "<h1><font color='green'>Valid</font><font color='gray'> / Invalid</font></h1>" ) ); break;
+		case eNotValidResult: labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / </font><font color='red'>Invalid</font></h1>" ) ); break;
+		case eNotValidResultButNotIllegal: labelFinalResultResponse.setText( tr( "<h1><font color='orange'>Valid</font><font color='gray'> / Invalid</font></h1>" ) ); break;
+		case eNoImportance: labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / Invalid</font></h1>" ) );break;
+		
 	}
 	else
 	{
-		labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / </font><font color='red'>Invalid</font></h1>" ) );
+		
 	}
 	
 	shortTermValues = ploudProc->getShortTermValues();

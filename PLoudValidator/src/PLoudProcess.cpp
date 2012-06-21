@@ -3,8 +3,8 @@
 
 PLoudProcess::PLoudProcess( Loudness::LoudnessLevels levels, float frequencyForTruePeak )
 	:
-	  Loudness::LoudnessLibrary( levels ),
-	  isMultichannelFile ( false )
+		Loudness::LoudnessLibrary( levels ),
+		isMultichannelFile ( false )
 {
 	setUpsamplingFrequencyForTruePeak( frequencyForTruePeak );
 }
@@ -190,16 +190,16 @@ void PLoudProcess::writeFile( void (*callback)(void*, int), void* object, double
 	
 	outputFilemane.insert( outputFilemane.length() - position, "_corrected" );
 	
-        audioOutputFile.open_write ( outputFilemane.c_str(), audioFiles.at(0)->type(), audioFiles.at(0)->form(), audioFiles.at(0)->rate(), audioFiles.at(0)->chan() );
+	audioOutputFile.open_write ( outputFilemane.c_str(), audioFiles.at(0)->type(), audioFiles.at(0)->form(), audioFiles.at(0)->rate(), audioFiles.at(0)->chan() );
 	
 	// correction of the file, and write into a corrected file.
 	
-        int bufferSize = audioFiles.at(0)->rate () / 5;
-        size_t channelsInBuffer = std::min( 5, audioFiles.at(0)->chan() );
+	int bufferSize = audioFiles.at(0)->rate () / 5;
+	size_t channelsInBuffer = std::min( 5, audioFiles.at(0)->chan() );
 	size_t cumulOfSamples = 0;
 	
 	float* data [ channelsInBuffer ];
-        float* inpb  = new float [audioFiles.at(0)->chan() * bufferSize];
+	float* inpb  = new float [audioFiles.at(0)->chan() * bufferSize];
 	
 	for( size_t i=0; i < channelsInBuffer; i++ )
 		data [i] = new float [bufferSize];
@@ -208,7 +208,7 @@ void PLoudProcess::writeFile( void (*callback)(void*, int), void* object, double
 	
 	while (true)
 	{
-                int  samples = audioFiles.at(0)->read( inpb, bufferSize );
+		int  samples = audioFiles.at(0)->read( inpb, bufferSize );
 		if (samples == 0) break;
 		
 		float* ptr = inpb;
@@ -222,7 +222,7 @@ void PLoudProcess::writeFile( void (*callback)(void*, int), void* object, double
 		callback( object, cumulOfSamples );
 	}
 	
-        for( int i=0; i< audioFiles.at(0)->chan(); i++ )
+	for( int i=0; i< audioFiles.at(0)->chan(); i++ )
 		delete[] data[i];
 	
 	audioOutputFile.close();
