@@ -119,6 +119,28 @@ std::vector<int>   LoudnessLibrary::getShortTermHistogram ( )
 	return p_process->getHistogramShortTerm();
 }
 
+ELoudnessResult    LoudnessLibrary::isValidProgram( )
+{
+	size_t invalidState = 0; // if a not valid result is present
+	size_t notIllegalState = 0; // if a not valid but not illegal result is present
+	
+	switch( isIntegratedLoudnessValid() )
+	{
+		case eValidResult: break;
+		case eNotValidResult: invalidState++; break;
+		case eNotValidResultButNotIllegal: notIllegalState++; break;
+		case eNoImportance: break;
+	}
+	
+	if( invalidState == 0 && notIllegalState == 0 )
+		return eValidResult;
+	
+	if( invalidState == 0 )
+		return eNotValidResultButNotIllegal;
+	
+	return eNotValidResult;
+}
+
 ELoudnessResult    LoudnessLibrary::isIntegratedLoudnessValid ( )
 {
 	float roundedValue = std::floor( p_process->getIntegrated() * 10.0 ) / 10.0 ;

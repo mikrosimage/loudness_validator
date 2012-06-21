@@ -285,6 +285,11 @@ public:
 	void printPloudValues( );
 
 	/**
+	 * Return if the program is valid
+	**/
+	ELoudnessResult     isValidProgram( );
+	
+	/**
 	 * Return if the Loudness is valid
 	**/
 	ELoudnessResult     isIntegratedLoudnessValid( );

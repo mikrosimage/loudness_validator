@@ -8,6 +8,7 @@ project :
 		<include>include
 		<include>src
 		<include>tool/io
+		<include>tool/common
 		<include>$(BOOST_ROOT_PATH)
 	:
 		usage-requirements
@@ -33,6 +34,11 @@ exe loudness-analyser :
 	loudnessLibrary
 	;
 
+exe loudness-corrector :
+	[ glob tool/corrector/*.cpp ]
+	soundFile
+	loudnessLibrary
+	;
 
 explicit
 	loudnessLibrary
