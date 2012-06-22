@@ -49,13 +49,13 @@ see ./build_windows.bat --help for more informations
 Run applications
 ----------------
 
-The distribution is done into dist/release/ directory.
-You can run GUI with:
-./dist/release/bin/PLoudValidator
+The distribution is done into dist/release/ directory.  
+You can run GUI with:  
+>./dist/release/bin/PLoudValidator  
 
-Or using command line tools, to display help :
-./dist/release/bin/loudness-analyser
-./dist/release/bin/loudness-corrector
+Or using command line tools, to display help :  
+>./dist/release/bin/loudness-analyser  
+./dist/release/bin/loudness-corrector  
 
 Tested compilers
 ----------------
