@@ -688,11 +688,7 @@ void PLoudGui::updateInterface( )
 		case eValidResult: labelFinalResultResponse.setText( tr( "<h1><font color='green'>Valid</font><font color='gray'> / Invalid</font></h1>" ) ); break;
 		case eNotValidResult: labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / </font><font color='red'>Invalid</font></h1>" ) ); break;
 		case eNotValidResultButNotIllegal: labelFinalResultResponse.setText( tr( "<h1><font color='orange'>Valid</font><font color='gray'> / Invalid</font></h1>" ) ); break;
-		case eNoImportance: labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / Invalid</font></h1>" ) );break;
-		
-	}
-	else
-	{
+		case eNoImportance	: labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / Invalid</font></h1>" ) );break;
 		
 	}
 	
