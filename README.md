@@ -56,32 +56,32 @@ Tested compilers
 Tested libraries
 ----------------
 
-* Qt 4.5.3
-* libsndfile 1.0.24-22.2
+* Qt 4.5.3  
+* libsndfile 1.0.24-22.2  
 
 
 Dependencies
 ------------
 
-Tools from loudnessLibrary directory requires libsndfile.
-And PLoudValidator require also Qt4.
+Tools from loudnessLibrary directory requires libsndfile.  
+And PLoudValidator require also Qt4.  
 
-[libsndfile](http://www.mega-nerd.com/libsndfile/)
-[Qt4](http://qt.nokia.com/products/)
+[libsndfile](http://www.mega-nerd.com/libsndfile/)  
+[Qt4](http://qt.nokia.com/products/)  
 
 More information 
 ----------------
 
-* EBU R-128
-[EBU R-128 link](http://tech.ebu.ch/loudness)
+* EBU R-128  
+[open link](http://tech.ebu.ch/loudness)
 
-* ATSC A85
-[ATSC A85 pdf](www.atsc.org/cms/standards/a_85-2011a.pdf)
+* ATSC A85  
+[download pdf](www.atsc.org/cms/standards/a_85-2011a.pdf)
 
-* France CST-Ficam specification
-[CST-Ficam pdf](http://www.arpp-pub.org/IMG/pdf/140911_-_Pub_TV_et_intensite_sonore_v-def-2.pdf)
+* France CST-Ficam RT-017 specification  
+[download pdf](http://www.arpp-pub.org/IMG/pdf/140911_-_Pub_TV_et_intensite_sonore_v-def-2.pdf)
 
-* EBU test material
-[zip archive](http://tech.ebu.ch/webdav/site/tech/shared/testmaterial/ebu-loudness-test-setv03.zip)
+* EBU test material  
+[download zip archive](http://tech.ebu.ch/webdav/site/tech/shared/testmaterial/ebu-loudness-test-setv03.zip)
 
 
