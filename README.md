@@ -41,11 +41,21 @@ see ./build_linux.sh --help for more informations
 > set BOOST_ROOT=path/to/boost  
 set QTDIR="C:\QtSDK\mingw" # with default install  
 set QTDIR="C:\QtSDK\Desktop\Qt\4.7.4\mingw"  
-cd PLoudValidator  
 build_windows.bat  
 build_windows.bat  /library /tools /PloudValidator  
 
 see ./build_windows.bat --help for more informations
+
+Run applications
+----------------
+
+The distribution is done into dist/release/ directory.
+You can run GUI with:
+./dist/release/bin/PLoudValidator
+
+Or using command line tools, to display help :
+./dist/release/bin/loudness-analyser
+./dist/release/bin/loudness-corrector
 
 Tested compilers
 ----------------
@@ -58,7 +68,6 @@ Tested libraries
 
 * Qt 4.5.3  
 * libsndfile 1.0.24-22.2  
-
 
 Dependencies
 ------------
