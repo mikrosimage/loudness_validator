@@ -2,6 +2,19 @@
 project project-config ;
 import qt4 ;
 
+path-constant BUILD_DIR : ./.build/ ;
+path-constant DIST_ROOT : ./dist/ ;
+
+# define projects
+use-project /PloudValidator : ./PLoudValidator ;
+use-project /tools : ./loudnessLibrary/tool ;
+use-project /library : ./loudnessLibrary ;
+
+# define sub-projects
+use-project /r128library : loudnessLibrary ;
+use-project /rlm         : rlm ;
+
+
 local QTDIR = [ modules.peek : QTDIR ] ;
 if ! [ qt4.initialized ]
 {

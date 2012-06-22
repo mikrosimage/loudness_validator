@@ -1,14 +1,17 @@
-PLoud Validator version 1.0
+PLoud Validator version 1.1
 ==================
 
 PLoudValidator is a software to validate audio files with correct loudness.
 It can validate various specifications:
 
-* EBU R128
+* EBU R 128
 
 * ATSC A85
 
-* CST-Ficam specification for France.
+* CST-Ficam RT-017 specification for France.
+
+It can also correct file to EBU R 128.
+Comming soon for others specifications.
 
 License
 -------
@@ -26,22 +29,45 @@ cd loudness_validator
 
 * Linux compilation
 
-> export BOOST_ROOT=path/to/boost
-cd PLoudValidator
-buildPLoudValidator_linux.sh
+> export BOOST_ROOT=path/to/boost  
+export QTDIR=/usr/lib64/qt4  
+./build_linux.sh  
+./build_linux.sh /library /tools /PloudValidator  
+
+see ./build_linux.sh --help for more informations
 
 * Windows compilation
 
-> set BOOST_ROOT=path/to/boost
-cd PLoudValidator
-buildPLoudValidator_windows.bat
+> set BOOST_ROOT=path/to/boost  
+set QTDIR="C:\QtSDK\mingw" # with default install  
+set QTDIR="C:\QtSDK\Desktop\Qt\4.7.4\mingw"  
+cd PLoudValidator  
+build_windows.bat  
+build_windows.bat  /library /tools /PloudValidator  
+
+see ./build_windows.bat --help for more informations
 
 Tested compilers
 ----------------
 
 * GCC 4.4.1 on OpenSUSE 11.2
-* GCC 4.5.2 on Windows XP 
+* GCC 4.5.2 on Windows XP
 
+Tested libraries
+----------------
+
+* Qt 4.5.3
+* libsndfile 1.0.24-22.2
+
+
+Dependencies
+------------
+
+Tools from loudnessLibrary directory requires libsndfile.
+And PLoudValidator require also Qt4.
+
+[libsndfile](http://www.mega-nerd.com/libsndfile/)
+[Qt4](http://qt.nokia.com/products/)
 
 More information 
 ----------------

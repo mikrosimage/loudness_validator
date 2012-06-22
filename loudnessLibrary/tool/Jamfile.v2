@@ -1,0 +1,48 @@
+
+
+exe loudness-analyser :
+	[ glob analyser/*.cpp ]
+	..//soundFile/<link>static
+	..//loudnessLibrary/<link>static
+	;
+
+exe loudness-corrector :
+	[ glob corrector/*.cpp ]
+	..//soundFile/<link>static
+	..//loudnessLibrary/<link>static
+	;
+
+install analyser-bins :
+		loudness-analyser
+	:
+		<install-dependencies>off
+		<install-type>EXE
+		<variant>debug:<location>$(DIST_ROOT)/debug/bin
+		<variant>release:<location>$(DIST_ROOT)/release/bin
+	;
+	
+install corrector-bins :
+		loudness-corrector
+	:
+		<install-dependencies>off
+		<install-type>EXE
+		<variant>debug:<location>$(DIST_ROOT)/debug/bin
+		<variant>release:<location>$(DIST_ROOT)/release/bin
+	;
+
+install tools-bins :
+		loudness-analyser
+		loudness-corrector
+	:
+		<install-dependencies>off
+		<install-type>EXE
+		<variant>debug:<location>$(DIST_ROOT)/debug/bin
+		<variant>release:<location>$(DIST_ROOT)/release/bin
+	;
+
+explicit
+	loudness-analyser
+	loudness-corrector
+	analyser-bins
+	corrector-bins
+	;

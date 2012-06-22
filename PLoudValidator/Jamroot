@@ -22,13 +22,8 @@ project PLoudValidator :
 	<define>PLOUDVALIDATOR_MONTH=\"\\\"$(date[2])\\\"\"
 	<define>PLOUDVALIDATOR_YEAR=\"\\\"$(date[1])\\\"\"
 	:
-	build-dir .build/
+	build-dir $(BUILD_DIR)
 ;
-
-use-project /r128library : ../loudnessLibrary ;
-use-project /rlm         : ../rlm ;
-
-
 
 exe PLoudValidator :
 		[ glob src/*.cpp ]
@@ -38,16 +33,15 @@ exe PLoudValidator :
 		/qt//QtGui/<variant>release
 		/rlm
 	:
-		<library>/r128library//loudnessLibrary
-		<library>/r128library//soundFile
+		<library>/r128library//loudnessLibrary/<link>static
+		<library>/r128library//soundFile/<link>static
 	;
 
 install dist :
 		PLoudValidator
 	:
-		<install-dependencies>on
+		<install-dependencies>off
 		<install-type>EXE
-		<install-type>LIB
-		<variant>debug:<location>dist/debug
-		<variant>release:<location>dist/release
+		<variant>debug:<location>$(DIST_ROOT)/debug/bin
+		<variant>release:<location>$(DIST_ROOT)/release/bin
 	;

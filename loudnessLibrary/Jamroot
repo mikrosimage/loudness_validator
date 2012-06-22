@@ -15,32 +15,50 @@ project :
 		<include>include
 		<include>tool/io
 	:
-		build-dir .build/
+		build-dir $(BUILD_DIR)
+	;
+
+alias headers :
+		include/loudnessLibrary.h
 	;
 
 lib loudnessLibrary :
-	[ glob src/*.cpp ]
+		[ glob src/*.cpp ]
 	;
-	
+
 lib soundFile :
 		[ glob tool/io/*.cpp ]
 	:
 		<library>/project-config//libsndfile
 	;
 
-exe loudness-analyser :
-	[ glob tool/analyser/*.cpp ]
-	soundFile
-	loudnessLibrary
+install loudnessLibrary-header :
+		headers
+	:
+		<install-dependencies>off
+		<variant>debug:<location>$(DIST_ROOT)/debug/include
+		<variant>release:<location>$(DIST_ROOT)/release/include
 	;
 
-exe loudness-corrector :
-	[ glob tool/corrector/*.cpp ]
-	soundFile
-	loudnessLibrary
+install loudnessLibrary-lib :
+		loudnessLibrary/<link>shared
+		loudnessLibrary/<link>static
+	:
+		<install-dependencies>off
+		<install-type>LIB
+		<variant>debug:<location>$(DIST_ROOT)/debug/lib
+		<variant>release:<location>$(DIST_ROOT)/release/lib
 	;
+
+install loudnessLibrary-all :
+		loudnessLibrary-header
+		loudnessLibrary-lib
+	;
+
 
 explicit
-	loudnessLibrary
-	soundFile
+		loudnessLibrary
+		soundFile
+		loudnessLibrary-header
+		loudnessLibrary-lib
 	;

@@ -1,0 +1,17 @@
+##############################################################################
+##                            PLoud Project                                  #
+##                                                                           #
+##                                                                           #
+##                                                                           #
+## Build:                                                                    #
+##                                                                           #
+## call ./buildPLoudValidator_linux.sh or                                    #
+##      buildPLoudValidator_windows.bat with:                                #
+##      /library         build Loudness library                              #
+##      /tools           build analyser and corrector                        #
+##      /PloudValidator  build GUI to analyse files                          #
+##                                                                           #
+##                                                                           #
+##                                                                           #
+##############################################################################
+
