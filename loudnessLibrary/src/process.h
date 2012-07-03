@@ -70,7 +70,7 @@ public:
 	const std::vector<int> getHistogramShortTerm  ( ) { return s_shortTermLoudness.getHistogram(); }
 
 
-	float       getCorrectionGain                 ( const LoudnessLevels& levels, const bool isShortProgram ) { return s_measureLoudness.getCorrectionGain( levels, isShortProgram, getTruePeakValueInDb() ); }
+	float       getCorrectionGain                 ( const LoudnessLevels& levels, const bool isShortProgram, bool limiterIsEnable ) { return s_measureLoudness.getCorrectionGain( levels, isShortProgram, getTruePeakValueInDb(), limiterIsEnable ); }
 	
 private:
 	// process on a bloc of 50ms, compute the loudness value, and the found the TruePeak on the buffer

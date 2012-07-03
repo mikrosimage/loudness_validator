@@ -13,6 +13,7 @@
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/rolling_mean.hpp>
+#include <boost/accumulators/statistics/rolling_mean.hpp>
 
 #include "histogram.h"
 #include "loudnessLibrary.h"
@@ -53,7 +54,7 @@ public:
 
 	void processRangeValues();
 	
-	float getCorrectionGain( const LoudnessLevels &levels, const bool isShortProgram, const float truePeakValue );
+	float getCorrectionGain( const LoudnessLevels &levels, const bool isShortProgram, const float truePeakValue, bool limiterIsEnable );
 
 	std::vector<int>   getHistogram     () { return _histogram.getHistogram(); }
 	std::vector<float> getTemporalValues() { return _temporalValues; }

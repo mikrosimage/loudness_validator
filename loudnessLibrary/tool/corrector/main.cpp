@@ -23,6 +23,7 @@ int main( int argc, char** argv )
 {
 	bool validToProcess = false;
 	bool analyseAfterCorrecting = false;
+	bool enableLimiter = false;
 	bool printLength = false;
 	int standard = 0;
 	std::vector<std::string> filenames;
@@ -45,6 +46,10 @@ int main( int argc, char** argv )
 		if( strcmp ( argv[i],"--analyse-corrected" ) == 0 )
 		{
 			analyseAfterCorrecting = true;
+		}
+		if( strcmp ( argv[i],"--enable-limiter" ) == 0 )
+		{
+			enableLimiter = true;
 		}
 		if( strcmp ( argv[i],"--length" ) == 0 )
 		{
@@ -116,7 +121,7 @@ int main( int argc, char** argv )
 				
 				std::string xmlFile = filename;
 				xmlFile.append("_measured.xml");
-				writeResults( xmlFile.c_str(), analyser );
+				writeResults( xmlFile.c_str(), filenames.at( i ).c_str(), analyser );
 				
 				std::string outputFilename = filenames.at(i);
 				int insertPoint = 4;
@@ -130,9 +135,22 @@ int main( int argc, char** argv )
 				
 				if( ! outputAudioFile.open_write( outputFilename.c_str(), audioFile.type(), audioFile.form(), audioFile.rate(), audioFile.chan() ) );
 				{
-					gain = analyser.getCorrectionGain();
+					gain = analyser.getCorrectionGain( enableLimiter );
 					std::cout << " => applying correction: " << gain;
-					writeCorrectedFile( audioFile, outputAudioFile, gain, progress );
+					float attackMs = 0;
+					float releaseMs = 0;
+					float lookAhead = 60;
+					float threshold = 1.0;//std::pow ( 10, ( levels.truePeakTargetLevel ) / 20 );
+					
+					if( enableLimiter )
+					{
+						writeCorrectedFile( audioFile, outputAudioFile, gain, attackMs, releaseMs, lookAhead, threshold, progress );
+					}
+					else
+					{
+						writeCorrectedFile( audioFile, outputAudioFile, gain, progress );
+					}
+					
 					outputAudioFile.close();
 				}
 				
@@ -148,7 +166,7 @@ int main( int argc, char** argv )
 	
 						std::string xmlFile = filename;
 						xmlFile.append("_corrected_measured.xml");
-						writeResults( xmlFile.c_str(), analyser );
+						writeResults( xmlFile.c_str(), outputFilename.c_str(), analyser );
 					}
 				}
 				result = analyser.isValidProgram();
@@ -158,7 +176,7 @@ int main( int argc, char** argv )
 	}
 	else
 	{
-		std::cout << "PLoud Corrector" << std::endl;
+		std::cout << "PLoud Corrector - version " << VERSION << std::endl;
 		std::cout << "Mikros Image - Marc-Antoine ARNAUD [mrn@mikrosimage.eu]" << std::endl << std::endl;
 		std::cout << "Common usage :" << std::endl;
 		std::cout << "\tloudness-analyser [options] filename.ext" << std::endl << std::endl;
@@ -170,6 +188,7 @@ int main( int argc, char** argv )
 		std::cout << "\t--progress: show progress status" << std::endl;
 		std::cout << "\t--verbose: show progress status and print values" << std::endl;
 		std::cout << "\t--analyse-corrected: analyse corrected file after writing" << std::endl;
+		std::cout << "\t--enable-limiter: activate brick wall look ahead limiter" << std::endl;
 		return -1;
 	}
 	

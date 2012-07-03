@@ -2,7 +2,6 @@
 #include "common.h"
 #include <numeric>
 #include <cmath>
-#include <iostream>
 
 //#define LOUD_CONSTANT -0.6976f
 #define LOUD_CONSTANT -0.691f
@@ -54,7 +53,6 @@ void Loudness::addFragment ( const float powerValue )
 	{
 		case eCorrectionLoudness:
 		{
-			//_histogram.addValue( LOUD_CONSTANT + 10.0 * std::log10( powerValue ) );
 			if( _numberOfFragments != 2 )
 				break;
 			_histogram.addValue( currentLoudness );
@@ -114,25 +112,8 @@ void Loudness::processRangeValues()
 	// found between threshold and 5.0 LU the 10 percentiles of the distribution
 	_maxRange = _histogram.foundMaxPercentageFrom( 95.0, _thresholdRange, 5.0 );
 }
-/*
-float Loudness::getCorrectionGain( const LoudnessLevels& levels )
-{
-	float integratedThreshold;
-	float integratedLoudness;
-	float correctionGain;
-	
-	integratedThreshold = _histogram.integratedValue( _absoluteThreshold, 5.0 ) + _relativeThreshold;
-	integratedLoudness = _histogram.integratedValue( integratedThreshold, 5.0 );
-	
-	correctionGain = levels.programLoudnessLongProgramTargetLevel - integratedLoudness;
-	
-	std::cout << correctionGain << " => x " << std::pow ( 10, ( correctionGain ) / 20 ) <<  std::endl;
-	
-	
-	return std::pow ( 10, ( correctionGain ) / 20 );
-}*/
 
-float Loudness::getCorrectionGain( const LoudnessLevels& levels, const bool isShortProgram, const float truePeakValue )
+float Loudness::getCorrectionGain( const LoudnessLevels& levels, const bool isShortProgram, const float truePeakValue, bool limiterIsEnable )
 {
 	float integratedThreshold;
 	float integratedLoudness;
@@ -150,6 +131,9 @@ float Loudness::getCorrectionGain( const LoudnessLevels& levels, const bool isSh
 	idealCorrectionGain = targetLevel    - integratedLoudness;
 	minCorrectionGain   = minTargetLevel - integratedLoudness;
 	maxCorrectionGain   = maxTargetLevel - integratedLoudness;
+	
+	if( limiterIsEnable )
+		return std::pow ( 10, ( idealCorrectionGain ) / 20 );
 	
 	float maxTruePeakGainCorrection = levels.truePeakTargetLevel - truePeakValue;
 	

@@ -44,7 +44,12 @@ void LoudnessLibrary::processSamples          ( float** samplesData, const size_
 
 bool LoudnessLibrary::isShortProgram( )
 {
-  return ( s_durationInSamples < s_frequency * 120 ) ;
+	return ( s_durationInSamples < s_frequency * 120 ) ;
+}
+
+EStandard LoudnessLibrary::getStandard( )
+{
+	return s_levels.standard;
 }
 
 double LoudnessLibrary::getIntegratedLoudness( )
@@ -239,9 +244,9 @@ ELoudnessResult    LoudnessLibrary::isTruePeakValid ( )
 		return eNotValidResult;
 }
 
-float LoudnessLibrary::getCorrectionGain( )
+float LoudnessLibrary::getCorrectionGain( bool limiterIsEnable )
 {
-	return p_process->getCorrectionGain( s_levels, isShortProgram() );
+	return p_process->getCorrectionGain( s_levels, isShortProgram(), limiterIsEnable );
 }
 
 
