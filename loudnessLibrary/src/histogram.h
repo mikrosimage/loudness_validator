@@ -10,9 +10,6 @@
 #define EBU_R128_HISTOGRAM_H
 
 #include <vector>
-#include <algorithm>
-#include <iostream>
-
 
 namespace Loudness
 {

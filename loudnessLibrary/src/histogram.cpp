@@ -8,7 +8,6 @@
 
 #include "histogram.h"
 #include <cmath>
-//#include <cstring>
 #include "common.h"
 
 namespace Loudness
