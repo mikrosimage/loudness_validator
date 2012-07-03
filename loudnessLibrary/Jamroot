@@ -7,9 +7,11 @@ project :
 		requirements
 		<include>include
 		<include>src
-		<include>tool/io
 		<include>tool/common
+		<include>tool/io
 		<include>$(BOOST_ROOT_PATH)
+		<define>VERSION=$(VERSION)
+		<define>USE_SSE2
 	:
 		usage-requirements
 		<include>include

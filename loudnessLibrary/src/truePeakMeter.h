@@ -7,7 +7,6 @@
  */
 
 #include <vector>
-#include <iostream>
 
 #ifndef LOUDNESS_TRUE_PEAK_METER_H
 #define LOUDNESS_TRUE_PEAK_METER_H
@@ -51,8 +50,11 @@ public:
 private:
 	float _z1, _z2, _z3, _z4;
 
-	std::vector<double> _historySamples;
-	std::vector<double> _coefficients;
+	std::vector<float>  _historySamples;
+	std::vector<float>  _coefficients;
+	
+	std::vector<float>  _orderedCoefficientsScale4[4];
+	std::vector<float>  _orderedCoefficientsScale8[8];
 
 	double              _maxValue;            /// maximum value of the upsampled signal
 	double              _maxSignal;           /// maximum value of the signal
