@@ -616,7 +616,7 @@ bool PLoudGui::rlmSesame()
 
 	bool sesame = false;
 	const char *product = "ploudvalidator";
-	const char *version = "1.0";
+	const char *version = PLOUDVALIDATOR_VERSION;
 	int count = 1;
 
 	_RLMlic = rlm_checkout( _RLMHandle, product, version, count );

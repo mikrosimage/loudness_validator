@@ -2,6 +2,9 @@
 project project-config ;
 import qt4 ;
 
+# project version
+constant VERSION : 1.1 ;
+
 path-constant BUILD_DIR : ./.build/ ;
 path-constant DIST_ROOT : ./dist/ ;
 

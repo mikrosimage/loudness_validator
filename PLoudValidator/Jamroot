@@ -17,7 +17,7 @@ project PLoudValidator :
 	<include>/usr/include
 	<include>/usr/include/QtGui
 	<os>LINUX:<cxxflags>-fPIC
-	<define>PLOUDVALIDATOR_VERSION=\"\\\"1.1\\\"\"
+	<define>PLOUDVALIDATOR_VERSION=\"\\\"$(VERSION)\\\"\"
 	<define>PLOUDVALIDATOR_DAY=\"\\\"$(date[3])\\\"\"
 	<define>PLOUDVALIDATOR_MONTH=\"\\\"$(date[2])\\\"\"
 	<define>PLOUDVALIDATOR_YEAR=\"\\\"$(date[1])\\\"\"
