@@ -18,6 +18,14 @@ namespace Loudness
 
 #define LOUDNESS_NAN std::numeric_limits<float>::quiet_NaN()
 
+enum EStandard
+{
+	eStandardCST_R017 = 0,
+	eStandardEBU_R128,
+	eStandardATSC_A85,
+	eStandardUnknown
+};
+
 struct LoudnessLevels
 {
 	const float programLoudnessLongProgramMaxValue;
@@ -47,6 +55,8 @@ struct LoudnessLevels
 	const float maximalLoudnessRange;
 	const float minimalLoudnessRange;
 
+	const EStandard standard;
+	
 	// custom levels
 	LoudnessLevels(
 		float ProgramLoudnessLongProgramMaxValue,
@@ -68,7 +78,8 @@ struct LoudnessLevels
 		float AbsoluteThresholdValue,
 		float RelativeThresholdValue,
 		float MaximalLoudnessRange,
-		float MinimalLoudnessRange ) :
+		float MinimalLoudnessRange,
+		EStandard Standard = eStandardUnknown ) :
 	programLoudnessLongProgramMaxValue        ( ProgramLoudnessLongProgramMaxValue ),
 	programLoudnessLongProgramMinValue        ( ProgramLoudnessLongProgramMinValue ),
 	programLoudnessLongProgramTargetLevel     ( ProgramLoudnessLongProgramTargetLevel ),
@@ -88,7 +99,8 @@ struct LoudnessLevels
 	absoluteThresholdValue                    ( AbsoluteThresholdValue ),
 	relativeThresholdValue                    ( RelativeThresholdValue ),
 	maximalLoudnessRange                      ( MaximalLoudnessRange ),
-	minimalLoudnessRange                      ( MinimalLoudnessRange )
+	minimalLoudnessRange                      ( MinimalLoudnessRange ),
+	standard                                  ( Standard )
 	{
 	}
 
@@ -114,7 +126,8 @@ struct LoudnessLevels
 			-70.0,   // absoluteThresholdValue
 			-10.0,   // relativeThresholdValue
 			+20.0,   // maximalLoudnessRange
-			+ 5.0    // minimalLoudnessRange
+			+ 5.0,   // minimalLoudnessRange
+			eStandardCST_R017 // standard
 		);
 		return levels;
 	}
@@ -141,7 +154,8 @@ struct LoudnessLevels
 			-70.0,   // absoluteThresholdValue
 			-10.0,   // relativeThresholdValue
 			LOUDNESS_NAN, // maximalLoudnessRange
-			LOUDNESS_NAN  // minimalLoudnessRange
+			LOUDNESS_NAN, // minimalLoudnessRange
+			eStandardEBU_R128     // standard
 		);
 		return levels;
 	}
@@ -168,7 +182,8 @@ struct LoudnessLevels
 			-70.0,   // absoluteThresholdValue
 			- 8.0,   // relativeThresholdValue
 			LOUDNESS_NAN, // maximalLoudnessRange
-			LOUDNESS_NAN  // minimalLoudnessRange
+			LOUDNESS_NAN, // minimalLoudnessRange
+			eStandardATSC_A85     // standard
 		);
 		return levels;
 	}
@@ -218,6 +233,11 @@ public:
 	**/
 	bool isShortProgram( );
 
+	/**
+	 * Return the standard used to valid the program
+	**/
+	EStandard getStandard( );
+	
 	/**
 	 * Get result of Integrated Loudness, is also called Program Loudness
 	 * \param integratedLoudnessValue Integrated Loudness (same as the Program Loudness) in LUFS
@@ -323,7 +343,7 @@ public:
 	 * Return gain to correct loudness to a valid value
 	 * if it return 0.0 and loudness is invalid, this means it's impossible to correct without a remix
 	**/
-	float               getCorrectionGain( );
+	float               getCorrectionGain( bool limiterIsEnable = false );
 
 protected:
 	std::auto_ptr<Process> p_process;
