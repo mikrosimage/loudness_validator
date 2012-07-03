@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <ctime>
 
 #include <loudnessLibrary.h>
 #include <SoundFile.h>
@@ -21,8 +22,11 @@ void progress( int p )
 int main( int argc, char** argv )
 {
 	bool validToProcess = false;
+	bool showTime = false;
 	int standard = 0;
 	std::vector<std::string> filenames;
+	
+	time_t start,end;
 	
 	for(int i = 1; i < argc; i++)
 	{
@@ -35,6 +39,10 @@ int main( int argc, char** argv )
 		{
 			showProgress = true;
 			showResults = true;
+		}
+		if( strcmp ( argv[i],"--time" ) == 0 )
+		{
+			showTime = true;
 		}
 		if( strncmp ( argv[i],"--standard=", 11 ) == 0 )
 		{
@@ -94,17 +102,22 @@ int main( int argc, char** argv )
 			Loudness::LoudnessLibrary analyser( levels );
 			if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 			{
+				time( &start );
 				processAnalyseFile( analyser, audioFile, progress );
+				time( &end );
 				if( showResults )
 					analyser.printPloudValues();
 				audioFile.close();
-				writeResults( filename.c_str(), analyser );
+				writeResults( filename.c_str(), filenames.at(i).c_str(), analyser );
+				double dif = difftime (end,start);
+				if( showTime )
+					std::cout << "processing time: " << dif << " seconds." << std::endl;
 			}
 		}
 	}
 	else
 	{
-		std::cout << "PLoud Analyser" << std::endl;
+		std::cout << "PLoud Analyser - version " << VERSION << std::endl;
 		std::cout << "Mikros Image - Marc-Antoine ARNAUD [mrn@mikrosimage.eu]" << std::endl << std::endl;
 		std::cout << "Common usage :" << std::endl;
 		std::cout << "\tloudness-analyser [options] filename.ext" << std::endl << std::endl;
