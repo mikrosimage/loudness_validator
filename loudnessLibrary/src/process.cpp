@@ -9,10 +9,6 @@
 #include "process.h"
 #include "common.h"
 
-#include <iostream>
-#include <cstring>
-#include <cmath>
-
 namespace Loudness{
 
 float Process::_channelGain [MAX_CHANNELS] = { 1.0f, 1.0f, 1.0f, 1.41f, 1.41f };
@@ -34,7 +30,7 @@ void Process::init ( const int numberOfChannels, const float frequencySampling )
 	_frequencySampling = frequencySampling;
 	_fragmentSize      = (int) frequencySampling / 20;
 
-	for( size_t i=0; i< MAX_CHANNELS; i++)
+	for( int i=0; i < _numberOfChannels; i++)
 	{
 		_filters[i].initializeFilterCoefficients ( _frequencySampling );
 		_truePeakMeter[i].initialize             ( _frequencySampling );
@@ -54,7 +50,7 @@ void Process::reset ( )
 
 	_vectorOfTruePeakValue.clear();
 	
-	for (int c = 0; c < MAX_CHANNELS; c++)
+	for (int c = 0; c < _numberOfChannels; c++)
 		_filters [c].reset ();
 	
 	s_measureLoudness.reset();
@@ -64,7 +60,7 @@ void Process::reset ( )
 
 void Process::setUpsamplingFrequencyForTruePeak ( const size_t frequency )
 {
-	for( size_t i=0; i< MAX_CHANNELS; i++)
+	for( int i=0; i< _numberOfChannels; i++)
 	{
 		_truePeakMeter[i].setUpsamplingFrequencyInHz( frequency );
 	}
