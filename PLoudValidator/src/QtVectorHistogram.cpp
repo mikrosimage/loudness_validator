@@ -77,15 +77,17 @@ void QtVectorHistogram::drawVector( QPainter *painter, std::vector<int>& datas, 
 	painter->setPen( color );
 	painter->setBrush( QBrush( color, Qt::SolidPattern ) );
 	
-	QPointF points[ datas.size() + 2 ];
-	points[0] = QPointF( leftBorder, height() - bottomBorder );
+	
+	std::vector<QPointF> points;
+	points.reserve( datas.size() + 2 );
+	points.push_back( QPointF( leftBorder, height() - bottomBorder ) );
 	for ( it = datas.begin() ; it != datas.end(); it++, index++, xPosition += step )
 	{
-		points[index] = QPointF( scaledXPosition( 1.0 * xPosition / step ), scaledYPosition( *it ) );
+		points.push_back( QPointF( scaledXPosition( 1.0 * xPosition / step ), scaledYPosition( *it ) ) );
 	}
-	points[datas.size()+1] = QPointF( scaledXPosition( 1.0 * ( xPosition - step ) / step ) , height() - bottomBorder );
-	
-	painter->drawPolygon( points, datas.size() + 2 );
+	points.push_back( QPointF( scaledXPosition( 1.0 * ( xPosition - step ) / step ) , height() - bottomBorder ) );
+
+	painter->drawPolygon( &points.at(0), datas.size() + 2 );
 }
 
 void QtVectorHistogram::paintEvent ( QPaintEvent * )
