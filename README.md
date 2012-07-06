@@ -61,6 +61,7 @@ Tested compilers
 ----------------
 
 * GCC 4.4.1 on OpenSUSE 11.2
+* CLang 3.1 on OpenSUSE 11.2
 * GCC 4.5.2 on Windows XP
 
 Tested libraries
