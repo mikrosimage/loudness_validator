@@ -5,7 +5,7 @@
 
 namespace Loudness
 {
-	class LoudnessLevels;
+	struct LoudnessLevels;
 }
 
 class Properties : public QDialog
