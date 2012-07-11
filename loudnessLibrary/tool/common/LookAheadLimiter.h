@@ -1,7 +1,10 @@
+#ifndef LOOK_AHEAD_LIMITER_H
+#define LOOK_AHEAD_LIMITER_H
+
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/rolling_sum.hpp>
-#include <rolling_max.hpp>
+#include <RollingMax.hpp>
 
 #include <iostream>
 using namespace boost::accumulators;
@@ -9,10 +12,10 @@ using namespace boost::accumulators;
 class LookAheadLimiter
 {
 public:
-	LookAheadLimiter( float lookAheadTime, float inputGain, float outputGain, float releaseTime, float sampleRate, float threshold );
+	LookAheadLimiter( const float lookAheadTime, const float sampleRate, const float threshold );
 	~LookAheadLimiter();
 	
-	float process( float value );
+	bool process( float &value );
 	
 private:
 	size_t signalCircularBufferSize;
@@ -22,40 +25,38 @@ private:
 	float* maxCircularBuffer;
 	
 	float* signalPtr;
-	float* maxPtr;
 	
-	accumulator_set<float, stats<tag::rolling_max> > accMax;
+	RollingMax<float> accMax;
 	
 	accumulator_set<float, stats<tag::rolling_sum> > accShortTimeSum;
 	accumulator_set<float, stats<tag::rolling_sum> > accShortTimeSum2;
 	
-	float inputGain;
-	float outputGain;
 	float threshold;
 };
 
 /**
   * lookAheadTime [ ms ]
   * inputGain [ dB ]
-  * outputGain [ dB ]
   * releaseTime [ ms ]
   */
-LookAheadLimiter::LookAheadLimiter( float lookAheadTime, float inputGain, float outputGain, float releaseTime, float sampleRate, float threshold ) :
+LookAheadLimiter::LookAheadLimiter( const float lookAheadTime, const float sampleRate, const float threshold ) :
 	signalCircularBufferSize ( sampleRate * lookAheadTime * 0.0001 ),
 	maxCircularBufferSize ( signalCircularBufferSize * 0.5 ),
-	accMax (tag::rolling_window::window_size = signalCircularBufferSize ),
+	accMax( signalCircularBufferSize ),
 	accShortTimeSum (tag::rolling_window::window_size = maxCircularBufferSize ),
 	accShortTimeSum2 (tag::rolling_window::window_size = maxCircularBufferSize ),
-	inputGain ( inputGain ),
-	outputGain ( outputGain ),
 	threshold ( threshold )
 {
-	
 	signalCircularBuffer = new float[ signalCircularBufferSize ];
 	maxCircularBuffer = new float[ maxCircularBufferSize ];
 	
+	for( size_t i=0; i< maxCircularBufferSize; i++ )
+	{
+		signalCircularBuffer[i] = 0.0;
+		maxCircularBuffer[i] = 0.0;
+	}
+	
 	signalPtr = signalCircularBuffer;
-	maxPtr = maxCircularBuffer;
 }
 
 
@@ -66,38 +67,31 @@ LookAheadLimiter::~LookAheadLimiter( )
 }
 
 
-float LookAheadLimiter::process( float value )
+bool LookAheadLimiter::process( float& value )
 {
 	*signalPtr = value;
-	accMax( *signalPtr );
+	accMax( fabs( value ) );
 	
 	signalPtr++;
-	if( signalPtr > ( signalCircularBuffer + signalCircularBufferSize ))
+	if( signalPtr > ( signalCircularBuffer + signalCircularBufferSize ) )
 	{
 		signalPtr = signalCircularBuffer;
 	}
 	
 	// found max value on signalCiucularBuffer
-	float peak = inputGain * rolling_max( accMax );
+	float peak = accMax.getMax();
 	
-	float gainReduction = ( peak > threshold ) ? peak - threshold : 1.0 ;
-	
-	// gainReduction -= 1.0; // for better processing stability
+	float gainReduction = ( peak > threshold ) ? threshold / peak : 1.0;
 	
 	accShortTimeSum( gainReduction );
 	
 	float g = rolling_sum( accShortTimeSum ) / maxCircularBufferSize;
 	accShortTimeSum2 ( g );
 	
-	float gainWithoutRelease = rolling_sum( accShortTimeSum ) / maxCircularBufferSize;
+	float finalGain = rolling_sum( accShortTimeSum ) / maxCircularBufferSize;
 	
-	float gainWithRelease = gainWithoutRelease ;
-	
-	// gain = ( 1 - gainWithRelease)
-	
-	gainWithRelease *= outputGain;
-	
-	//std::cout << gainWithRelease << std::endl;
-	
-	return *signalPtr / gainWithRelease;
+	value = *signalPtr * finalGain;
+	return true;
 }
+
+#endif
