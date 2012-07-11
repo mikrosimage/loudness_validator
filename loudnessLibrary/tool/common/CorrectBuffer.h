@@ -4,7 +4,7 @@
 #include <vector>
 #include <LookAheadLimiter.h>
 
-void correctBuffer( float* data, const size_t samples, const size_t channelsInBuffer, const float gain )
+size_t correctBuffer( float* data, const size_t samples, const size_t channelsInBuffer, const float gain )
 {
 	for( size_t c = 0; c < channelsInBuffer; c++ )
 	{
@@ -14,14 +14,16 @@ void correctBuffer( float* data, const size_t samples, const size_t channelsInBu
 			data++;
 		}
 	}
+	return samples;
 }
 
-void correctBuffer( std::vector<LookAheadLimiter*>& limiters, float* data, const size_t samples, const size_t channelsInBuffer, const float gain )
+size_t correctBuffer( std::vector<LookAheadLimiter*>& limiters, float* data, const size_t samples, const size_t channelsInBuffer, const float gain )
 {
 	float* inData  = data;
 	float* outData = data;
 	
 	float sample;
+	size_t count = 0;
 
 	for( size_t i = 0; i < samples; i++ )
 	{
@@ -32,10 +34,37 @@ void correctBuffer( std::vector<LookAheadLimiter*>& limiters, float* data, const
 			{
 				(*outData) = sample;
 				outData++;
+				count++;
 			}
 			inData++;
 		}
 	}
+	return count / channelsInBuffer;
+}
+
+size_t getLastData( std::vector<LookAheadLimiter*>& limiters, float* data, const size_t samples, const size_t channelsInBuffer, const float gain )
+{
+	float* inData  = data;
+	float* outData = data;
+	
+	float sample;
+	size_t count = 0;
+
+	for( size_t i = 0; i < samples; i++ )
+	{
+		for( size_t c = 0; c < channelsInBuffer; c++ )
+		{
+			sample = (*inData) * gain;
+			if( limiters.at(c)->getLastSamples( sample ) )
+			{
+				(*outData) = sample;
+				outData++;
+				count++;
+			}
+			inData++;
+		}
+	}
+	return count / channelsInBuffer;
 }
 
 #endif

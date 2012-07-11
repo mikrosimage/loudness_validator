@@ -16,6 +16,7 @@ public:
 	~LookAheadLimiter();
 	
 	bool process( float &value );
+	bool getLastSamples( float &value );
 	
 private:
 	size_t signalCircularBufferSize;
@@ -32,6 +33,8 @@ private:
 	accumulator_set<float, stats<tag::rolling_sum> > accShortTimeSum2;
 	
 	float threshold;
+	size_t processTime;
+	size_t lastSamples;
 };
 
 /**
@@ -45,7 +48,9 @@ LookAheadLimiter::LookAheadLimiter( const float lookAheadTime, const float sampl
 	accMax( signalCircularBufferSize ),
 	accShortTimeSum (tag::rolling_window::window_size = maxCircularBufferSize ),
 	accShortTimeSum2 (tag::rolling_window::window_size = maxCircularBufferSize ),
-	threshold ( threshold )
+	threshold ( threshold ),
+	processTime( 0 ),
+	lastSamples( 0 )
 {
 	signalCircularBuffer = new float[ signalCircularBufferSize ];
 	maxCircularBuffer = new float[ maxCircularBufferSize ];
@@ -69,6 +74,7 @@ LookAheadLimiter::~LookAheadLimiter( )
 
 bool LookAheadLimiter::process( float& value )
 {
+	processTime++;
 	*signalPtr = value;
 	accMax( fabs( value ) );
 	
@@ -91,6 +97,22 @@ bool LookAheadLimiter::process( float& value )
 	float finalGain = rolling_sum( accShortTimeSum ) / maxCircularBufferSize;
 	
 	value = *signalPtr * finalGain;
+	
+	if( processTime < signalCircularBufferSize )
+		return false;
+	
+	return true;
+}
+
+bool LookAheadLimiter::getLastSamples( float &value )
+{
+	lastSamples++;
+	value = 0.0;
+	process( value );
+	
+	if( lastSamples > signalCircularBufferSize )
+		return false;
+	
 	return true;
 }
 

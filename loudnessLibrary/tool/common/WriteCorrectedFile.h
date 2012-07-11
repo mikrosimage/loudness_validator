@@ -6,27 +6,6 @@
 #include <SoundFile.h>
 #include <CorrectBuffer.h>
 #include <LookAheadLimiter.h>
-/*
-void correctBuffer( Loudness::LoudnessLibrary& analyser, float* data, const size_t samples, const size_t channelsInBuffer, const float gain )
-{
-	float* dataPerChannel[ channelsInBuffer ];
-	
-	for( size_t i = 0; i< channelsInBuffer; i++ )
-		dataPerChannel [i] = new float [samples];
-	
-	for( size_t i = 0; i < samples; i++ )
-	{
-		for( size_t c = 0; c < channelsInBuffer; c++ )
-		{
-			(*data) = dataPerChannel [c][i] = (*data) * gain;
-			data++;
-		}
-	}
-	analyser.processSamples( dataPerChannel, samples );
-	
-	for( size_t i=0; i < channelsInBuffer; i++ )
-		delete[] dataPerChannel[i];
-}*/
 
 void writeCorrectedFile( Loudness::LoudnessLibrary& analyser, SoundFile& input, SoundFile& output, const float gain, void (*callback)(int) )
 {
@@ -104,17 +83,18 @@ void writeCorrectedFile( Loudness::LoudnessLibrary& analyser, SoundFile& input, 
 	
 	while (true)
 	{
-		int  samples = input.read( inpb, bufferSize );
+		size_t samples = input.read( inpb, bufferSize );
 		if( samples == 0 ) break;
 		
 		float* ptr = inpb;
 		
-		correctBuffer( limiters, ptr, samples, channelsInBuffer, gain );
+		//samples = 
+		size_t s = correctBuffer( limiters, ptr, samples, channelsInBuffer, gain );
 		
 		// re-analyse output
 		ptr = inpb;
 		
-		for( int i = 0; i < samples; i++ )
+		for( size_t i = 0; i < samples; i++ )
 		{
 			for( size_t c = 0; c < channelsInBuffer; c++ )
 			{
@@ -123,13 +103,43 @@ void writeCorrectedFile( Loudness::LoudnessLibrary& analyser, SoundFile& input, 
 			}
 		}
 
-		analyser.processSamples( dataPerChannel, samples );
+		analyser.processSamples( dataPerChannel, s );
 		
-		samples = output.write( inpb, samples );
+		samples = output.write( inpb, s );
 		
 		cumulOfSamples += samples;
 		callback( (float)cumulOfSamples / length * 100 );
 	}
+	
+	while (true)
+	{
+		float* ptr = inpb;
+		
+		//samples = 
+		size_t s = getLastData( limiters, ptr, bufferSize, channelsInBuffer, gain );
+		
+		std::cout << "last" << s << std::endl;
+		if( s == 0 ) break;
+		// re-analyse output
+		ptr = inpb;
+		
+		for( size_t i = 0; i < s; i++ )
+		{
+			for( size_t c = 0; c < channelsInBuffer; c++ )
+			{
+				dataPerChannel [c][i] = (*ptr);
+				ptr++;
+			}
+		}
+
+		analyser.processSamples( dataPerChannel, s );
+		
+		s = output.write( inpb, s );
+		
+		cumulOfSamples += s;
+		callback( (float)cumulOfSamples / length * 100 );
+	}
+	
 	
 	for( size_t i = 0; i< channelsInBuffer; i++ )
 	{
