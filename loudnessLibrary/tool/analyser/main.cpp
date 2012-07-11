@@ -18,7 +18,6 @@ void progress( int p )
 		std::cout << "[" << p << "%]\r" << std::flush;
 }
 
-
 int main( int argc, char** argv )
 {
 	bool validToProcess = false;
@@ -27,7 +26,7 @@ int main( int argc, char** argv )
 	std::vector<std::string> filenames;
 	
 	time_t start,end;
-	
+
 	for(int i = 1; i < argc; i++)
 	{
 		
@@ -98,7 +97,7 @@ int main( int argc, char** argv )
 			Loudness::LoudnessLevels levels =	standard == 0 ? Loudness::LoudnessLevels::Loudness_CST_R017() : 
 												standard == 1 ? Loudness::LoudnessLevels::Loudness_EBU_R128() : 
 																Loudness::LoudnessLevels::Loudness_ATSC_A85() ;
-
+			
 			Loudness::LoudnessLibrary analyser( levels );
 			if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 			{
@@ -108,7 +107,7 @@ int main( int argc, char** argv )
 				if( showResults )
 					analyser.printPloudValues();
 				audioFile.close();
-				writeResults( filename.c_str(), filenames.at(i).c_str(), analyser );
+				writeResults( filename.c_str(), filenames.at(i).c_str(), "unknown", analyser );
 				double dif = difftime (end,start);
 				if( showTime )
 					std::cout << "processing time: " << dif << " seconds." << std::endl;

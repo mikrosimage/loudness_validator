@@ -1,3 +1,6 @@
+#ifndef WRITE_XML_H
+#define WRITE_XML_H
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -35,7 +38,7 @@ std::string writeValues( std::vector<float> datas )
 	return ss.str();
 }
 
-void writeResults( const char* filename, const char* audioFilename, Loudness::LoudnessLibrary& analyser )
+void writeResults( const char* filename, const char* audioFilename, const char* channelType, Loudness::LoudnessLibrary& analyser )
 {
 	std::ofstream stat;
 	stat.precision( 1 );
@@ -43,6 +46,7 @@ void writeResults( const char* filename, const char* audioFilename, Loudness::Lo
 	stat.open( filename );
 	stat << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 	stat << "<Program filename=\"" << audioFilename << "\" " << printStandard( analyser.getStandard() ) << " " << convertValid( analyser.isValidProgram() ) << " >\n";
+	stat << "<Channels type=\"" << channelType << "\">\n";
 	stat << "\t<ProgramLoudness " << convertValid( analyser.isIntegratedLoudnessValid() ) << ">" << analyser.getIntegratedLoudness() << "</ProgramLoudness>\n";
 	stat << "\t<LRA " << convertValid( analyser.isIntegratedLoudnessRangeValid() ) << ">" << analyser.getIntegratedRange() << "</LRA>\n";
 	stat << "\t<MaxMomentaryLoudness " << convertValid( analyser.isMomentaryLoudnessValid() ) << ">" << analyser.getMomentaryLoudness() << "</MaxMomentaryLoudness>\n";
@@ -51,8 +55,9 @@ void writeResults( const char* filename, const char* audioFilename, Loudness::Lo
 	stat << "\t<TruePeak " << convertValid( analyser.isTruePeakValid() ) << ">" << analyser.getTruePeakInDbTP() << "</TruePeak>\n";
 	stat << "\t<MaxShortTermValues>" << writeValues( analyser.getShortTermValues() ) << "</MaxShortTermValues>\n";
 	stat << "\t<TruePeakValues>" << writeValues( analyser.getTruePeakValues() ) << "</TruePeakValues>\n";
+	stat << "</Channels>\n";
 	stat << "</Program>\n";
 	stat.close();
 }
 
-
+#endif
