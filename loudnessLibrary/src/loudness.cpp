@@ -77,8 +77,6 @@ void Loudness::addFragment ( const float powerValue )
 			_numberOfFragments = 0;
 			break;
 		}
-		default:
-			break;
 	}
 
 	_maxLoudness = std::max( _maxLoudness, currentLoudness );
@@ -120,17 +118,17 @@ float Loudness::getCorrectionGain( const LoudnessLevels& levels, const bool isSh
 	float correctionGain;
 	float idealCorrectionGain;
 	float minCorrectionGain;
-	float maxCorrectionGain;
+	//float maxCorrectionGain;
 	float targetLevel    = isShortProgram ? levels.programLoudnessShortProgramTargetLevel : levels.programLoudnessLongProgramTargetLevel;
 	float minTargetLevel = isShortProgram ? levels.programLoudnessShortProgramTargetMaxLevel : levels.programLoudnessLongProgramTargetMaxLevel;
-	float maxTargetLevel = isShortProgram ? levels.programLoudnessShortProgramTargetMinLevel : levels.programLoudnessLongProgramTargetMinLevel;
+	//float maxTargetLevel = isShortProgram ? levels.programLoudnessShortProgramTargetMinLevel : levels.programLoudnessLongProgramTargetMinLevel;
 	
 	integratedThreshold = _histogram.integratedValue( _absoluteThreshold, 5.0 ) + _relativeThreshold;
 	integratedLoudness = _histogram.integratedValue( integratedThreshold, 5.0 );
 	
 	idealCorrectionGain = targetLevel    - integratedLoudness;
 	minCorrectionGain   = minTargetLevel - integratedLoudness;
-	maxCorrectionGain   = maxTargetLevel - integratedLoudness;
+	//maxCorrectionGain   = maxTargetLevel - integratedLoudness;
 	
 	if( limiterIsEnable )
 		return std::pow ( 10, ( idealCorrectionGain ) / 20 );

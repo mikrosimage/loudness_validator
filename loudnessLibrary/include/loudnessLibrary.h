@@ -28,34 +28,33 @@ enum EStandard
 
 struct LoudnessLevels
 {
-	const float programLoudnessLongProgramMaxValue;
-	const float programLoudnessLongProgramMinValue;
-	const float programLoudnessLongProgramTargetLevel;
-	const float programLoudnessLongProgramTargetMaxLevel;
-	const float programLoudnessLongProgramTargetMinLevel;
+	float programLoudnessLongProgramMaxValue;
+	float programLoudnessLongProgramMinValue;
+	float programLoudnessLongProgramTargetLevel;
+	float programLoudnessLongProgramTargetMaxLevel;
+	float programLoudnessLongProgramTargetMinLevel;
 	
-	const float shortTermLoudnessLongProgramMaxValue;
-	const float shortTermLoudnessLongProgramMinValue;
+	float shortTermLoudnessLongProgramMaxValue;
+	float shortTermLoudnessLongProgramMinValue;
 	
-	const float programLoudnessShortProgramMaxValue;
-	const float programLoudnessShortProgramMinValue;
-	const float programLoudnessShortProgramTargetLevel;
-	const float programLoudnessShortProgramTargetMaxLevel;
-	const float programLoudnessShortProgramTargetMinLevel;
+	float programLoudnessShortProgramMaxValue;
+	float programLoudnessShortProgramMinValue;
+	float programLoudnessShortProgramTargetLevel;
+	float programLoudnessShortProgramTargetMaxLevel;
+	float programLoudnessShortProgramTargetMinLevel;
 	
-	const float shortTermLoudnessShortProgramMaxValue;
+	float shortTermLoudnessShortProgramMaxValue;
 
-	const float truePeakMaxValue;
-	const float truePeakTargetLevel;
-	const float truePeakTargetMaxLevel;
+	float truePeakMaxValue;
+	float truePeakTargetLevel;
 
-	const float absoluteThresholdValue;
-	const float relativeThresholdValue;
+	float absoluteThresholdValue;
+	float relativeThresholdValue;
 
-	const float maximalLoudnessRange;
-	const float minimalLoudnessRange;
+	float maximalLoudnessRange;
+	float minimalLoudnessRange;
 
-	const EStandard standard;
+	EStandard standard;
 	
 	// custom levels
 	LoudnessLevels(
@@ -74,7 +73,6 @@ struct LoudnessLevels
 		float ShortTermLoudnessShortProgramMaxValue,
 		float TruePeakMaxValue,
 		float TruePeakTargetLevel,
-		float TruePeakTargetMaxLevel,
 		float AbsoluteThresholdValue,
 		float RelativeThresholdValue,
 		float MaximalLoudnessRange,
@@ -95,7 +93,6 @@ struct LoudnessLevels
 	shortTermLoudnessShortProgramMaxValue     ( ShortTermLoudnessShortProgramMaxValue ),
 	truePeakMaxValue                          ( TruePeakMaxValue ),
 	truePeakTargetLevel                       ( TruePeakTargetLevel ),
-	truePeakTargetMaxLevel                    ( TruePeakTargetMaxLevel ),
 	absoluteThresholdValue                    ( AbsoluteThresholdValue ),
 	relativeThresholdValue                    ( RelativeThresholdValue ),
 	maximalLoudnessRange                      ( MaximalLoudnessRange ),
@@ -121,8 +118,7 @@ struct LoudnessLevels
 			-23.8,   // programLoudnessShortProgramTargetMinLevel
 			+ 3.0,   // shortTermLoudnessShortProgramMaxValue
 			- 3.0,   // truePeakMaxValue
-			- 3.0,   // truePeakTargetLevel
-			- 3.0,   // truePeakTargetMaxLevel
+			- 4.0,   // truePeakTargetLevel
 			-70.0,   // absoluteThresholdValue
 			-10.0,   // relativeThresholdValue
 			+20.0,   // maximalLoudnessRange
@@ -149,8 +145,7 @@ struct LoudnessLevels
 			-23.5,   // programLoudnessShortProgramTargetMinLevel
 			LOUDNESS_NAN, // shortTermLoudnessShortProgramMaxValue
 			- 1.0,   // truePeakMaxValue
-			- 1.5,   // truePeakTargetLevel
-			- 1.5,   // truePeakTargetMaxLevel
+			- 2.0,   // truePeakTargetLevel
 			-70.0,   // absoluteThresholdValue
 			-10.0,   // relativeThresholdValue
 			LOUDNESS_NAN, // maximalLoudnessRange
@@ -177,8 +172,7 @@ struct LoudnessLevels
 			-25.0,   // programLoudnessLongProgramTargetMinLevel
 			LOUDNESS_NAN, // shortTermLoudnessShortProgramMaxValue
 			- 2.0,   // truePeakMaxValue
-			- 2.0,   // truePeakTargetLevel
-			- 2.0,   // truePeakTargetMaxLevel
+			- 3.0,   // truePeakTargetLevel
 			-70.0,   // absoluteThresholdValue
 			- 8.0,   // relativeThresholdValue
 			LOUDNESS_NAN, // maximalLoudnessRange
