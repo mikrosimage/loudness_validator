@@ -393,7 +393,6 @@ void PLoudGui::openSeparatedFiles( )
 		properties.shortTermLoudnessShortProgramMaxValue,
 		properties.truePeakMaxValue,
 		properties.truePeakTargetLevel,
-		properties.truePeakTargetMaxLevel,
 		properties.absoluteThreshold,
 		properties.relativeThreshold,
 		properties.maximalLoudnessRange,
@@ -551,13 +550,12 @@ void PLoudGui::openMultichannelFile( )
 		properties.shortTermLoudnessShortProgramMaxValue,
 		properties.truePeakMaxValue,
 		properties.truePeakTargetLevel,
-		properties.truePeakTargetMaxLevel,
 		properties.absoluteThreshold,
 		properties.relativeThreshold,
 		properties.maximalLoudnessRange,
 		properties.minimalLoudnessRange
 	);
-
+	
 	if ( ploudProc != NULL )
 	{
 		delete ploudProc;
@@ -568,7 +566,7 @@ void PLoudGui::openMultichannelFile( )
 	
 	std::vector<std::string> files;
 	files.push_back( multichannelFile.getFilename().toLatin1().constData() );
-
+	
 	if( ! ploudProc->openAudioFiles( files ) )
 	{
 		QString msg  = "Error to open file :\n";
@@ -583,7 +581,7 @@ void PLoudGui::openMultichannelFile( )
 	progressBar.setMaximum ( ploudProc->getProgramLength() );
 	progressBar.setMinimum ( 0 );
 	progressMsg.setText( "Analyse" );
-
+	
 	ploudProc->processAnalyseFile( callbackProgress, (void*)&progressBar );
 	
 	programDuration = ploudProc->getProgramDuration() ;

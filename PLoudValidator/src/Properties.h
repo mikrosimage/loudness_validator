@@ -42,7 +42,6 @@ public:
 	float           shortTermLoudnessShortProgramMaxValue;
 	float           truePeakMaxValue;
 	float           truePeakTargetLevel;
-	float           truePeakTargetMaxLevel;
 	float           maximalLoudnessRange;
 	float           minimalLoudnessRange;
 	
@@ -100,7 +99,6 @@ private:
 	QLabel          labelShortTermLoudnessShortProgramMaxValue;
 	QLabel          labelTruePeakMaxValue;
 	QLabel          labelTruePeakTargetLevel;
-	QLabel          labelTruePeakTargetMaxLevel;
 	QLabel          labelAbsoluteThresholdValue;
 	QLabel          labelRelativeThresholdValue;
 	QLabel          labelMaximalLoudnessRange;
@@ -121,7 +119,6 @@ private:
 	QDoubleSpinBox  spinShortTermLoudnessShortProgramMaxValue;
 	QDoubleSpinBox  spinTruePeakMaxValue;
 	QDoubleSpinBox  spinTruePeakTargetLevel;
-	QDoubleSpinBox  spinTruePeakTargetMaxLevel;
 	QDoubleSpinBox  spinAbsoluteThresholdValue;
 	QDoubleSpinBox  spinRelativeThresholdValue;
 	QDoubleSpinBox  spinMaximalLoudnessRange;
@@ -142,7 +139,6 @@ private:
 	QLabel          labelShortTermLoudnessShortProgramMaxUnit;
 	QLabel          labelTruePeakMaxUnit;
 	QLabel          labelTruePeakTargetLevelUnit;
-	QLabel          labelTruePeakTargetMaxLevelUnit;
 	QLabel          labelAbsoluteThresholdUnit;
 	QLabel          labelRelativeThresholdUnit;
 	QLabel          labelMaximalLoudnessRangeUnit;

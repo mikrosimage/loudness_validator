@@ -24,7 +24,6 @@ Properties::Properties(QWidget* parent, Qt::WindowFlags f):
 	shortTermLoudnessShortProgramMaxValue              ( 0 ),
 	truePeakMaxValue                                   ( 0 ),
 	truePeakTargetLevel                                ( 0 ),
-	truePeakTargetMaxLevel                             ( 0 ),
 	maximalLoudnessRange                               ( 0 ),
 	minimalLoudnessRange                               ( 0 ),
 	frequencyTruePeak                                  ( 0 ),
@@ -60,7 +59,6 @@ Properties::Properties(QWidget* parent, Qt::WindowFlags f):
 	labelShortTermLoudnessShortProgramMaxValue         ( tr( "<b><font color='red'>max</font></b> short-term loudness" ) ),
 	labelTruePeakMaxValue                              ( tr( "<b><font color='red'>max</font></b> true peak value" ) ),
 	labelTruePeakTargetLevel                           ( tr( "<b><font color='blue'>target</font></b> true peak" ) ),
-	labelTruePeakTargetMaxLevel                        ( tr( "<b><font color='blue'>target</font> <font color='red'>max</font></b> true peak" ) ),
 	labelAbsoluteThresholdValue                        ( tr( "<b><font color='red'>absolute</font></b> threshold value" ) ),
 	labelRelativeThresholdValue                        ( tr( "<b><font color='red'>relative</font></b> threshold value" ) ),
 	labelMaximalLoudnessRange                          ( tr( "<b><font color='red'>max</font></b> loudness Range (LRA)" ) ),
@@ -80,7 +78,6 @@ Properties::Properties(QWidget* parent, Qt::WindowFlags f):
 	spinShortTermLoudnessShortProgramMaxValue          ( ),
 	spinTruePeakMaxValue                               ( ),
 	spinTruePeakTargetLevel                            ( ),
-	spinTruePeakTargetMaxLevel                         ( ),
 	spinAbsoluteThresholdValue                         ( ),
 	spinRelativeThresholdValue                         ( ),
 	spinMaximalLoudnessRange                           ( ),
@@ -100,7 +97,6 @@ Properties::Properties(QWidget* parent, Qt::WindowFlags f):
 	labelShortTermLoudnessShortProgramMaxUnit          ( tr( "LU" ) ),
 	labelTruePeakMaxUnit                               ( tr( "dBTP" ) ),
 	labelTruePeakTargetLevelUnit                       ( tr( "dBTP" ) ),
-	labelTruePeakTargetMaxLevelUnit                    ( tr( "dBTP" ) ),
 	labelAbsoluteThresholdUnit                         ( tr( "LUFS" ) ),
 	labelRelativeThresholdUnit                         ( tr( "LU" ) ),
 	labelMaximalLoudnessRangeUnit                      ( tr( "LU" ) ),
@@ -142,7 +138,6 @@ Properties::Properties(QWidget* parent, Qt::WindowFlags f):
 	
 	labelTruePeakMaxValue      .setTextFormat ( Qt::RichText );
 	labelTruePeakTargetLevel   .setTextFormat ( Qt::RichText );
-	labelTruePeakTargetMaxLevel.setTextFormat ( Qt::RichText );
 	labelAbsoluteThresholdValue.setTextFormat ( Qt::RichText );
 	labelRelativeThresholdValue.setTextFormat ( Qt::RichText );
 	labelMaximalLoudnessRange  .setTextFormat ( Qt::RichText );
@@ -163,7 +158,6 @@ Properties::Properties(QWidget* parent, Qt::WindowFlags f):
 	spinShortTermLoudnessShortProgramMaxValue    .setMinimum ( -200.0 );
 	spinTruePeakMaxValue                         .setMinimum ( -200.0 );
 	spinTruePeakTargetLevel                      .setMinimum ( -200.0 );
-	spinTruePeakTargetMaxLevel                   .setMinimum ( -200.0 );
 	spinAbsoluteThresholdValue                   .setMinimum ( -200.0 );
 	spinRelativeThresholdValue                   .setMinimum ( -200.0 );
 	spinMaximalLoudnessRange                     .setMinimum ( -200.0 );
@@ -184,7 +178,6 @@ Properties::Properties(QWidget* parent, Qt::WindowFlags f):
 	spinShortTermLoudnessShortProgramMaxValue    .setDecimals( 1 );
 	spinTruePeakMaxValue                         .setDecimals( 1 );
 	spinTruePeakTargetLevel                      .setDecimals( 1 );
-	spinTruePeakTargetMaxLevel                   .setDecimals( 1 );
 	spinAbsoluteThresholdValue                   .setDecimals( 1 );
 	spinRelativeThresholdValue                   .setDecimals( 1 );
 	spinMaximalLoudnessRange                     .setDecimals( 1 );
@@ -260,13 +253,10 @@ Properties::Properties(QWidget* parent, Qt::WindowFlags f):
 	// all programs
 	line = 0; col = 0;
 	gridCorrectAllsProgram.addWidget( &labelTruePeakTargetLevel   , line++, col );
-	gridCorrectAllsProgram.addWidget( &labelTruePeakTargetMaxLevel, line++, col );
 	line = 0; col++;
 	gridCorrectAllsProgram.addWidget( &spinTruePeakTargetLevel   , line++, col );
-	gridCorrectAllsProgram.addWidget( &spinTruePeakTargetMaxLevel, line++, col );
 	line = 0; col++;
 	gridCorrectAllsProgram.addWidget( &labelTruePeakTargetLevelUnit   , line++, col );
-	gridCorrectAllsProgram.addWidget( &labelTruePeakTargetMaxLevelUnit, line++, col );
 	
 	line = 0; col = 0;
 	layoutAllProgram.addWidget( &labelTruePeakMaxValue      , line++, col );
@@ -329,7 +319,6 @@ void Properties::updateValues()
 	shortTermLoudnessShortProgramMaxValue  = spinShortTermLoudnessShortProgramMaxValue.text().length() == 0 ? LOUDNESS_NAN : spinShortTermLoudnessShortProgramMaxValue.value();
 	truePeakMaxValue                       = spinTruePeakMaxValue.text().length() == 0 ? LOUDNESS_NAN : spinTruePeakMaxValue.value();
 	truePeakTargetLevel                    = spinTruePeakTargetLevel.text().length() == 0 ? LOUDNESS_NAN : spinTruePeakTargetLevel.value();
-	truePeakTargetMaxLevel                 = spinTruePeakTargetMaxLevel.text().length() == 0 ? LOUDNESS_NAN : spinTruePeakTargetMaxLevel.value();
 	
 	absoluteThreshold                      = spinAbsoluteThresholdValue.text().length() == 0 ? LOUDNESS_NAN : spinAbsoluteThresholdValue.value();
 	relativeThreshold                      = spinRelativeThresholdValue.text().length() == 0 ? LOUDNESS_NAN : spinRelativeThresholdValue.value();
@@ -395,8 +384,7 @@ void Properties::setEnableProperties( bool enable )
 	spinProgramLoudnessShortProgramTargetMinLevel.setEnabled( enable );*/
 	spinShortTermLoudnessShortProgramMaxValue.setEnabled( enable );
 	spinTruePeakMaxValue.setEnabled       ( enable );
-	/*spinTruePeakTargetLevel.setEnabled    ( enable );
-	spinTruePeakTargetMaxLevel.setEnabled    ( enable );*/
+	/*spinTruePeakTargetLevel.setEnabled    ( enable );*/
 	spinAbsoluteThresholdValue.setEnabled ( enable );
 	spinRelativeThresholdValue.setEnabled ( enable );
 	spinMaximalLoudnessRange.setEnabled   ( enable );
@@ -421,7 +409,6 @@ void Properties::setPropertiesValues( Loudness::LoudnessLevels values )
 	spinShortTermLoudnessShortProgramMaxValue.setValue( values.shortTermLoudnessShortProgramMaxValue );
 	spinTruePeakMaxValue.setValue( values.truePeakMaxValue );
 	spinTruePeakTargetLevel.setValue( values.truePeakTargetLevel );
-	spinTruePeakTargetMaxLevel.setValue( values.truePeakTargetMaxLevel );
 	spinAbsoluteThresholdValue.setValue( values.absoluteThresholdValue );
 	spinRelativeThresholdValue.setValue( values.relativeThresholdValue );
 	spinMaximalLoudnessRange.setValue( values.maximalLoudnessRange );

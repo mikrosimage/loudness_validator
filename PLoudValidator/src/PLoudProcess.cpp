@@ -9,11 +9,6 @@ PLoudProcess::PLoudProcess( Loudness::LoudnessLevels levels, float frequencyForT
 	setUpsamplingFrequencyForTruePeak( frequencyForTruePeak );
 }
 
-void PLoudProcess::init( Loudness::LoudnessLevels levels, float frequencyForTruePeak )
-{
-	setUpsamplingFrequencyForTruePeak( frequencyForTruePeak );
-}
-
 bool PLoudProcess::openAudioFiles( std::vector<std::string>& files )
 {
 	bool ret = true;
