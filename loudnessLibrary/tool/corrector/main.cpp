@@ -29,6 +29,8 @@ int main( int argc, char** argv )
 	std::vector<std::string> filenames;
 	
 	float gain = 1.0;
+	float lookaheadTime = 60.0;
+	
 	
 	Loudness::ELoudnessResult result = Loudness::eNoImportance;
 	
@@ -55,6 +57,26 @@ int main( int argc, char** argv )
 		{
 			printLength = true;
 		}
+		if( strncmp ( argv[i],"--lookahead-time=", 17 ) == 0 )
+		{
+			std::string time = argv[i];
+			time.erase( 0, 17 ); // removing 17 first caracters.
+			std::stringstream ss;
+			float t;
+			ss << time;
+			ss >> t;
+			
+			if ( ss.fail() )
+			{
+				std::cout << "Error: lookahead-time parameter take only a float into value. example: --lookahead-time=20.5" << std::endl;
+				return -101;
+			}
+			if( t != 0 )
+			{
+				lookaheadTime = t;
+			}
+		}
+		
 		if( strncmp ( argv[i],"--standard=", 11 ) == 0 )
 		{
 			if( strcmp ( argv[i],"--standard=cst" ) == 0 )
@@ -121,7 +143,7 @@ int main( int argc, char** argv )
 				
 				std::string xmlFile = filename;
 				xmlFile.append("_measured.xml");
-				writeResults( xmlFile.c_str(), filenames.at( i ).c_str(), analyser );
+				writeResults( xmlFile.c_str(), filenames.at( i ).c_str(), "unknown", analyser );
 				
 				std::string outputFilename = filenames.at(i);
 				int insertPoint = 4;
@@ -129,28 +151,23 @@ int main( int argc, char** argv )
 					insertPoint = 5;
 				outputFilename.insert( outputFilename.length() - insertPoint, "_corrected" );
 				
-				//std::cout << " => "<< outputFilename << std::endl;
-				
 				SoundFile outputAudioFile;
+				Loudness::LoudnessLibrary analyserAfterCorrection( levels );
 				
-				if( ! outputAudioFile.open_write( outputFilename.c_str(), audioFile.type(), audioFile.form(), audioFile.rate(), audioFile.chan() ) );
+				if( ! outputAudioFile.open_write( outputFilename.c_str(), audioFile.type(), audioFile.form(), audioFile.rate(), audioFile.chan() ) )
 				{
 					gain = analyser.getCorrectionGain( enableLimiter );
-					std::cout << " => applying correction: " << gain;
-					float attackMs = 0;
-					float releaseMs = 0;
-					float lookAhead = 60;
-					float threshold = 1.0;//std::pow ( 10, ( levels.truePeakTargetLevel ) / 20 );
+					std::cout << " => applying correction: " << gain << std::endl;
+					float threshold = std::pow ( 10, ( levels.truePeakTargetLevel ) / 20 );
 					
 					if( enableLimiter )
 					{
-						writeCorrectedFile( audioFile, outputAudioFile, gain, attackMs, releaseMs, lookAhead, threshold, progress );
+						writeCorrectedFile( analyserAfterCorrection, audioFile, outputAudioFile, gain, lookaheadTime, threshold, progress );
 					}
 					else
 					{
-						writeCorrectedFile( audioFile, outputAudioFile, gain, progress );
+						writeCorrectedFile( analyserAfterCorrection, audioFile, outputAudioFile, gain, progress );
 					}
-					
 					outputAudioFile.close();
 				}
 				
@@ -158,18 +175,14 @@ int main( int argc, char** argv )
 				
 				if( analyseAfterCorrecting )
 				{
-					if( ! audioFile.open_read ( outputFilename.c_str() ) )
-					{
-						processAnalyseFile( analyser, audioFile, progress );
-						if( showResults )
-							analyser.printPloudValues();
-	
-						std::string xmlFile = filename;
-						xmlFile.append("_corrected_measured.xml");
-						writeResults( xmlFile.c_str(), outputFilename.c_str(), analyser );
-					}
+					if( showResults )
+						analyserAfterCorrection.printPloudValues();
 				}
-				result = analyser.isValidProgram();
+				
+				std::string xmlFileCorrected = filename;
+				xmlFileCorrected.append("_corrected_measured.xml");
+				writeResults( xmlFileCorrected.c_str(), outputFilename.c_str(), "unknown", analyserAfterCorrection );
+				result = analyserAfterCorrection.isValidProgram();
 			}
 			std::cout << std::endl;
 		}
@@ -186,9 +199,11 @@ int main( int argc, char** argv )
 		std::cout << "\t\t\tcst:  CST RT 017" << std::endl;
 		std::cout << "\t\t\tatsc: ATSC A/85" << std::endl;
 		std::cout << "\t--progress: show progress status" << std::endl;
+		std::cout << "\t--length: print program length" << std::endl;
 		std::cout << "\t--verbose: show progress status and print values" << std::endl;
 		std::cout << "\t--analyse-corrected: analyse corrected file after writing" << std::endl;
 		std::cout << "\t--enable-limiter: activate brick wall look ahead limiter" << std::endl;
+		std::cout << "\t--lookahead-time: specify the look-ahead time for the limiter (default is 60ms)" << std::endl;
 		return -1;
 	}
 	
