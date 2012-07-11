@@ -118,7 +118,6 @@ void writeCorrectedFile( Loudness::LoudnessLibrary& analyser, SoundFile& input, 
 		//samples = 
 		size_t s = getLastData( limiters, ptr, bufferSize, channelsInBuffer, gain );
 		
-		std::cout << "last" << s << std::endl;
 		if( s == 0 ) break;
 		// re-analyse output
 		ptr = inpb;
