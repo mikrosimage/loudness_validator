@@ -60,7 +60,7 @@ void Process::reset ( )
 
 void Process::setUpsamplingFrequencyForTruePeak ( const size_t frequency )
 {
-	for( int i=0; i< _numberOfChannels; i++)
+	for( int i=0; i< MAX_CHANNELS; i++)
 	{
 		_truePeakMeter[i].setUpsamplingFrequencyInHz( frequency );
 	}
