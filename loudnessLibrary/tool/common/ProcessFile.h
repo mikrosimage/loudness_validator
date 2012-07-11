@@ -1,3 +1,5 @@
+#ifndef PROCESS_FILE_H
+#define PROCESS_FILE_H
 
 #include <loudnessLibrary.h>
 #include <SoundFile.h>
@@ -38,3 +40,5 @@ void processAnalyseFile( Loudness::LoudnessLibrary& analyser, SoundFile& audioFi
 	for( size_t i=0; i< channelsInBuffer; i++ )
 		delete[] data[i];
 }
+
+#endif
