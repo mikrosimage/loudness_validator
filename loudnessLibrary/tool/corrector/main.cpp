@@ -25,7 +25,7 @@ int main( int argc, char** argv )
 	bool analyseAfterCorrecting = false;
 	bool enableLimiter = false;
 	bool printLength = false;
-	int standard = 0;
+	int standard = 1;
 	std::vector<std::string> filenames;
 	
 	float gain = 1.0;
@@ -192,7 +192,7 @@ int main( int argc, char** argv )
 		std::cout << "PLoud Corrector - version " << VERSION << std::endl;
 		std::cout << "Mikros Image - Marc-Antoine ARNAUD [mrn@mikrosimage.eu]" << std::endl << std::endl;
 		std::cout << "Common usage :" << std::endl;
-		std::cout << "\tloudness-analyser [options] filename.ext" << std::endl << std::endl;
+		std::cout << "\tloudness-corrector [options] filename.ext" << std::endl << std::endl;
 		std::cout << "Options :" << std::endl;
 		std::cout << "\t--standard=ebu/cst/atsc : select one standard to validate the Loudness" << std::endl;
 		std::cout << "\t\t\tebu:  EBU R 128 (default)" << std::endl;
