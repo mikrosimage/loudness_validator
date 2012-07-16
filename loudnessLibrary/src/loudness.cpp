@@ -139,7 +139,6 @@ float Loudness::getCorrectionGain( const LoudnessLevels& levels, const bool isSh
 	
 	/*
 	std::cout << "| min gain correction:       " << minCorrectionGain << " dB = " << std::pow ( 10, ( minCorrectionGain ) / 20 ) << std::endl;
-	std::cout << "| max gain correction:       " << maxCorrectionGain << " dB = " << std::pow ( 10, ( maxCorrectionGain ) / 20 ) << std::endl;
 	std::cout << "| ideal gain correction:     " << idealCorrectionGain << " dB = " << std::pow ( 10, ( idealCorrectionGain ) / 20 ) << std::endl;
 	std::cout << "| True Peak gain correction: " << maxTruePeakGainCorrection << " dB = " << std::pow ( 10, ( maxTruePeakGainCorrection ) / 20 ) << std::endl;
 	
@@ -160,9 +159,10 @@ float Loudness::getCorrectionGain( const LoudnessLevels& levels, const bool isSh
 			correctionGain = LOUDNESS_NAN;
 		}
 	}
+	/*
 	_histogram.applyGain( correctionGain );
 	integratedThreshold = _histogram.integratedValue( _absoluteThreshold, 5.0 ) + _relativeThreshold;
-	integratedLoudness  = _histogram.integratedValue( integratedThreshold, 5.0 );
+	integratedLoudness  = _histogram.integratedValue( integratedThreshold, 5.0 );*/
 
 	//std::cout << "| => applying correction: " << correctionGain << " dB = " << std::pow ( 10, ( correctionGain ) / 20 ) << " | newest Program Loudness:" << integratedLoudness << " LUFS" << std::endl;
 	return std::pow ( 10, ( correctionGain ) / 20 );
