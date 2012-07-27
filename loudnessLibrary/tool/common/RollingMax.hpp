@@ -25,7 +25,8 @@ private:
 
 template<typename Sample>
 RollingMax<Sample>::RollingMax( size_t windowSize ) :
-	cb( windowSize )
+	cb( windowSize ),
+	max( -1.0 )
 {
 }
 
