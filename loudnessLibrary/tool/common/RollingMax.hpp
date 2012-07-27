@@ -33,7 +33,9 @@ template<typename Sample>
 void RollingMax<Sample>::operator()(Sample sample)
 {
 	
-	Sample removedSample = cb.front();
+	Sample removedSample( 0.0 );
+	if( cb.full() )
+		removedSample = cb.front();
 	
 	cb.push_back( sample );
 	
