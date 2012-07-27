@@ -7,6 +7,7 @@
 #include <RollingMax.hpp>
 
 #include <iostream>
+#include <cmath>
 using namespace boost::accumulators;
 
 class LookAheadLimiter
