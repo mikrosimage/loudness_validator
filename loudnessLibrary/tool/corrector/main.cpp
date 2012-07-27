@@ -143,7 +143,8 @@ int main( int argc, char** argv )
 				
 				std::string xmlFile = filename;
 				xmlFile.append("_measured.xml");
-				writeResults( xmlFile.c_str(), filenames.at( i ).c_str(), "unknown", analyser );
+				WriteXml writerXml ( xmlFile.c_str(), filenames.at(i).c_str() );
+				writerXml.writeResults( "unknown", analyser );
 				
 				std::string outputFilename = filenames.at(i);
 				int insertPoint = 4;
@@ -181,7 +182,9 @@ int main( int argc, char** argv )
 				
 				std::string xmlFileCorrected = filename;
 				xmlFileCorrected.append("_corrected_measured.xml");
-				writeResults( xmlFileCorrected.c_str(), outputFilename.c_str(), "unknown", analyserAfterCorrection );
+				
+				WriteXml writerXmlCorrected ( xmlFileCorrected.c_str(), outputFilename.c_str() );
+				writerXmlCorrected.writeResults( "unknown", analyserAfterCorrection );
 				result = analyserAfterCorrection.isValidProgram();
 			}
 			std::cout << std::endl;

@@ -1,13 +1,22 @@
 
+project
+	:
+		requirements
+		<cxxflags>-fbounds-check
+		<cflags>-fbounds-check
+	;
+
 
 exe loudness-analyser :
 	[ glob analyser/*.cpp ]
+	common//tool-gain/<link>static
 	..//soundFile/<link>static
 	..//loudnessLibrary/<link>static
 	;
 
 exe loudness-corrector :
 	[ glob corrector/*.cpp ]
+	common//tool-gain-and-limiter/<link>static
 	..//soundFile/<link>static
 	..//loudnessLibrary/<link>static
 	;

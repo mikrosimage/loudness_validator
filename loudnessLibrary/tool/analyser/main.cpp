@@ -107,7 +107,8 @@ int main( int argc, char** argv )
 				if( showResults )
 					analyser.printPloudValues();
 				audioFile.close();
-				writeResults( filename.c_str(), filenames.at(i).c_str(), "unknown", analyser );
+				WriteXml writerXml ( filename.c_str(), filenames.at(i).c_str() );
+				writerXml.writeResults( "unknown", analyser );
 				double dif = difftime (end,start);
 				if( showTime )
 					std::cout << "processing time: " << dif << " seconds." << std::endl;
