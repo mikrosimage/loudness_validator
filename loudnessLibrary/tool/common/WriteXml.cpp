@@ -7,19 +7,19 @@ WriteXml::WriteXml( const char* filename, const char* srcAudioFilename ) :
 	xmlFile.precision( 1 );
 	xmlFile.setf( std::ios::fixed, std::ios::floatfield );
 	xmlFile.open( filename );
+	xmlFile << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+	xmlFile << "<loudness>\n";
 }
 
 WriteXml::~WriteXml()
 {
+	xmlFile << "</loudness>\n";
 	xmlFile.close();
 }
 
 void WriteXml::writeResults( const char* channelType, Loudness::LoudnessLibrary& analyser )
 {
-
-	xmlFile << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
-	xmlFile << "<Program filename=\"" << srcAudioFilename << "\" " << printStandard( analyser.getStandard() ) << " " << convertValid( analyser.isValidProgram() ) << " >\n";
-	xmlFile << "<Channels type=\"" << channelType << "\">\n";
+	xmlFile << "<Program filename=\"" << srcAudioFilename << "\" " << printStandard( analyser.getStandard() ) << " " << convertValid( analyser.isValidProgram() ) << "channelsType=\"" << channelType << "\">\n";
 	xmlFile << "\t<ProgramLoudness " << convertValid( analyser.isIntegratedLoudnessValid() ) << ">" << analyser.getIntegratedLoudness() << "</ProgramLoudness>\n";
 	xmlFile << "\t<LRA " << convertValid( analyser.isIntegratedLoudnessRangeValid() ) << ">" << analyser.getIntegratedRange() << "</LRA>\n";
 	xmlFile << "\t<MaxMomentaryLoudness " << convertValid( analyser.isMomentaryLoudnessValid() ) << ">" << analyser.getMomentaryLoudness() << "</MaxMomentaryLoudness>\n";
@@ -28,9 +28,7 @@ void WriteXml::writeResults( const char* channelType, Loudness::LoudnessLibrary&
 	xmlFile << "\t<TruePeak " << convertValid( analyser.isTruePeakValid() ) << ">" << analyser.getTruePeakInDbTP() << "</TruePeak>\n";
 	xmlFile << "\t<MaxShortTermValues>" << writeValues( analyser.getShortTermValues() ) << "</MaxShortTermValues>\n";
 	xmlFile << "\t<TruePeakValues>" << writeValues( analyser.getTruePeakValues() ) << "</TruePeakValues>\n";
-	xmlFile << "</Channels>\n";
 	xmlFile << "</Program>\n";
-	
 }
 
 std::string WriteXml::convertValid( Loudness::ELoudnessResult result )

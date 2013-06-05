@@ -22,7 +22,7 @@ int main( int argc, char** argv )
 {
 	bool validToProcess = false;
 	bool showTime = false;
-	int standard = 0;
+	std::vector<int> standards;
 	std::vector<std::string> filenames;
 	
 	time_t start,end;
@@ -47,19 +47,19 @@ int main( int argc, char** argv )
 		{
 			if( strcmp ( argv[i],"--standard=cst" ) == 0 )
 			{
-				standard = 0;
+				standards.push_back(0);
 			}
 			else
 			{
 				if( strcmp ( argv[i],"--standard=ebu" ) == 0 )
 				{
-					standard = 1;
+					standards.push_back(1);
 				}
 				else
 				{
 					if( strcmp ( argv[i],"--standard=atsc" ) == 0 )
 					{
-						standard = 2;
+						standards.push_back(2);
 					}
 					else
 					{
@@ -68,6 +68,10 @@ int main( int argc, char** argv )
 					}
 				}
 			}
+		}
+		else
+		{
+			standards.push_back(1);		// default standard : EBU R128
 		}
 		std::string ext ( argv[i] );
 		ext.erase( 0, ext.length() - 5 );
@@ -91,27 +95,31 @@ int main( int argc, char** argv )
 			else
 				if( filename.at( filename.length() - 5 ) == '.' )
 					filename.erase( filename.length() - 5, 5 );
-			filename.append("_measured.xml");
-			
-			SoundFile audioFile;
-			Loudness::LoudnessLevels levels =	standard == 0 ? Loudness::LoudnessLevels::Loudness_CST_R017() : 
-												standard == 1 ? Loudness::LoudnessLevels::Loudness_EBU_R128() : 
-																Loudness::LoudnessLevels::Loudness_ATSC_A85() ;
-			
-			Loudness::LoudnessLibrary analyser( levels );
-			if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
+
+			filename.append("_PLoud.xml");
+			WriteXml writerXml ( filename.c_str(), filenames.at(i).c_str() );
+
+			for( size_t j=0; j < standards.size(); j++ )
 			{
-				time( &start );
-				processAnalyseFile( analyser, audioFile, progress );
-				time( &end );
-				if( showResults )
-					analyser.printPloudValues();
-				audioFile.close();
-				WriteXml writerXml ( filename.c_str(), filenames.at(i).c_str() );
-				writerXml.writeResults( "unknown", analyser );
-				double dif = difftime (end,start);
-				if( showTime )
-					std::cout << "processing time: " << dif << " seconds." << std::endl;
+				SoundFile audioFile;
+				Loudness::LoudnessLevels levels =	standards.at(j) == 0 ? Loudness::LoudnessLevels::Loudness_CST_R017() : 
+													standards.at(j) == 1 ? Loudness::LoudnessLevels::Loudness_EBU_R128() : 
+																		   Loudness::LoudnessLevels::Loudness_ATSC_A85() ;
+				
+				Loudness::LoudnessLibrary analyser( levels );
+				if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
+				{
+					time( &start );
+					processAnalyseFile( analyser, audioFile, progress );
+					time( &end );
+					if( showResults )
+						analyser.printPloudValues();
+					audioFile.close();
+					writerXml.writeResults( "unknown", analyser );
+					double dif = difftime (end,start);
+					if( showTime )
+						std::cout << "processing time: " << dif << " seconds." << std::endl;
+				}
 			}
 		}
 	}
@@ -122,7 +130,7 @@ int main( int argc, char** argv )
 		std::cout << "Common usage :" << std::endl;
 		std::cout << "\tloudness-analyser [options] filename.ext" << std::endl << std::endl;
 		std::cout << "Options :" << std::endl;
-		std::cout << "\tstandard=ebu/cst/atsc : select one standard to validate the Loudness" << std::endl;
+		std::cout << "\t--standard=ebu/cst/atsc : select one standard to validate the Loudness" << std::endl;
 		std::cout << "\t\t\tebu:  EBU R 128 (default)" << std::endl;
 		std::cout << "\t\t\tcst:  CST RT 017" << std::endl;
 		std::cout << "\t\t\tatsc: ATSC A/85" << std::endl;
