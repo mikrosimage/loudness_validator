@@ -69,7 +69,7 @@ int main( int argc, char** argv )
 				}
 			}
 		}
-		else
+		if( standards.empty() )
 		{
 			standards.push_back(1);		// default standard : EBU R128
 		}
