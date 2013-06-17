@@ -19,6 +19,7 @@ private:
 	std::string convertValid( Loudness::ELoudnessResult result );
 	std::string printStandard( Loudness::EStandard standard );
 	std::string writeValues( std::vector<float> datas );
+	std::string getDate();
 	
 	std::ofstream xmlFile;
 	const char* filename;
