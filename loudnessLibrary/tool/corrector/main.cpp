@@ -210,7 +210,7 @@ int main( int argc, char** argv )
 		return -1;
 	}
 	
-	int returnValue;
+	int returnValue = 0;
 	
 	switch( result )
 	{

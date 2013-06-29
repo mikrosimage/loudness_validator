@@ -38,24 +38,28 @@ void WriteXml::writeResults( const char* channelType, Loudness::LoudnessLibrary&
 
 std::string WriteXml::convertValid( Loudness::ELoudnessResult result )
 {
+	std::string st = "";
 	switch( result )
 	{
-		case Loudness::eValidResult                 : return " status=\"valid\" ";       break;
-		case Loudness::eNotValidResult              : return " status=\"illegal\" ";     break;
-		case Loudness::eNotValidResultButNotIllegal : return " status=\"not illegal\" "; break;
-		case Loudness::eNoImportance                : return " status=\"\" ";            break;
+		case Loudness::eValidResult                 : st = "valid\" ";       break;
+		case Loudness::eNotValidResult              : st = "illegal\" ";     break;
+		case Loudness::eNotValidResultButNotIllegal : st = "not illegal\" "; break;
+		case Loudness::eNoImportance                : break;
 	}
+	return " status=\'" + st + "'";
 }
 
 std::string WriteXml::printStandard( Loudness::EStandard standard )
 {
+	std::string st = "";
 	switch( standard )
 	{
-		case Loudness::eStandardCST_R017 : return " standard=\"CST-R017\" "; break;
-		case Loudness::eStandardEBU_R128 : return " standard=\"EBU-R128\" "; break;
-		case Loudness::eStandardATSC_A85 : return " standard=\"ATSC-A85\" "; break;
-		case Loudness::eStandardUnknown  : return " standard=\"Unknown\" ";  break;
+		case Loudness::eStandardCST_R017 : st = "CST-R017"; break;
+		case Loudness::eStandardEBU_R128 : st = "EBU-R128"; break;
+		case Loudness::eStandardATSC_A85 : st = "ATSC-A85"; break;
+		case Loudness::eStandardUnknown  : st = "Unknown";  break;
 	}
+	return " standard=\'" + st + "'";
 }
 
 std::string WriteXml::writeValues( std::vector<float> datas )
