@@ -16,8 +16,7 @@ Comming soon for others specifications.
 License
 -------
 
-    Mikros Image private project.
-
+See [**COPYING.md**](COPYING.md)
 
 Compilation
 -----------
