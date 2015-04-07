@@ -1,2 +1,4 @@
-dist
-.build
+
+build
+config.log
+.scon*
