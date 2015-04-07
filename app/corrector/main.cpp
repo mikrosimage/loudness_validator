@@ -196,7 +196,7 @@ int main( int argc, char** argv )
 		std::cout << LOUDNESS_ASSESSMENT_VERSION_MAJOR << ".";
 		std::cout << LOUDNESS_ASSESSMENT_VERSION_MINOR << ".";
 		std::cout << LOUDNESS_ASSESSMENT_VERSION_MICRO << std::endl;
-		std::cout << "Mikros Image - Marc-Antoine ARNAUD [mrn@mikrosimage.eu]" << std::endl << std::endl;
+		std::cout << "Marc-Antoine ARNAUD [arnaud.marcantoine@gmail.com]" << std::endl << std::endl;
 		std::cout << "Common usage :" << std::endl;
 		std::cout << "\tloudness-corrector [options] filename.ext" << std::endl << std::endl;
 		std::cout << "Options :" << std::endl;
