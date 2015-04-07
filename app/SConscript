@@ -1,0 +1,28 @@
+
+Import( 'env' )
+
+Import( 'loudnessAnalyserLibStatic' )
+Import( 'loudnessCorrectorsLibStatic' )
+Import( 'loudnessToolsLibStatic' )
+
+env.Program(
+	'loudness-analyser',
+	Glob( 'analyser/*.cpp' ),
+	LIBS = [
+		loudnessAnalyserLibStatic,
+		loudnessToolsLibStatic,
+		"sndfile",
+	]
+)
+
+
+env.Program(
+	'loudness-corrector',
+	Glob( 'corrector/*.cpp' ),
+	LIBS = [
+		loudnessAnalyserLibStatic,
+		loudnessCorrectorsLibStatic,
+		loudnessToolsLibStatic,
+		"sndfile",
+	]
+)
