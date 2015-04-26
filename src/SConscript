@@ -1,0 +1,23 @@
+
+Import( 'env' )
+
+conf = Configure(env)
+if not conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
+    print 'Did not find libsndfile.a or sndfile.lib, exiting!'
+    Exit(1)
+env = conf.Finish()
+
+loudnessAnalyserLib = env.SharedLibrary(
+        'loudnessAnalyser',
+        Glob( 'loudnessAnalyser/*.cpp' ),
+        )
+
+loudnessAnalyserLibStatic = env.StaticLibrary(
+        'loudnessAnalyser',
+        Glob( 'loudnessAnalyser/*.cpp' ),
+        )
+
+env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessAnalyserLib ) )
+env.Alias( 'install', env.Install( 'lib', loudnessAnalyserLibStatic ) )
+
+Export( 'loudnessAnalyserLibStatic' )
