@@ -1,10 +1,3 @@
-/*
- * loudnessProcess.h
- *
- *  Created on: Aug 26, 2011
- *      Author: Marc-Antoine ARNAUD
- *              MikrosImage R&D
- */
 
 #ifndef _LOUDNESS_ANALYSER_PROCESS_HPP_
 #define _LOUDNESS_ANALYSER_PROCESS_HPP_
