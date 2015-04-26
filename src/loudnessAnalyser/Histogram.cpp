@@ -6,7 +6,7 @@
  *              MikrosImage R&D
  */
 
-#include "histogram.hpp"
+#include "Histogram.hpp"
 #include <cmath>
 #include "common.hpp"
 

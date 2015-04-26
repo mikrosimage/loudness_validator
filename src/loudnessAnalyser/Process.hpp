@@ -9,10 +9,10 @@
 #ifndef _LOUDNESS_ANALYSER_PROCESS_HPP_
 #define _LOUDNESS_ANALYSER_PROCESS_HPP_
 
-#include "loudness.hpp"
-#include "filter.hpp"
-#include "histogram.hpp"
-#include "truePeakMeter.hpp"
+#include "Loudness.hpp"
+#include "Filter.hpp"
+#include "Histogram.hpp"
+#include "TruePeakMeter.hpp"
 
 #include <vector>
 #include <cmath>

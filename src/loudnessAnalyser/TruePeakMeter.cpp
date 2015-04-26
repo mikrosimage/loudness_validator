@@ -6,7 +6,7 @@
  *              MikrosImage R&D
  */
 
-#include "truePeakMeter.hpp"
+#include "TruePeakMeter.hpp"
 #include "common.hpp"
 
 #include <cmath>

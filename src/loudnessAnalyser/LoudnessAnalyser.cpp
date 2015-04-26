@@ -7,7 +7,7 @@
  */
 
 #include "LoudnessAnalyser.hpp"
-#include "process.hpp"
+#include "Process.hpp"
 #include "common.hpp"
 
 #include <iostream>

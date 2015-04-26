@@ -6,7 +6,7 @@
  *              MikrosImage R&D
  */
 
-#include "process.hpp"
+#include "Process.hpp"
 #include "common.hpp"
 
 namespace Loudness{
