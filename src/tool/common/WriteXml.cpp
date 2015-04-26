@@ -1,4 +1,4 @@
-#include "WriteXml.h"
+#include "WriteXml.hpp"
 #include <ctime>
 
 WriteXml::WriteXml( const char* filename, const char* srcAudioFilename ) :

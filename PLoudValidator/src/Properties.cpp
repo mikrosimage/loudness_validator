@@ -1,5 +1,5 @@
 #include "Properties.h"
-#include "loudnessLibrary.h"
+#include "loudnessLibrary.hpp"
 #include <iostream>
 #include <cmath>
 #include <limits>

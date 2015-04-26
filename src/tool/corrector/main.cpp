@@ -4,11 +4,11 @@
 #include <vector>
 #include <cmath>
 
-#include <loudnessLibrary.h>
-#include <SoundFile.h>
-#include <WriteXml.h>
-#include <ProcessFile.h>
-#include <WriteCorrectedFile.h>
+#include <loudnessLibrary.hpp>
+#include <SoundFile.hpp>
+#include <WriteXml.hpp>
+#include <ProcessFile.hpp>
+#include <WriteCorrectedFile.hpp>
 
 bool showProgress = false;
 bool showResults = false;

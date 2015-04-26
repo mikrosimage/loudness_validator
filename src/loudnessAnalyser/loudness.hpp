@@ -15,8 +15,8 @@
 #include <boost/accumulators/statistics/rolling_mean.hpp>
 #include <boost/accumulators/statistics/rolling_mean.hpp>
 
-#include "histogram.h"
-#include "loudnessLibrary.h"
+#include "histogram.hpp"
+#include "loudnessLibrary.hpp"
 
 using namespace boost::accumulators;
 

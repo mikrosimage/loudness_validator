@@ -1,5 +1,5 @@
-#include "loudness.h"
-#include "common.h"
+#include "loudness.hpp"
+#include "common.hpp"
 #include <numeric>
 #include <cmath>
 

@@ -2,7 +2,7 @@
 #define CORRECT_BUFFER_H
 
 #include <vector>
-#include <LookAheadLimiter.h>
+#include <LookAheadLimiter.hpp>
 
 size_t correctBuffer( float* data, const size_t samples, const size_t channelsInBuffer, const float gain )
 {
