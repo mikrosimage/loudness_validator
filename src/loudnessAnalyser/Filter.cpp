@@ -6,7 +6,7 @@
  *              MikrosImage R&D
  */
 
-#include "filter.hpp"
+#include "Filter.hpp"
 
 //#define PRINT_FILTERS_COEFFICIENTS
 
