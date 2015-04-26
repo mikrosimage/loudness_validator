@@ -6,8 +6,8 @@
  *              MikrosImage R&D
  */
 
-#ifndef EBU_R128_LOUDNESS_H
-#define EBU_R128_LOUDNESS_H
+#ifndef _LOUDNESS_ANALYSER_LOUDNESS_HPP_
+#define _LOUDNESS_ANALYSER_LOUDNESS_HPP_
 
 #include <vector>
 #include <boost/accumulators/accumulators.hpp>

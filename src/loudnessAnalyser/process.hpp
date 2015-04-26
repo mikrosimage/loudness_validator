@@ -6,8 +6,8 @@
  *              MikrosImage R&D
  */
 
-#ifndef LOUDNESS_PROCESS_H
-#define LOUDNESS_PROCESS_H
+#ifndef _LOUDNESS_ANALYSER_PROCESS_HPP_
+#define _LOUDNESS_ANALYSER_PROCESS_HPP_
 
 #include "loudness.hpp"
 #include "filter.hpp"
@@ -108,4 +108,4 @@ private:
 
 }
 
-#endif // EBU_R128_PROCESS_H
+#endif

@@ -1,4 +1,7 @@
 
+#ifndef _LOUDNESS_ANALYSER_COMMON_HPP_
+#define _LOUDNESS_ANALYSER_COMMON_HPP_
+
 #include <iostream>
 
 #ifndef PLOUD_NO_COUT
@@ -25,3 +28,5 @@
 #endif
 
 #define PLOUD_COUT_VAR( a )  PLOUD_COUT( PLOUD_VAR( a ) )
+
+#endif

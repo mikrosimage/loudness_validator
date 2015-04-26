@@ -6,8 +6,8 @@
  *              MikrosImage R&D
  */
 
-#ifndef EBU_R128_HISTOGRAM_H
-#define EBU_R128_HISTOGRAM_H
+#ifndef _LOUDNESS_ANALYSER_HISTOGRAM_HPP_
+#define _LOUDNESS_ANALYSER_HISTOGRAM_HPP_
 
 #include <vector>
 
@@ -65,4 +65,4 @@ private:
 };
 
 }
-#endif // EBU_R128_HISTOGRAM_H
+#endif
