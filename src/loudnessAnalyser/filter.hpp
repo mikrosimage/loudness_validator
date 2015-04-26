@@ -6,8 +6,8 @@
  *              MikrosImage R&D
  */
 
-#ifndef LOUDNESS_FILTER_H
-#define LOUDNESS_FILTER_H
+#ifndef _LOUDNESS_ANALYSER_FILTER_HPP_
+#define _LOUDNESS_ANALYSER_FILTER_HPP_
 
 namespace Loudness{
 
@@ -34,4 +34,4 @@ private:
 
 }
 
-#endif // EBU_R128_FILTER_H
+#endif

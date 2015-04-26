@@ -5,8 +5,8 @@
  *      Author: Marc-Antoine ARNAUD
  */
 
-#ifndef LOUDNESS_LIBRARY_H
-#define LOUDNESS_LIBRARY_H
+#ifndef _LOUDNESS_ANALYSER_LOUDNESS_LIBRARY_HPP_
+#define _LOUDNESS_ANALYSER_LOUDNESS_LIBRARY_HPP_
 
 #include <cstdlib>
 #include <vector>

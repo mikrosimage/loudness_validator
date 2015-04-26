@@ -8,8 +8,8 @@
 
 #include <vector>
 
-#ifndef LOUDNESS_TRUE_PEAK_METER_H
-#define LOUDNESS_TRUE_PEAK_METER_H
+#ifndef _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
+#define _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 
 #define FILTER_SIZE 125.0
 
@@ -66,4 +66,4 @@ private:
 
 }
 
-#endif // EBU_R128_TRUE_PEAK_METER_H
+#endif
