@@ -1,4 +1,4 @@
-#include "LookAheadLimiter.h"
+#include "LookAheadLimiter.hpp"
 
 /**
   * lookAheadTime [ ms ]

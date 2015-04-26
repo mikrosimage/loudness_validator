@@ -1,7 +1,7 @@
 #ifndef PLOUD_PROCESS_H
 #define PLOUD_PROCESS_H
 
-#include "loudnessLibrary.h"
+#include "loudnessLibrary.hpp"
 #include <SoundFile.h>
 #include <string>
 #include <vector>

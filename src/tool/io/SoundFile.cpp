@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "SoundFile.h"
+#include "SoundFile.hpp"
 
 
 SoundFile::SoundFile (void)

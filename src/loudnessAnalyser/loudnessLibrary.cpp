@@ -6,9 +6,9 @@
  *              MikrosImage R&D
  */
 
-#include "loudnessLibrary.h"
-#include "process.h"
-#include "common.h"
+#include "loudnessLibrary.hpp"
+#include "process.hpp"
+#include "common.hpp"
 
 #include <iostream>
 #include <iomanip>

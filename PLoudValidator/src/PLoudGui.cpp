@@ -11,7 +11,7 @@
 #include "QtVectorHistogram.h"
 #include <SoundFile.h>
 
-#include "loudnessLibrary.h"
+#include "loudnessLibrary.hpp"
 
 #include <HelpDialog.h>
 

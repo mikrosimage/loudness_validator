@@ -1,8 +1,8 @@
 #ifndef PROCESS_FILE_H
 #define PROCESS_FILE_H
 
-#include <loudnessLibrary.h>
-#include <SoundFile.h>
+#include <loudnessLibrary.hpp>
+#include <SoundFile.hpp>
 
 void processAnalyseFile( Loudness::LoudnessLibrary& analyser, SoundFile& audioFile, void (*callback)(int) )
 {

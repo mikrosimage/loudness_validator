@@ -6,9 +6,9 @@
  *              MikrosImage R&D
  */
 
-#include "histogram.h"
+#include "histogram.hpp"
 #include <cmath>
-#include "common.h"
+#include "common.hpp"
 
 namespace Loudness
 {
