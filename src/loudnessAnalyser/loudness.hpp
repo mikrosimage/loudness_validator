@@ -16,7 +16,7 @@
 #include <boost/accumulators/statistics/rolling_mean.hpp>
 
 #include "histogram.hpp"
-#include "loudnessLibrary.hpp"
+#include "LoudnessAnalyser.hpp"
 
 using namespace boost::accumulators;
 

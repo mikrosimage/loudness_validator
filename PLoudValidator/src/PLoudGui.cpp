@@ -11,7 +11,7 @@
 #include "QtVectorHistogram.h"
 #include <SoundFile.h>
 
-#include "loudnessLibrary.hpp"
+#include "LoudnessAnalyser.hpp"
 
 #include <HelpDialog.h>
 
@@ -334,7 +334,7 @@ void PLoudGui::callbackProgress( void* object, int value )
 	pb->setValue( value );
 }
 
-void analyseFiles( SoundFile* audioFile, size_t channels, Loudness::LoudnessLibrary* ploudMeter, QProgressBar& progressBar, double gain = 1.0 )
+void analyseFiles( SoundFile* audioFile, size_t channels, Loudness::LoudnessAnalyser* ploudMeter, QProgressBar& progressBar, double gain = 1.0 )
 {
 	int cumulOfSamples = 0;
 	int bufferSize = audioFile[0].rate() / 5;

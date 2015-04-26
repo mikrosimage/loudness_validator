@@ -18,7 +18,7 @@ WriteXml::~WriteXml()
 	xmlFile.close();
 }
 
-void WriteXml::writeResults( const char* channelType, Loudness::LoudnessLibrary& analyser )
+void WriteXml::writeResults( const char* channelType, Loudness::LoudnessAnalyser& analyser )
 {
 	xmlFile << "<Program filename=\"" << srcAudioFilename << "\" " 
 			<< printStandard( analyser.getStandard() ) << " " 

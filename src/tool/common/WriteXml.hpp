@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <loudnessLibrary.hpp>
+#include <LoudnessAnalyser.hpp>
 
 class WriteXml
 {
@@ -13,7 +13,7 @@ public:
 	
 	~WriteXml();
 	
-	void writeResults( const char* channelType, Loudness::LoudnessLibrary& analyser );
+	void writeResults( const char* channelType, Loudness::LoudnessAnalyser& analyser );
 	
 private:
 	std::string convertValid( Loudness::ELoudnessResult result );

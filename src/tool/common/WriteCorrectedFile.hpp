@@ -7,7 +7,7 @@
 #include <CorrectBuffer.hpp>
 #include <LookAheadLimiter.hpp>
 
-void writeCorrectedFile( Loudness::LoudnessLibrary& analyser, SoundFile& input, SoundFile& output, const float gain, void (*callback)(int) )
+void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input, SoundFile& output, const float gain, void (*callback)(int) )
 {
 	int    bufferSize       = input.rate () / 5;
 	int    length           = input.size();
@@ -56,7 +56,7 @@ void writeCorrectedFile( Loudness::LoudnessLibrary& analyser, SoundFile& input, 
 	delete[] inpb;
 }
 
-void writeCorrectedFile( Loudness::LoudnessLibrary& analyser, SoundFile& input, SoundFile& output, const float gain, float lookAhead, float threshold, void (*callback)(int) )
+void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input, SoundFile& output, const float gain, float lookAhead, float threshold, void (*callback)(int) )
 {
 	int    bufferSize       = input.rate () / 5;
 	int    length           = input.size();

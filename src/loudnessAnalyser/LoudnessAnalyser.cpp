@@ -6,7 +6,7 @@
  *              MikrosImage R&D
  */
 
-#include "loudnessLibrary.hpp"
+#include "LoudnessAnalyser.hpp"
 #include "process.hpp"
 #include "common.hpp"
 
@@ -18,76 +18,76 @@
 namespace Loudness
 {
 
-LoudnessLibrary::LoudnessLibrary( LoudnessLevels& levels ) :
+LoudnessAnalyser::LoudnessAnalyser( LoudnessLevels& levels ) :
 	p_process ( new Process( levels.absoluteThresholdValue, levels.relativeThresholdValue ) ),
 	s_levels  ( levels )
 {
 }
 
-void LoudnessLibrary::initAndStart ( const size_t& channels, const size_t& frequency )
+void LoudnessAnalyser::initAndStart( const size_t& channels, const size_t& frequency )
 {
 	s_durationInSamples = 0;
 	s_frequency         = frequency;
 	p_process->init( channels , frequency );
 }
 
-void LoudnessLibrary::setUpsamplingFrequencyForTruePeak  ( const size_t& frequency )
+void LoudnessAnalyser::setUpsamplingFrequencyForTruePeak( const size_t& frequency )
 {
 	p_process->setUpsamplingFrequencyForTruePeak( frequency );
 }
 
-void LoudnessLibrary::processSamples          ( float** samplesData, const size_t& samples )
+void LoudnessAnalyser::processSamples( float** samplesData, const size_t& samples )
 {
 	s_durationInSamples += samples;
 	p_process->process( samples, samplesData );
 }
 
-bool LoudnessLibrary::isShortProgram( )
+bool LoudnessAnalyser::isShortProgram( )
 {
 	return ( s_durationInSamples < s_frequency * 120 ) ;
 }
 
-EStandard LoudnessLibrary::getStandard( )
+EStandard LoudnessAnalyser::getStandard( )
 {
 	return s_levels.standard;
 }
 
-double LoudnessLibrary::getIntegratedLoudness( )
+double LoudnessAnalyser::getIntegratedLoudness( )
 {
 	return p_process->getIntegrated();
 }
 
-double LoudnessLibrary::getIntegratedRange( )
+double LoudnessAnalyser::getIntegratedRange( )
 {
 	return p_process->getRangeMax() - p_process->getRangeMin();
 }
 
-double LoudnessLibrary::getMaxShortTermLoudness( )
+double LoudnessAnalyser::getMaxShortTermLoudness( )
 {
 	return p_process->getMaxLoudnessShortTerm();
 }
 
-double LoudnessLibrary::getMinShortTermLoudness( )
+double LoudnessAnalyser::getMinShortTermLoudness( )
 {
 	return p_process->getMinLoudnessShortTerm();
 }
 
-double LoudnessLibrary::getMomentaryLoudness( )
+double LoudnessAnalyser::getMomentaryLoudness( )
 {
 	return p_process->getMaxLoudnessMomentary();
 }
 
-double LoudnessLibrary::getTruePeakValue( )
+double LoudnessAnalyser::getTruePeakValue( )
 {
 	return p_process->getTruePeakValue();
 }
 
-double LoudnessLibrary::getTruePeakInDbTP( )
+double LoudnessAnalyser::getTruePeakInDbTP( )
 {
 	return p_process->getTruePeakValueInDb();
 }
 
-void LoudnessLibrary::printPloudValues        ( )
+void LoudnessAnalyser::printPloudValues( )
 {
 	std::cout.precision(1);
 	std::cout.setf(std::ios::fixed,std::ios::floatfield);
@@ -109,22 +109,22 @@ void LoudnessLibrary::printPloudValues        ( )
 	std::cout << std::endl;
 }
 
-std::vector<float> LoudnessLibrary::getTruePeakValues    ( )
+std::vector<float> LoudnessAnalyser::getTruePeakValues    ( )
 {
 	return p_process->getTruePeakValues();
 }
 
-std::vector<float> LoudnessLibrary::getShortTermValues    ( )
+std::vector<float> LoudnessAnalyser::getShortTermValues    ( )
 {
 	return p_process->getShortTermValues();
 }
 
-std::vector<int>   LoudnessLibrary::getShortTermHistogram ( )
+std::vector<int> LoudnessAnalyser::getShortTermHistogram ( )
 {
 	return p_process->getHistogramShortTerm();
 }
 
-ELoudnessResult    LoudnessLibrary::isValidProgram( )
+ELoudnessResult LoudnessAnalyser::isValidProgram( )
 {
 	size_t invalidState = 0; // if a not valid result is present
 	size_t notIllegalState = 0; // if a not valid but not illegal result is present
@@ -146,7 +146,7 @@ ELoudnessResult    LoudnessLibrary::isValidProgram( )
 	return eNotValidResult;
 }
 
-ELoudnessResult    LoudnessLibrary::isIntegratedLoudnessValid ( )
+ELoudnessResult LoudnessAnalyser::isIntegratedLoudnessValid ( )
 {
 	float roundedValue = std::floor( p_process->getIntegrated() * 10.0 ) / 10.0 ;
 	if( isShortProgram() ) // short program
@@ -167,7 +167,7 @@ ELoudnessResult    LoudnessLibrary::isIntegratedLoudnessValid ( )
 	}
 }
 
-ELoudnessResult    LoudnessLibrary::isIntegratedLoudnessRangeValid ( )
+ELoudnessResult LoudnessAnalyser::isIntegratedLoudnessRangeValid ( )
 {
 	float loudnessRange = p_process->getRangeMax() - p_process->getRangeMin();
 	if( isShortProgram() ) // short program
@@ -190,7 +190,7 @@ ELoudnessResult    LoudnessLibrary::isIntegratedLoudnessRangeValid ( )
 	}
 }
 
-ELoudnessResult    LoudnessLibrary::isMaxShortTermLoudnessValid ( )
+ELoudnessResult LoudnessAnalyser::isMaxShortTermLoudnessValid ( )
 {
 	if( isShortProgram() ) // short program
 	{
@@ -212,7 +212,7 @@ ELoudnessResult    LoudnessLibrary::isMaxShortTermLoudnessValid ( )
 	}
 }
 
-ELoudnessResult    LoudnessLibrary::isMinShortTermLoudnessValid ( )
+ELoudnessResult LoudnessAnalyser::isMinShortTermLoudnessValid ( )
 {
 	if( isShortProgram() ) // short program
 	{
@@ -229,12 +229,12 @@ ELoudnessResult    LoudnessLibrary::isMinShortTermLoudnessValid ( )
 	}
 }
 
-ELoudnessResult    LoudnessLibrary::isMomentaryLoudnessValid ( )
+ELoudnessResult LoudnessAnalyser::isMomentaryLoudnessValid ( )
 {
 	return eNoImportance;
 }
 
-ELoudnessResult    LoudnessLibrary::isTruePeakValid ( )
+ELoudnessResult LoudnessAnalyser::isTruePeakValid ( )
 {
 	if( std::isnan( s_levels.truePeakMaxValue ) )
 		return eNoImportance;
@@ -244,7 +244,7 @@ ELoudnessResult    LoudnessLibrary::isTruePeakValid ( )
 		return eNotValidResult;
 }
 
-float LoudnessLibrary::getCorrectionGain( bool limiterIsEnable )
+float LoudnessAnalyser::getCorrectionGain( bool limiterIsEnable )
 {
 	return p_process->getCorrectionGain( s_levels, isShortProgram(), limiterIsEnable );
 }

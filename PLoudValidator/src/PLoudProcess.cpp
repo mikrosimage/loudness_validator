@@ -3,7 +3,7 @@
 
 PLoudProcess::PLoudProcess( Loudness::LoudnessLevels levels, float frequencyForTruePeak )
 	:
-		Loudness::LoudnessLibrary( levels ),
+		Loudness::LoudnessAnalyser( levels ),
 		isMultichannelFile ( false )
 {
 	setUpsamplingFrequencyForTruePeak( frequencyForTruePeak );
