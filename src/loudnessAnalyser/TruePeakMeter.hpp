@@ -1,10 +1,3 @@
-/*
- * loudnessTruePeakMeter.h
- *
- *  Created on: Aug 26, 2011
- *      Author: Marc-Antoine ARNAUD
- *              MikrosImage R&D
- */
 
 #include <vector>
 

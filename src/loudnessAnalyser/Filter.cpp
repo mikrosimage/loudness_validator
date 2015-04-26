@@ -1,10 +1,3 @@
-/*
- * loudnessFilter.cpp
- *
- *  Created on: Aug 26, 2011
- *      Author: Marc-Antoine ARNAUD
- *              MikrosImage R&D
- */
 
 #include "Filter.hpp"
 
@@ -20,7 +13,8 @@
 #include <cmath>
 
 
-namespace Loudness{
+namespace Loudness
+{
 
 /// Pre-filter constants
 

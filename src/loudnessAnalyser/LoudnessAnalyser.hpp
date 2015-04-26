@@ -1,9 +1,3 @@
-/*
- * loudnessLibrary.h
- *
- *  Created on: Aug 26, 2011
- *      Author: Marc-Antoine ARNAUD
- */
 
 #ifndef _LOUDNESS_ANALYSER_LOUDNESS_ANALYSER_HPP_
 #define _LOUDNESS_ANALYSER_LOUDNESS_ANALYSER_HPP_
