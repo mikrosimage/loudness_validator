@@ -1,7 +1,7 @@
 #ifndef PLOUD_PROCESS_H
 #define PLOUD_PROCESS_H
 
-#include "loudnessLibrary.hpp"
+#include "LoudnessAnalyser.hpp"
 #include <SoundFile.h>
 #include <string>
 #include <vector>
@@ -13,7 +13,7 @@ enum ELoudnessStandard
 	eATSCA85
 };
 
-class PLoudProcess : public Loudness::LoudnessLibrary
+class PLoudProcess : public Loudness::LoudnessAnalyser
 {
 public:
 	PLoudProcess( Loudness::LoudnessLevels levels, float frequencyForTruePeak );

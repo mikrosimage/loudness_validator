@@ -11,7 +11,7 @@ class QtVectorViewer;
 class QtVectorHistogram;
 
 namespace Loudness{
-	class LoudnessLibrary;
+	class LoudnessAnalyser;
 }
 
 

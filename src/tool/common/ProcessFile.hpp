@@ -1,10 +1,10 @@
 #ifndef PROCESS_FILE_H
 #define PROCESS_FILE_H
 
-#include <loudnessLibrary.hpp>
+#include <LoudnessAnalyser.hpp>
 #include <SoundFile.hpp>
 
-void processAnalyseFile( Loudness::LoudnessLibrary& analyser, SoundFile& audioFile, void (*callback)(int) )
+void processAnalyseFile( Loudness::LoudnessAnalyser& analyser, SoundFile& audioFile, void (*callback)(int) )
 {
 	int cumulOfSamples = 0;
 	int length = audioFile.size();

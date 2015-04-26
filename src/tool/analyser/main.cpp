@@ -4,7 +4,7 @@
 #include <vector>
 #include <ctime>
 
-#include <loudnessLibrary.hpp>
+#include <LoudnessAnalyser.hpp>
 #include <SoundFile.hpp>
 #include <WriteXml.hpp>
 #include <ProcessFile.hpp>
@@ -106,7 +106,7 @@ int main( int argc, char** argv )
 													standards.at(j) == 1 ? Loudness::LoudnessLevels::Loudness_EBU_R128() : 
 																		   Loudness::LoudnessLevels::Loudness_ATSC_A85() ;
 				
-				Loudness::LoudnessLibrary analyser( levels );
+				Loudness::LoudnessAnalyser analyser( levels );
 				if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 				{
 					time( &start );

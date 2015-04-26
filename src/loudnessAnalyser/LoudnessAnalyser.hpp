@@ -5,8 +5,8 @@
  *      Author: Marc-Antoine ARNAUD
  */
 
-#ifndef _LOUDNESS_ANALYSER_LOUDNESS_LIBRARY_HPP_
-#define _LOUDNESS_ANALYSER_LOUDNESS_LIBRARY_HPP_
+#ifndef _LOUDNESS_ANALYSER_LOUDNESS_ANALYSER_HPP_
+#define _LOUDNESS_ANALYSER_LOUDNESS_ANALYSER_HPP_
 
 #include <cstdlib>
 #include <vector>
@@ -193,10 +193,10 @@ enum ELoudnessResult
 
 class Process;
 
-class LoudnessLibrary
+class LoudnessAnalyser
 {
 public:
-	LoudnessLibrary( LoudnessLevels& levels );
+	LoudnessAnalyser( LoudnessLevels& levels );
 
 	/**
 	 * Initialize and start the Loudness meter (Integrated, Momentary and Short-Term, LRA)
