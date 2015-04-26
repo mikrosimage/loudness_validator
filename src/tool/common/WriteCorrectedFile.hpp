@@ -3,9 +3,9 @@
 
 #include <fstream>
 #include <vector>
-#include <SoundFile.hpp>
-#include <CorrectBuffer.hpp>
-#include <LookAheadLimiter.hpp>
+#include <tool/io/SoundFile.hpp>
+#include "CorrectBuffer.hpp"
+#include "LookAheadLimiter.hpp"
 
 void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input, SoundFile& output, const float gain, void (*callback)(int) )
 {

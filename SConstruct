@@ -38,5 +38,8 @@ env.Append(
 Export( 'env' )
 
 VariantDir( 'build/' + buildMode + '/src', 'src', duplicate = 0 )
+VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
 
 SConscript( 'src/SConscript', variant_dir = 'build/' + buildMode + '/src' )
+SConscript( 'app/SConscript', variant_dir = 'build/' + buildMode + '/app' )
+

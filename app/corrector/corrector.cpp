@@ -4,11 +4,11 @@
 #include <vector>
 #include <cmath>
 
-#include <LoudnessAnalyser.hpp>
-#include <SoundFile.hpp>
-#include <WriteXml.hpp>
-#include <ProcessFile.hpp>
-#include <WriteCorrectedFile.hpp>
+#include <LoudnessAnalyser/LoudnessAnalyser.hpp>
+#include <tool/io/SoundFile.hpp>
+#include <tool/common/WriteXml.hpp>
+#include <tool/common/ProcessFile.hpp>
+#include <tool/common/WriteCorrectedFile.hpp>
 
 bool showProgress = false;
 bool showResults = false;
@@ -192,8 +192,8 @@ int main( int argc, char** argv )
 	}
 	else
 	{
-		std::cout << "PLoud Corrector - version " << VERSION << std::endl;
-		std::cout << "Mikros Image - Marc-Antoine ARNAUD [mrn@mikrosimage.eu]" << std::endl << std::endl;
+		std::cout << "Loudness Corrector " << std::endl;
+		std::cout << "Author: Marc-Antoine ARNAUD" << std::endl << std::endl;
 		std::cout << "Common usage :" << std::endl;
 		std::cout << "\tloudness-corrector [options] filename.ext" << std::endl << std::endl;
 		std::cout << "Options :" << std::endl;

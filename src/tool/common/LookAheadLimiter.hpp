@@ -5,7 +5,7 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/rolling_sum.hpp>
 #include <boost/circular_buffer.hpp>
-#include <RollingMax.hpp>
+#include "RollingMax.hpp"
 
 #include <iostream>
 #include <cmath>

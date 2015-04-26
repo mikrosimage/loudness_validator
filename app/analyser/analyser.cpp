@@ -4,10 +4,10 @@
 #include <vector>
 #include <ctime>
 
-#include <LoudnessAnalyser.hpp>
-#include <SoundFile.hpp>
-#include <WriteXml.hpp>
-#include <ProcessFile.hpp>
+#include <LoudnessAnalyser/LoudnessAnalyser.hpp>
+#include <tool/io/SoundFile.hpp>
+#include <tool/common/WriteXml.hpp>
+#include <tool/common/ProcessFile.hpp>
 
 bool showProgress = false;
 bool showResults = false;
@@ -125,8 +125,8 @@ int main( int argc, char** argv )
 	}
 	else
 	{
-		std::cout << "PLoud Analyser - version " << VERSION << std::endl;
-		std::cout << "Mikros Image - Marc-Antoine ARNAUD [mrn@mikrosimage.eu]" << std::endl << std::endl;
+		std::cout << "Loudness Analyser" << std::endl;
+		std::cout << "Author: Marc-Antoine ARNAUD" << std::endl << std::endl;
 		std::cout << "Common usage :" << std::endl;
 		std::cout << "\tloudness-analyser [options] filename.ext" << std::endl << std::endl;
 		std::cout << "Options :" << std::endl;
