@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <LoudnessAnalyser.hpp>
+#include <LoudnessAnalyser/LoudnessAnalyser.hpp>
 
 class WriteXml
 {
