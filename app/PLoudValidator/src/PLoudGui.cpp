@@ -9,16 +9,13 @@
 #include "LoudnessMeter.h"
 #include "QtVectorViewer.h"
 #include "QtVectorHistogram.h"
-#include <SoundFile.h>
-
-#include "LoudnessAnalyser.hpp"
-
-#include <HelpDialog.h>
-
-#define BUFFER_SIZE 4096
+#include "HelpDialog.h"
 #include "AudioFile.h"
 
-#include "license.h"
+#include <LoudnessAnalyser/LoudnessAnalyser.hpp>
+#include <tool/io/SoundFile.hpp>
+
+#define BUFFER_SIZE 4096
 
 const char* channelName [6]=
 {
@@ -114,16 +111,16 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	setWindowTitle   ( tr( "PLoud Validator - MikrosImage" ) );
 	setWindowIcon    ( QIcon( ":/icons/logomikros.jpg" ) );
 	
-	processSeparatedFiles.setEnabled   ( false );
-	processMultiChannelFile.setEnabled ( false );
+	processSeparatedFiles.setEnabled   ( true );
+	processMultiChannelFile.setEnabled ( true );
 	
 	correctSeparatedFiles.setEnabled   ( false );
 	correctMultiChannelFile.setEnabled ( false );
 	
-	processSeparatedFiles  .setMinimumHeight ( 40 );
+	processSeparatedFiles.setMinimumHeight ( 40 );
 	processMultiChannelFile.setMinimumHeight ( 40 );
 	
-	correctSeparatedFiles  .setMinimumHeight ( 40 );
+	correctSeparatedFiles.setMinimumHeight ( 40 );
 	correctMultiChannelFile.setMinimumHeight ( 40 );
 	
 	progressMsg.setAlignment( Qt::AlignHCenter );
@@ -303,12 +300,6 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 		connect( audioFiles[i], SIGNAL( fileWasSelected() ), SLOT( openNewFile() ) );
 	}
 	connect ( &multichannelFile, SIGNAL( fileWasSelected() ), SLOT( openNewFile() ) );
-	
-	if( rlmSesame() )
-	{
-		processSeparatedFiles.setEnabled   ( true );
-		processMultiChannelFile.setEnabled ( true );
-	}
 }
 
 PLoudGui::~PLoudGui()
@@ -590,57 +581,6 @@ void PLoudGui::openMultichannelFile( )
 	this->updateInterface( );
 }
 
-bool PLoudGui::rlmSesame()
-{
-	const char *license = ".";
-	int stat;
-	RLM_LICENSE _RLMlic;
-	RLM_HANDLE  _RLMHandle = rlm_init( license, 0, (char *) NULL );
-	stat = rlm_stat( _RLMHandle );
-
-	if (stat)
-	{
-		char errString [ RLM_ERRSTRING_MAX ];
-		rlm_errstring( ( RLM_LICENSE ) NULL, _RLMHandle, errString );
-		QString msg  = "Error initializing license system :\n";
-		msg += errString;
-		msg += "\n";
-
-		QMessageBox::critical( this, "License Error", msg );
-		std::cerr << "Error initializing license system : " << errString << std::endl;
-		return false;
-	}
-
-
-	bool sesame = false;
-	const char *product = "ploudvalidator";
-	const char *version = PLOUDVALIDATOR_VERSION;
-	int count = 1;
-
-	_RLMlic = rlm_checkout( _RLMHandle, product, version, count );
-
-	stat = rlm_license_stat( _RLMlic );
-	if ( stat == 0 ){
-		sesame = true;
-	}
-	else
-	{
-		char errString[ RLM_ERRSTRING_MAX ];
-		std::cerr << "Error checking out " << product << " license : ";
-		rlm_errstring( _RLMlic, _RLMHandle, errString );
-		std::cerr << errString << std::endl;
-		QString msg  = "Error  checking out ";
-		msg += product;
-		msg += " license :\n";
-		msg += errString;
-		msg += "\n";
-
-		QMessageBox::critical( this, "License Error", msg );
-	}
-
-	return sesame;
-}
-
 void PLoudGui::updateInterface( )
 {
 	std::vector<float> shortTermValues;
@@ -733,7 +673,7 @@ void PLoudGui::updateInterface( )
 	correctMultiChannelFile.setEnabled ( true );
 }
 
-void PLoudGui::openNewFile          ( )
+void PLoudGui::openNewFile( )
 {
 	correctSeparatedFiles.setEnabled   ( false );
 	correctMultiChannelFile.setEnabled ( false );

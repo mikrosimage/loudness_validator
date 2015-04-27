@@ -1,5 +1,5 @@
 #include "LoudnessMeter.h"
-#include <QtGui>
+#include <QtGui/QtGui>
 
 
 LoudnessMeter::LoudnessMeter(QWidget *parent) :

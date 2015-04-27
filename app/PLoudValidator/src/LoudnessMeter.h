@@ -1,7 +1,7 @@
 #ifndef LOUDNESSMETER_H
 #define LOUDNESSMETER_H
 
-#include <QLabel>
+#include <QtGui/QLabel>
 
 class LoudnessMeter : public QLabel
 {

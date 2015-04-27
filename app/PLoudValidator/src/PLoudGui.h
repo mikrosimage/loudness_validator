@@ -2,9 +2,9 @@
 #define PLOUDGUI_H
 
 #include <QtGui/QtGui>
-#include <Properties.h>
-#include <AudioFile.h>
-#include <DropAudio.h>
+#include "Properties.h"
+#include "AudioFile.h"
+#include "DropAudio.h"
 #include "PLoudProcess.hpp"
 
 class QtVectorViewer;

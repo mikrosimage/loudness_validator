@@ -20,15 +20,7 @@ HelpDialog::HelpDialog(QWidget* parent, Qt::WindowFlags f):
 	textHelp.setReadOnly( true );
 	textHelp.setTextBackgroundColor( QColor(0,0,0) );
 	textHelp.setHtml(
-		"<p><center><h1>Ploud Validator</h1><br/><h2>Version " \
-		PLOUDVALIDATOR_VERSION \
-		"</h2><br/>year : " \
-		PLOUDVALIDATOR_YEAR \
-		"<br/>month : "
-		PLOUDVALIDATOR_MONTH \
-		"<br/>day : "
-		PLOUDVALIDATOR_DAY \
-		"</center><p><br/>" \
+		"<p><center><h1>Ploud Validator</h1></center><p><br/>" \
 		"<table><tr><td><img src=':/icons/ebur128.png'></img></td>" \
 		"<td>In accordance with the recommendation R128 on the perceptual audio level.<br/><br/>" \
 		"link: <a href=\"http://tech.ebu.ch/loudness\">http://tech.ebu.ch/loudness</a></td></tr>" \
