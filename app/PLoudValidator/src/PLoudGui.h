@@ -81,9 +81,6 @@ private:
 	QMenu           menuSettings;
 	QMenu           menuHelp;
 	
-	QAction         aOpen;
-	QAction         aSave;
-	QAction         aClose;
 	QAction         aQuit;
 	
 	QAction         aOpenPropertiesDialog;
