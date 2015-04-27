@@ -12,23 +12,19 @@ AudioFile::AudioFile( QString text, QStatusBar* mainStatusBar, QString iconFile,
 	lastSelectedAdress ( QDir::home().absolutePath() )
 {
 	setAcceptDrops           ( true );
-	label.setMinimumWidth    ( 100 );
-	label.setMaximumWidth    ( 100 );
 	button.setMinimumWidth   ( 100 );
 	button.setMaximumWidth   ( 1000 );
-	button.setMinimumHeight  ( 100 );
+	button.setMinimumHeight  ( 30 );
 	button.setMaximumHeight  ( 1000 );
 	button.showMaximized();
 	
-	label.setAlignment( Qt::AlignHCenter );
 	button.setIcon( QIcon( iconFile ) );
 	button.setIconSize( QSize( widgetSize, widgetSize ) );
+
+	grid.addWidget( &label,  0, 0 );
+	grid.addWidget( &button, 0, 1 );
 	
-	grid.addWidget ( &label    , 0, 0 );
-	grid.addWidget ( &button   , 1, 0 );
-	
-	
-	QDir defaultPath = QDir( "/datas/mrn/PloudTests" );
+	QDir defaultPath = QDir( "~/Music" );
 	
 	if( defaultPath.exists () )
 		lastSelectedAdress = defaultPath.path();
