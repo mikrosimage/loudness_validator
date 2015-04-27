@@ -1,3 +1,4 @@
+import os
 Import( 'env' )
 
 Import( 'loudnessAnalyserLibStatic' )
@@ -20,5 +21,22 @@ env.Program(
 		loudnessAnalyserLibStatic,
 		loudnessToolsLibStatic,
 		"sndfile",
+	]
+)
+
+qtEnv = env.Clone()
+qtEnv.Tool('qt')
+
+qtEnv.Program(
+	'loudness-validator',
+	Glob( 'PLoudValidator/src/*.cpp' ),
+	LIBS = [
+		loudnessAnalyserLibStatic,
+		loudnessToolsLibStatic,
+		"sndfile",
+	],
+	FRAMEWORKS = [
+		"QtCore",
+		"QtGui"
 	]
 )
