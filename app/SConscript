@@ -29,7 +29,7 @@ qtEnv.Tool('qt')
 
 qtEnv.Program(
 	'loudness-validator',
-	Glob( 'PLoudValidator/src/*.cpp' ),
+	Glob( 'LoudnessValidator/*.cpp' ),
 	LIBS = [
 		loudnessAnalyserLibStatic,
 		loudnessToolsLibStatic,

@@ -92,15 +92,15 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	labelFinalResult           ( tr( "Result" ) ),
 	labelFinalResultResponse   ( tr( "<h1><font color='gray'>Valid / Invalid</font></h1>" ) ),
 	/// process buttons
-	processSeparatedFiles      ( QIcon( ":/icons/view-refresh.png" ), tr( "Process" ) ),
-	processMultiChannelFile    ( QIcon( ":/icons/view-refresh.png" ), tr( "Process" ) ),
+	processSeparatedFiles      ( tr( "Process" ) ),
+	processMultiChannelFile    ( tr( "Process" ) ),
 	/// correction buttons
-	correctSeparatedFiles      ( QIcon( ":/icons/view-refresh.png" ), tr( "Correct" ) ),
-	correctMultiChannelFile    ( QIcon( ":/icons/view-refresh.png" ), tr( "Correct" ) ),
+	correctSeparatedFiles      ( tr( "Correct" ) ),
+	correctMultiChannelFile    ( tr( "Correct" ) ),
 	/// AudioFile
-	multichannelFile           ( tr( "" ), statusBar(), ":/icons/multichannel.png", 100 ),
+	multichannelFile           ( tr( "Multi channel file" ), statusBar(), ":/icons/multichannel.png", 100 ),
 	/// DropAudio button
-	dropAudio                  ( QIcon( ":/iupdateInterfacecons/list-add.png" ), tr( "Add files (drop here)" ), statusBar() ),
+	dropAudio                  ( tr( "Add files (drop here)" ), statusBar() ),
 	correctedFile              ( false )
 {
 	setMinimumWidth  ( 600 );
@@ -137,13 +137,13 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	std::size_t line = 0;
 	gridTab1.addWidget( &dropAudio             , line++, 0, 1, 3 );
 	
-	gridTab1.addWidget( audioFiles[0]          , line, 0 ); // left
-	gridTab1.addWidget( audioFiles[1]          , line, 2 ); // right
-	gridTab1.addWidget( audioFiles[2]          , line, 1); // center
-	gridTab1.addWidget( audioFiles[3]          , line + 2, 0 ); // surround left
-	gridTab1.addWidget( audioFiles[4]          , line + 2, 2 ); // surround right
-	gridTab1.addWidget( audioFiles[5]          , line + 1, 1 ); // LFE
-	line += 3;
+	gridTab1.addWidget( audioFiles[0]          , line + 0, 0, 1, 3 ); // left
+	gridTab1.addWidget( audioFiles[1]          , line + 1, 0, 1, 3 ); // right
+	gridTab1.addWidget( audioFiles[2]          , line + 2, 0, 1, 3 ); // center
+	gridTab1.addWidget( audioFiles[3]          , line + 3, 0, 1, 3 ); // surround left
+	gridTab1.addWidget( audioFiles[4]          , line + 4, 0, 1, 3 ); // surround right
+	gridTab1.addWidget( audioFiles[5]          , line + 5, 0, 1, 3 ); // LFE
+	line += 6;
 	gridTab1.addWidget( &processSeparatedFiles   , line++, 0, 1, 3 );
 	gridTab1.addWidget( &correctSeparatedFiles   , line++, 0, 1, 3 );
 	
