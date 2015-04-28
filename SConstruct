@@ -20,6 +20,7 @@ env = Environment()
 env.Append(
         CPPPATH = [
                 '#src',
+                '/usr/include/qt4',
         ],
         CXXFLAGS = [
                 '-Wall',

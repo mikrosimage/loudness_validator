@@ -34,6 +34,8 @@ qtEnv.Program(
 		loudnessAnalyserLibStatic,
 		loudnessToolsLibStatic,
 		"sndfile",
+		"QtCore",
+		"QtGui"
 	],
 	FRAMEWORKS = [
 		"QtCore",
