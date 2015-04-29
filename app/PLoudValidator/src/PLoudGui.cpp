@@ -62,13 +62,10 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	menuSettings               ( tr( "&Settings" ) ),
 	menuHelp                   ( tr( "&Help"     ) ),
 	/// actions in menu bar
-	aOpen                      ( QIcon( ":/icons/document-open.png"    ), tr( "&Open"                 ), this ),
-	aSave                      ( QIcon( ":/icons/document-save.png"    ), tr( "&Save"                 ), this ),
-	aClose                     ( QIcon( ":/icons/dialog-close.png"     ), tr( "&Close"                ), this ),
-	aQuit                      ( QIcon( ":/icons/application-exit.png" ), tr( "&Quit"                 ), this ),
-	aOpenPropertiesDialog      ( QIcon( ":/icons/configure.png"        ), tr( "&Properties"           ), this ),
-	aHelp                      ( QIcon( ":/icons/help-contents.png"    ), tr( "PloudValidator &Help"  ), this ),
-	aAbout                     ( QIcon( ":/icons/help-about.png"       ), tr( "&About PloudValidator" ), this ),
+	aQuit                      ( tr( "&Quit"                 ), this ),
+	aOpenPropertiesDialog      ( tr( "&Properties"           ), this ),
+	aHelp                      ( tr( "PloudValidator &Help"  ), this ),
+	aAbout                     ( tr( "&About PloudValidator" ), this ),
 	/// Propeties
 	properties                 ( ),
 	/// Progress bar
@@ -108,8 +105,7 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 {
 	setMinimumWidth  ( 600 );
 	setMinimumHeight ( 600 );
-	setWindowTitle   ( tr( "PLoud Validator - MikrosImage" ) );
-	setWindowIcon    ( QIcon( ":/icons/logomikros.jpg" ) );
+	setWindowTitle   ( tr( "Loudness Validator" ) );
 	
 	processSeparatedFiles.setEnabled   ( true );
 	processMultiChannelFile.setEnabled ( true );
@@ -131,12 +127,12 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	mainTabulation.addTab( &frameTab1, tr( "separated files"   ) );
 	mainTabulation.addTab( &frameTab2, tr( "multichannel file" ) );
 	
-	audioFiles[0] = new AudioFile( tr(channelName[0]), statusBar(), ":/icons/left.png" );
-	audioFiles[1] = new AudioFile( tr(channelName[1]), statusBar(), ":/icons/right.png" );
-	audioFiles[2] = new AudioFile( tr(channelName[2]), statusBar(), ":/icons/center.png" );
-	audioFiles[3] = new AudioFile( tr(channelName[3]), statusBar(), ":/icons/surLeft.png" );
-	audioFiles[4] = new AudioFile( tr(channelName[4]), statusBar(), ":/icons/surRight.png" );
-	audioFiles[5] = new AudioFile( tr(channelName[5]), statusBar(), ":/icons/lfe.png" );
+	audioFiles[0] = new AudioFile( tr(channelName[0]), statusBar() );
+	audioFiles[1] = new AudioFile( tr(channelName[1]), statusBar() );
+	audioFiles[2] = new AudioFile( tr(channelName[2]), statusBar() );
+	audioFiles[3] = new AudioFile( tr(channelName[3]), statusBar() );
+	audioFiles[4] = new AudioFile( tr(channelName[4]), statusBar() );
+	audioFiles[5] = new AudioFile( tr(channelName[5]), statusBar() );
 	
 	std::size_t line = 0;
 	gridTab1.addWidget( &dropAudio             , line++, 0, 1, 3 );
@@ -259,10 +255,6 @@ PLoudGui::PLoudGui( QWidget* parent ) :
 	dockDigitResults.show( );
 	dockDigitResults.raise( );
 	
-	/*menuFile.addAction( &aOpen );
-	menuFile.addAction( &aSave );
-	menuFile.addAction( &aClose );
-	menuFile.addSeparator();*/
 	menuFile.addAction( &aQuit );
 	
 	menuSettings.addAction ( &aOpenPropertiesDialog );
