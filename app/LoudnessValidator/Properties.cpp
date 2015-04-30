@@ -1,6 +1,6 @@
 #include "Properties.h"
 
-#include <LoudnessAnalyser/LoudnessAnalyser.hpp>
+#include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
 #include <iostream>
 #include <cmath>

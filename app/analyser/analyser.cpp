@@ -4,7 +4,7 @@
 #include <vector>
 #include <ctime>
 
-#include <LoudnessAnalyser/LoudnessAnalyser.hpp>
+#include <loudnessAnalyser/LoudnessAnalyser.hpp>
 #include <tool/io/SoundFile.hpp>
 #include <tool/common/WriteXml.hpp>
 #include <tool/common/ProcessFile.hpp>
