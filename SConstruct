@@ -1,5 +1,6 @@
 EnsureSConsVersion( 2, 3, 0 )
 
+# Versions
 loudnessAssessmentVersionMajor = "0"
 loudnessAssessmentVersionMinor = "0"
 loudnessAssessmentVersionMicro = "1"
@@ -11,11 +12,12 @@ loudnessAssessmentVersion = [
 
 loudnessAssessmentVersionStr = ".".join( loudnessAssessmentVersion )
 
+# Get build mode
 buildMode = ARGUMENTS.get( 'mode', 'release' )
 if not ( buildMode in [ 'debug', 'release' ] ) :
         raise Exception( "Can't select build mode ['debug', 'release']" )
 
-# get libsndfile install path
+# Get libsndfile install path
 sndfile_root = ARGUMENTS.get( 'SNDFILE_ROOT', '' )
 sndfile_include = ''
 sndfile_lib = ''
@@ -23,13 +25,14 @@ if sndfile_root:
     sndfile_include = sndfile_root + '/include'
     sndfile_lib = sndfile_root + '/lib'
 
-# get libboost install path
+# Get libboost install path
 boost_root = ARGUMENTS.get( 'BOOST_ROOT', '' )
 boost_include = ''
 boost_lib = ''
 if boost_root:
     boost_include = boost_root + '/include'
 
+# Create env
 env = Environment()
 
 env.Append(
@@ -57,6 +60,8 @@ if buildMode == 'release':
 else:
     env.Append( CXXFLAGS=['-g'] )
 
+# Build src and app
+
 Export( 'env' )
 
 VariantDir( 'build/' + buildMode + '/src', 'src', duplicate = 0 )
@@ -64,4 +69,3 @@ VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
 
 SConscript( 'src/SConscript', variant_dir = 'build/' + buildMode + '/src' )
 SConscript( 'app/SConscript', variant_dir = 'build/' + buildMode + '/app' )
-
