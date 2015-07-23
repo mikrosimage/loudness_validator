@@ -15,34 +15,13 @@ Comming soon for others specifications.
 
 See [**COPYING.md**](COPYING.md)
 
+## Run applications
+
+See [**USAGE.md**](USAGE.md)
+
 ## Compilation
 
 See [**INSTALL.md**](INSTALL.md)
-
-
-## Run applications
-
-#### Analyser
-```
-./build/release/loudness-analyser
-```
-
-Analyse the loudness of the given file.
-
-#### Corrector
-```
-./build/release/loudness-corrector
-```
-
-Correct the loudness of the given file.
-
-#### Validator
-```
-./build/release/loudness-validator
-```
-
-A GUI which enables to analyse, visualize and correct the loudness.
-
 
 ## More information 
 
