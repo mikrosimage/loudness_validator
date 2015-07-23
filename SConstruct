@@ -52,6 +52,10 @@ env.Append(
         SHLIBVERSION = loudnessAssessmentVersionStr,
         )
 
+if buildMode == 'release':
+    env.Append( CXXFLAGS=['-O3'] )
+else:
+    env.Append( CXXFLAGS=['-g'] )
 
 Export( 'env' )
 
