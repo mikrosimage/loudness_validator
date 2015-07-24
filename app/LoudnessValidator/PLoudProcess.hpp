@@ -1,7 +1,7 @@
 #ifndef PLOUD_PROCESS_H
 #define PLOUD_PROCESS_H
 
-#include <LoudnessAnalyser/LoudnessAnalyser.hpp>
+#include <loudnessAnalyser/LoudnessAnalyser.hpp>
 #include <tool/io/SoundFile.hpp>
 #include <string>
 #include <vector>
