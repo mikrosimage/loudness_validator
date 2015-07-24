@@ -1,10 +1,7 @@
-
-#include <vector>
-
 #ifndef _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 #define _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 
-#define FILTER_SIZE 125.0
+#include <vector>
 
 namespace Loudness{
 
@@ -39,6 +36,9 @@ public:
 	{
 		_upsamplingFrequency = frequency;
 	}
+
+private:
+	static const int FILTER_SIZE = 125;
 
 private:
 	float _z1, _z2, _z3, _z4;
