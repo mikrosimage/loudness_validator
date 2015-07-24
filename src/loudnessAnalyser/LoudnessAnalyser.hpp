@@ -212,7 +212,7 @@ public:
 	 * \param samplesData data for each channels ( data[channel][sampleTime] )
 	 * \param samples number of samples in the data pointer
 	**/
-	void processSamples                     ( float** samplesData, const size_t& samples );
+	void processSamples                     ( float** samplesData, const unsigned int nbSamples );
 
 
 	/**
