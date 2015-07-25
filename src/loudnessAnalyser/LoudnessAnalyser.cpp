@@ -29,7 +29,7 @@ void LoudnessAnalyser::setUpsamplingFrequencyForTruePeak( const size_t& frequenc
 	p_process->setUpsamplingFrequencyForTruePeak( frequency );
 }
 
-void LoudnessAnalyser::processSamples( float** samplesData, const unsigned int nbSamples )
+void LoudnessAnalyser::processSamples( float** samplesData, const size_t nbSamples )
 {
 	s_durationInSamples += nbSamples;
 	p_process->process( nbSamples, samplesData );

@@ -197,7 +197,7 @@ public:
 	 * \param channels set the number of channels (default = 2 = stereo)
 	 * \param frequency set the frequency sampling (default = 48000 = 48kHz)
 	**/
-	void initAndStart ( const size_t& channels, const size_t& frequency );
+	void initAndStart( const size_t& channels, const size_t& frequency );
 
 
 	/**
@@ -205,14 +205,14 @@ public:
 	 * Call initAndStart() after to set coefficients filters correctly.
 	 * \param frequency frequency of the upsampling data in the TruePeakMeter
 	 */
-	void setUpsamplingFrequencyForTruePeak  ( const size_t& frequency );
+	void setUpsamplingFrequencyForTruePeak( const size_t& frequency );
 
 	/**
 	 * Add samples need to be processed
 	 * \param samplesData data for each channels ( data[channel][sampleTime] )
 	 * \param samples number of samples in the data pointer
 	**/
-	void processSamples                     ( float** samplesData, const unsigned int nbSamples );
+	void processSamples( float** samplesData, const size_t nbSamples );
 
 
 	/**

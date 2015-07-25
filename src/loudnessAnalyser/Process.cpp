@@ -23,7 +23,7 @@ void Process::init ( const int numberOfChannels, const float frequencySampling )
 	_frequencySampling = frequencySampling;
 	_fragmentSize      = (int) frequencySampling / 20;
 
-	for( unsigned int channel = 0; channel < _numberOfChannels; channel++ )
+	for( size_t channel = 0; channel < _numberOfChannels; channel++ )
 	{
 		_filters[channel].initializeFilterCoefficients ( _frequencySampling );
 		_truePeakMeter[channel].initialize             ( _frequencySampling );
@@ -43,7 +43,7 @@ void Process::reset ( )
 
 	_vectorOfTruePeakValue.clear();
 	
-	for( unsigned int c = 0; c < _numberOfChannels; c++ )
+	for( size_t c = 0; c < _numberOfChannels; c++ )
 		_filters [c].reset ();
 	
 	s_measureLoudness.reset();
@@ -53,15 +53,16 @@ void Process::reset ( )
 
 void Process::setUpsamplingFrequencyForTruePeak ( const size_t frequency )
 {
-	for( unsigned int channel = 0; channel < MAX_CHANNELS; channel++ )
+	for( size_t channel = 0; channel < MAX_CHANNELS; channel++ )
 	{
 		_truePeakMeter[channel].setUpsamplingFrequencyInHz( frequency );
 	}
 }
 
-void Process::process ( unsigned int nbSamples, float *inputData [] )
+void Process::process ( size_t nbSamples, float *inputData [] )
 {
-	unsigned int channel, samplesForOneBloc;
+	size_t channel;
+	size_t samplesForOneBloc;
 
 	for( channel = 0; channel < _numberOfChannels; channel++ )
 		_inputPointerData [channel] = inputData [channel];
@@ -104,9 +105,10 @@ void Process::process ( unsigned int nbSamples, float *inputData [] )
 	}
 }
 
-float Process::detectProcess ( const unsigned int nbSamples, float& truePeakValue )
+float Process::detectProcess ( const size_t nbSamples, float& truePeakValue )
 {
-	unsigned int channel, sample;
+	size_t channel;
+	size_t sample;
 	float sumOfChannelPower, sumOfWeightedPowerChannels;
 	float filteredChannel;
 	float *sampleData;

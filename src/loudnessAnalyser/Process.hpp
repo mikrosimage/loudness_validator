@@ -26,7 +26,7 @@ public:
 
 	void        init                              ( const int numberOfChannels, const float frequencySampling );
 	void        reset                             ( );
-	void        process                           ( unsigned int nbSamples, float *inputData [] );
+	void        process                           ( size_t nbSamples, float *inputData [] );
 
 	void        setUpsamplingFrequencyForTruePeak ( const size_t frequency );
 
@@ -67,12 +67,12 @@ public:
 	
 private:
 	// process on a bloc of 50ms, compute the loudness value, and found the TruePeak on the buffer
-	float       detectProcess                     ( const unsigned int nbSamples, float& truePeakValue );
+	float       detectProcess                     ( const size_t nbSamples, float& truePeakValue );
 
-	unsigned int _numberOfChannels; // Number of channels, 2 or 5.
+	size_t                _numberOfChannels;        // Number of channels, 2 or 5.
 	float                 _frequencySampling;       // Sample rate.
-	size_t _fragmentSize;  // Fragments size, 1/20 second.
-	unsigned int _fragmentCount;  // Number of samples remaining in current fragment.
+	size_t                _fragmentSize;            // Fragments size, 1/20 second.
+	size_t                _fragmentCount;           // Number of samples remaining in current fragment.
 	float                 _fragmentPower;           // Power accumulated for current fragment.
 	int                   _writeIndex;              // Write index into _frpwr
 
