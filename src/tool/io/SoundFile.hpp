@@ -93,12 +93,12 @@ private:
 	void reset (void);
 	
 	SNDFILE  *_sndfile;
-	int       _mode;
+	int       _mode;  // read / write
 	int       _type;
-	int       _form;
+	int       _form;  // format (WAV, Core Audio...)
 	int       _rate;
-	int       _chan;
-	uint32_t  _size;
+	int       _chan;  // number of channel
+	uint32_t  _size;  // number of samples
 };
 
 #endif

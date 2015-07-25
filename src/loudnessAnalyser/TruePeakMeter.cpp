@@ -94,11 +94,13 @@ float TruePeakMeter::processSample( const double& sample )
 		if( _factor == 4.0 )
 		{
 			__m128 sum = _mm_set1_ps ( 0.0 );
-			
-			for( size_t iter = 0; iter < _orderedCoefficientsScale4[interSampleIdx].size(); iter += 4 )
+			const size_t maxIter = _orderedCoefficientsScale4[interSampleIdx].size();
+			const float* coefsPtr = &_orderedCoefficientsScale4[interSampleIdx][0];
+			const float* histPtr = &_historySamples[0];
+			for( size_t iter = 0; iter < maxIter; iter += 4 )
 			{
-				__m128 input = _mm_loadu_ps( &_historySamples.at( iter ) );
-				__m128 coefs = _mm_loadu_ps( &_orderedCoefficientsScale4[interSampleIdx].at( iter ) );
+				__m128 input = _mm_loadu_ps( (histPtr+iter) );
+				__m128 coefs = _mm_loadu_ps( (coefsPtr+iter) );
 			
 				sum = _mm_add_ps( _mm_mul_ps( input, coefs ), sum );
 			}
