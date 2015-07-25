@@ -1,11 +1,19 @@
-
 Import( 'env' )
 
+# check libsndfile
 conf = Configure(env)
 if not conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
-    print 'Did not find libsndfile.a or sndfile.lib, exiting!'
+    print 'Error: did not find sndfile library, exiting.'
     Exit(1)
 env = conf.Finish()
+
+# check boost accumulators (header only library) 
+conf = Configure(env)
+if not conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
+    print 'Error: did not find boost accumulators headers, exiting.'
+    Exit(1)
+env = conf.Finish()
+
 
 loudnessAnalyserLib = env.SharedLibrary(
     'loudnessAnalyser',
