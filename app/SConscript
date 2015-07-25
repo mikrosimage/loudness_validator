@@ -4,7 +4,7 @@ Import( 'env' )
 Import( 'loudnessAnalyserLibStatic' )
 Import( 'loudnessToolsLibStatic' )
 
-env.Program(
+loudnessAnalyserProgram = env.Program(
 	'loudness-analyser',
 	Glob( 'analyser/*.cpp' ),
 	LIBS = [
@@ -14,7 +14,7 @@ env.Program(
 	]
 )
 
-env.Program(
+loudnessCorrectorProgram = env.Program(
 	'loudness-corrector',
 	Glob( 'corrector/*.cpp' ),
 	LIBS = [
@@ -45,9 +45,13 @@ if not env['PLATFORM'] == "darwin":
 else:
 	loudnessValidatorFrameworks.append( QtLibs )
 
-qtEnv.Program(
+loudnessValidatorProgram = qtEnv.Program(
 	'loudness-validator',
 	Glob( 'LoudnessValidator/*.cpp' ),
 	LIBS = loudnessValidatorLibraries,
 	FRAMEWORKS = loudnessValidatorFrameworks,
 )
+
+env.Alias( 'install', env.Install( 'bin', loudnessAnalyserProgram ) )
+env.Alias( 'install', env.Install( 'bin', loudnessCorrectorProgram ) )
+env.Alias( 'install', env.Install( 'bin', loudnessValidatorProgram ) )

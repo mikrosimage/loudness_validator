@@ -49,6 +49,8 @@ env.Alias( 'install', env.Install( 'lib', loudnessAnalyserLibStatic ) )
 env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessToolsLib ) )
 env.Alias( 'install', env.Install( 'lib', loudnessToolsLibStatic ) )
 
+env.Alias( 'install', env.Install( 'include/loudnessAnalyser', "loudnessAnalyser/LoudnessAnalyser.hpp" ) )
+
 Export( 'loudnessAnalyserLibStatic' )
 Export( 'loudnessToolsLibStatic' )
 
