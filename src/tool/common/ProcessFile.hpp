@@ -4,7 +4,7 @@
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 #include <tool/io/SoundFile.hpp>
 
-void processAnalyseFile( Loudness::LoudnessAnalyser& analyser, SoundFile& audioFile, void (*callback)(int) )
+void processAnalyseFile( Loudness::LoudnessAnalyser& analyser, SoundFile& audioFile, bool enableOptimisation, void (*callback)(int) )
 {
 	int cumulOfSamples = 0;
 	int length = audioFile.size();
@@ -16,7 +16,7 @@ void processAnalyseFile( Loudness::LoudnessAnalyser& analyser, SoundFile& audioF
 	for( size_t i = 0; i< channelsInBuffer; i++ )
 		data [i] = new float [bufferSize];
 	
-	analyser.initAndStart( channelsInBuffer, audioFile.rate() );
+	analyser.initAndStart( channelsInBuffer, audioFile.rate(), enableOptimisation );
 	
 	audioFile.seek( 0 );
 	

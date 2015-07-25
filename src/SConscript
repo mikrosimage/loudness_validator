@@ -17,12 +17,14 @@ env = conf.Finish()
 
 loudnessAnalyserLib = env.SharedLibrary(
     'loudnessAnalyser',
-    Glob( 'loudnessAnalyser/*.cpp' ),
+    Glob( 'loudnessAnalyser/*.cpp' ) +
+    Glob( 'loudnessAnalyser/utils/*.cpp' ),
 )
 
 loudnessAnalyserLibStatic = env.StaticLibrary(
     'loudnessAnalyser',
-    Glob( 'loudnessAnalyser/*.cpp' ),
+    Glob( 'loudnessAnalyser/*.cpp' ) +
+    Glob( 'loudnessAnalyser/utils/*.cpp' ),
 )
 
 loudnessToolsLib = env.SharedLibrary(

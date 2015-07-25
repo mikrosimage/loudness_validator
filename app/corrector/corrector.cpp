@@ -25,6 +25,7 @@ int main( int argc, char** argv )
 	bool analyseAfterCorrecting = false;
 	bool enableLimiter = false;
 	bool printLength = false;
+	bool enableOptimisation = true;
 	int standard = 1;
 	std::vector<std::string> filenames;
 	
@@ -76,7 +77,10 @@ int main( int argc, char** argv )
 				lookaheadTime = t;
 			}
 		}
-		
+		if( strcmp ( argv[i], "--disable-optimisation" ) == 0 )
+		{
+			enableOptimisation = false;
+		}
 		if( strncmp ( argv[i],"--standard=", 11 ) == 0 )
 		{
 			if( strcmp ( argv[i],"--standard=cst" ) == 0 )
@@ -137,7 +141,7 @@ int main( int argc, char** argv )
 			{
 				if( printLength )
 					std::cout << "\t length = " << (float) audioFile.size() / audioFile.rate() << "\t" << std::flush;
-				processAnalyseFile( analyser, audioFile, progress );
+				processAnalyseFile( analyser, audioFile, enableOptimisation, progress );
 				if( showResults )
 					analyser.printPloudValues();
 				

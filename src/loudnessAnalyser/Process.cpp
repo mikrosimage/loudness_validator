@@ -17,7 +17,7 @@ Process::~Process()
 {
 }
 
-void Process::init ( const int numberOfChannels, const float frequencySampling )
+void Process::init ( const int numberOfChannels, const float frequencySampling, bool enableOptimisation )
 {
 	_numberOfChannels  = numberOfChannels;
 	_frequencySampling = frequencySampling;
@@ -27,6 +27,7 @@ void Process::init ( const int numberOfChannels, const float frequencySampling )
 	{
 		_filters[i].initializeFilterCoefficients ( _frequencySampling );
 		_truePeakMeter[i].initialize             ( _frequencySampling );
+		_truePeakMeter[i].enableOptimisation     ( enableOptimisation );
 	}
 
 	reset();

@@ -196,8 +196,9 @@ public:
 	 * Initialize and start the Loudness meter (Integrated, Momentary and Short-Term, LRA)
 	 * \param channels set the number of channels (default = 2 = stereo)
 	 * \param frequency set the frequency sampling (default = 48000 = 48kHz)
+	 * \param  enableOptimisation enable optimisation code (based on SIMD instructions)
 	**/
-	void initAndStart ( const size_t& channels, const size_t& frequency );
+	void initAndStart( const size_t& channels, const size_t& frequency, bool enableOptimisation = false );
 
 
 	/**

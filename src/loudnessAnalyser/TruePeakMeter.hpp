@@ -11,9 +11,14 @@ namespace Loudness{
 class TruePeakMeter
 {
 public:
-	TruePeakMeter();
+	TruePeakMeter( bool enableOptimisation = false );
 
 	void initialize( const int frequencySampling );
+
+	void enableOptimisation( bool enable )
+	{
+		_enableOptimisation = enable;
+	}
 
 	void reset()
 	{
@@ -41,8 +46,6 @@ public:
 	}
 
 private:
-	float _z1, _z2, _z3, _z4;
-
 	std::vector<float>  _historySamples;
 	std::vector<float>  _coefficients;
 	
@@ -54,6 +57,8 @@ private:
 	double              _frequencySampling;   /// input frequency sampling
 	double              _upsamplingFrequency; /// output frequency sampling
 	double              _factor;              /// upsampling scale factor
+
+	bool                _enableOptimisation;
 };
 
 

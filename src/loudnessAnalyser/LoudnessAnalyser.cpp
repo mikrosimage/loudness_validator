@@ -17,11 +17,11 @@ LoudnessAnalyser::LoudnessAnalyser( LoudnessLevels& levels ) :
 {
 }
 
-void LoudnessAnalyser::initAndStart( const size_t& channels, const size_t& frequency )
+void LoudnessAnalyser::initAndStart( const size_t& channels, const size_t& frequency, bool enableOptimisation )
 {
 	s_durationInSamples = 0;
 	s_frequency         = frequency;
-	p_process->init( channels , frequency );
+	p_process->init( channels , frequency, enableOptimisation );
 }
 
 void LoudnessAnalyser::setUpsamplingFrequencyForTruePeak( const size_t& frequency )

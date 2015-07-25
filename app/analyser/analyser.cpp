@@ -22,6 +22,7 @@ int main( int argc, char** argv )
 {
 	bool validToProcess = false;
 	bool showTime = false;
+	bool enableOptimisation = true;
 	std::vector<int> standards;
 	std::vector<std::string> filenames;
 	
@@ -30,34 +31,38 @@ int main( int argc, char** argv )
 	for(int i = 1; i < argc; i++)
 	{
 		
-		if( strcmp ( argv[i],"--progress" ) == 0 )
+		if( strcmp ( argv[i], "--progress" ) == 0 )
 		{
 			showProgress = true;
 		}
-		if( strcmp ( argv[i],"--verbose" ) == 0 )
+		if( strcmp ( argv[i], "--verbose" ) == 0 )
 		{
 			showProgress = true;
 			showResults = true;
 		}
-		if( strcmp ( argv[i],"--time" ) == 0 )
+		if( strcmp ( argv[i], "--time" ) == 0 )
 		{
 			showTime = true;
 		}
-		if( strncmp ( argv[i],"--standard=", 11 ) == 0 )
+		if( strcmp ( argv[i], "--disable-optimisation" ) == 0 )
 		{
-			if( strcmp ( argv[i],"--standard=cst" ) == 0 )
+			enableOptimisation = false;
+		}
+		if( strncmp ( argv[i], "--standard=", 11 ) == 0 )
+		{
+			if( strcmp ( argv[i], "--standard=cst" ) == 0 )
 			{
 				standards.push_back(0);
 			}
 			else
 			{
-				if( strcmp ( argv[i],"--standard=ebu" ) == 0 )
+				if( strcmp ( argv[i], "--standard=ebu" ) == 0 )
 				{
 					standards.push_back(1);
 				}
 				else
 				{
-					if( strcmp ( argv[i],"--standard=atsc" ) == 0 )
+					if( strcmp ( argv[i], "--standard=atsc" ) == 0 )
 					{
 						standards.push_back(2);
 					}
@@ -71,7 +76,7 @@ int main( int argc, char** argv )
 		}
 		if( standards.empty() )
 		{
-			standards.push_back(1);		// default standard : EBU R128
+			standards.push_back(1); // default standard : EBU R128
 		}
 		std::string ext ( argv[i] );
 		ext.erase( 0, ext.length() - 5 );
@@ -110,7 +115,7 @@ int main( int argc, char** argv )
 				if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 				{
 					time( &start );
-					processAnalyseFile( analyser, audioFile, progress );
+					processAnalyseFile( analyser, audioFile, enableOptimisation, progress );
 					time( &end );
 					if( showResults )
 						analyser.printPloudValues();

@@ -24,7 +24,7 @@ public:
 	~Process();
 
 
-	void        init                              ( const int numberOfChannels, const float frequencySampling );
+	void        init                              ( const int numberOfChannels, const float frequencySampling, bool enableOptimisation = false );
 	void        reset                             ( );
 	void        process                           ( const int numberOfFrames, float *inputData [] );
 
