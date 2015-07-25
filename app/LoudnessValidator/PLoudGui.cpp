@@ -320,14 +320,14 @@ void PLoudGui::callbackProgress( void* object, int value )
 void analyseFiles( SoundFile* audioFile, size_t channels, Loudness::LoudnessAnalyser* ploudMeter, QProgressBar& progressBar, double gain = 1.0 )
 {
 	int cumulOfSamples = 0;
-	int bufferSize = audioFile[0].rate() / 5;
+	int bufferSize = audioFile[0].getSampleRate() / 5;
 	
 	float *data [ channels ];
 
 	for( size_t i = 0; i< channels; i++ )
 		data [i] = new float [bufferSize];
 	
-	ploudMeter->initAndStart( channels, audioFile[0].rate() );
+	ploudMeter->initAndStart( channels, audioFile[0].getSampleRate() );
 	
 	while (true)
 	{
@@ -445,20 +445,20 @@ void PLoudGui::openSeparatedFiles( )
 	bool rateIsEqual  = true;
 	bool sizeIsEqual  = true;
 	bool monoChannels = true;
-	int rate    = audioInputFile[0].rate();
-	size_t size = audioInputFile[0].size();
+	int sampleRate = audioInputFile[0].getSampleRate();
+	size_t bitDepth = audioInputFile[0].getBitDepth();
 
 	for(size_t i=0; i < numberOfChannels; i++)
 	{
-		if( rate != audioInputFile[i].rate() )
+		if( sampleRate != audioInputFile[i].getSampleRate() )
 		{
 			rateIsEqual = false;
 		}
-		if( size != audioInputFile[i].size() )
+		if( bitDepth != audioInputFile[i].getBitDepth() )
 		{
 			sizeIsEqual = false;
 		}
-		if( audioInputFile[i].chan() != 1 )
+		if( audioInputFile[i].getNbChannels() != 1 )
 		{
 			monoChannels = false;
 		}
@@ -488,12 +488,12 @@ void PLoudGui::openSeparatedFiles( )
 	
 	//ploudMeter->initAndStart( channelsInBuffer, rate );
 	
-	progressBar.setMaximum ( audioInputFile[0].size() ),
+	progressBar.setMaximum ( audioInputFile[0].getBitDepth() ),
 	progressBar.setMinimum ( 0 );
 	
 	//analyseFiles( audioInputFile, channelsInBuffer, ploudMeter, progressBar );
 
-	programDuration = audioInputFile[0].size() / audioInputFile[0].rate() ;
+	programDuration = audioInputFile[0].getBitDepth() / audioInputFile[0].getSampleRate() ;
 
 	for( size_t i=0; i<numberOfChannels; i++ )
 	{

@@ -41,8 +41,6 @@ private:
 	static const int FILTER_SIZE = 125;
 
 private:
-	float _z1, _z2, _z3, _z4;
-
 	std::vector<float>  _historySamples;
 	std::vector<float>  _coefficients;
 	

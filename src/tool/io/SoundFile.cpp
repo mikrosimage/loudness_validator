@@ -37,125 +37,129 @@ SoundFile::~SoundFile (void)
 void SoundFile::reset (void)
 {
 	_sndfile = 0;
-	_mode = MODE_NONE;
-	_type = TYPE_OTHER;
-	_form = FORM_OTHER;
-	_rate = 0;
-	_chan = 0;
-	_size = 0;
+	_readWriteMode = eRwModeNone;
+	_audioCodec = eAudioCodecOther;
+	_bitDepth = eBitDepthOther;
+	_sampleRate = 0;
+	_nbChannels = 0;
+	_nbSamples = 0;
 }
 
 int SoundFile::open_read (const char *name)
 {
 	SF_INFO I;
 	
-	if (_mode) return ERR_MODE;
+	if (_readWriteMode)
+		return eErrorRwMode;
 	reset ();
 	
-	if ((_sndfile = sf_open (name, SFM_READ, &I)) == 0) return ERR_OPEN;
+	if ((_sndfile = sf_open (name, SFM_READ, &I)) == 0)
+		return eErrorOpen;
 	
-	_mode = MODE_READ;
+	_readWriteMode = eErrorRead;
 	
 	switch (I.format & SF_FORMAT_TYPEMASK)
 	{
 	case SF_FORMAT_CAF:
-		_type = TYPE_CAF;
+		_audioCodec = eAudioCodecCaf;
 		break;
 	case SF_FORMAT_WAV:
-		_type = TYPE_WAV;
+		_audioCodec = eAudioCodecWav;
 		break;
 	case SF_FORMAT_WAVEX:
 		if (sf_command (_sndfile, SFC_WAVEX_GET_AMBISONIC, 0, 0) == SF_AMBISONIC_B_FORMAT)
-			_type = TYPE_AMB;
+			_audioCodec = eAudioCodecAmb;
 		else
-			_type = TYPE_WAV;
+			_audioCodec = eAudioCodecWav;
 	}
 	
 	switch (I.format & SF_FORMAT_SUBMASK)
 	{
 	case SF_FORMAT_PCM_16:
-		_form = FORM_16BIT;
+		_bitDepth = eBitDepth16Bits;
 		break;
 	case SF_FORMAT_PCM_24:
-		_form = FORM_24BIT;
+		_bitDepth = eBitDepth24Bits;
 		break;
 	case SF_FORMAT_PCM_32:
-		_form = FORM_32BIT;
+		_bitDepth = eBitDepth32Bits;
 		break;
 	case SF_FORMAT_FLOAT:
-		_form = FORM_FLOAT;
+		_bitDepth = eBitDepthFloat;
 		break;
 	}
 	
-	_rate = I.samplerate;
-	_chan = I.channels;
-	_size = I.frames;
+	_sampleRate = I.samplerate;
+	_nbChannels = I.channels;
+	_nbSamples = I.frames;
 	
 	return 0;
 }
 
-int SoundFile::open_write (const char *name, int type, int form, int rate, int chan)
+int SoundFile::open_write (const char *name, int audioCodec, int bitDepth, int sampleRate, int nbChannels)
 {
 	SF_INFO I;
 	
-	if (_mode) return ERR_MODE;
-	if (!rate || !chan) return ERR_OPEN;
+	if (_readWriteMode)
+		return eErrorRwMode;
+	if (! sampleRate || ! nbChannels)
+		return eErrorOpen;
 	reset ();
 	
-	switch (type)
+	switch (audioCodec)
 	{
-		case TYPE_CAF:
+		case eAudioCodecCaf:
 			I.format = SF_FORMAT_CAF;
 			break;
-		case TYPE_WAV:
-		case TYPE_AMB:
-			I.format = (chan > 2) ? SF_FORMAT_WAVEX : SF_FORMAT_WAV;
+		case eAudioCodecWav:
+		case eAudioCodecAmb:
+			I.format = (nbChannels > 2) ? SF_FORMAT_WAVEX : SF_FORMAT_WAV;
 			break;
 		default:
-			return ERR_TYPE;
+			return eErrorAudioCodec;
 	}
 	
-	switch (form)
+	switch (bitDepth)
 	{
-		case FORM_16BIT:
+		case eBitDepth16Bits:
 			I.format |= SF_FORMAT_PCM_16;
 			break;
-		case FORM_24BIT:
+		case eBitDepth24Bits:
 			I.format |= SF_FORMAT_PCM_24;
 			break;
-		case FORM_32BIT:
+		case eBitDepth32Bits:
 			I.format |= SF_FORMAT_PCM_32;
 			break;
-		case FORM_FLOAT:
+		case eBitDepthFloat:
 			I.format |= SF_FORMAT_FLOAT;
 			break;
 		default:
-			return ERR_FORM;
+			return eErrorBitDepth;
 	}
 	
-	I.samplerate = rate;
-	I.channels = chan;
+	I.samplerate = sampleRate;
+	I.channels = nbChannels;
 	I.sections = 1;
 	
-	if ((_sndfile = sf_open (name, SFM_WRITE, &I)) == 0) return ERR_OPEN;
+	if ((_sndfile = sf_open (name, SFM_WRITE, &I)) == 0) return eErrorOpen;
 	
-	if (type == TYPE_AMB)
+	if (audioCodec == eAudioCodecAmb)
 	{
 		sf_command (_sndfile, SFC_WAVEX_SET_AMBISONIC, 0, SF_AMBISONIC_B_FORMAT);
 	}
 	
-	_mode = MODE_WRITE;
-	_type = type;
-	_form = form;
-	_rate = rate;
-	_chan = chan;
-	
+	_readWriteMode = eRwModeWrite;
+	_audioCodec = audioCodec;
+	_bitDepth = bitDepth;
+	_sampleRate = sampleRate;
+	_nbChannels = nbChannels;
 	return 0;
 }
 
 int SoundFile::close (void)
 {
-	if (_sndfile) sf_close (_sndfile);
+	if (_sndfile)
+		sf_close (_sndfile);
 	reset ();
 	return 0;
 }
@@ -163,15 +167,17 @@ int SoundFile::close (void)
 
 int SoundFile::seek (uint32_t posit)
 {
-	if (!_sndfile) return ERR_MODE;
-	if (sf_seek (_sndfile, posit, SEEK_SET) != posit) return ERR_SEEK;
+	if (!_sndfile)
+		return eErrorRwMode;
+	if (sf_seek (_sndfile, posit, SEEK_SET) != posit) return eErrorSeek;
 	return 0;
 }
 
 
 int SoundFile::read (float *data, uint32_t frames)
 {
-	if (_mode != MODE_READ) return ERR_MODE;
+	if (_readWriteMode != eRwModeRead)
+		return eErrorRwMode;
 	return sf_readf_float (_sndfile, data, frames);
 }
 
@@ -182,21 +188,24 @@ int SoundFile::write (float *data, uint32_t frames)
 	uint32_t k;
 	float    *p, v;
 	
-	if (_mode != MODE_WRITE) return ERR_MODE;
+	if (_readWriteMode != eRwModeWrite)
+		return eErrorRwMode;
 
-	if (_form != FORM_FLOAT)
+	if (_bitDepth != eBitDepthFloat)
 	{
-		for (i = 0; i < _chan; i++)
+		for (i = 0; i < _nbChannels; i++)
 		{
-		p = data + i;
+			p = data + i;
 			for (k = 0; k < frames; k++)
 			{
-			v = *p;
-			if      (v >  1.0f) v =  1.0f;
-			else if (v < -1.0f) v = -1.0f;
-			*p = v;
-			p += _chan;
-		}
+				v = *p;
+				if(v >  1.0f)
+					v =  1.0f;
+				else if (v < -1.0f)
+					v = -1.0f;
+				*p = v;
+				p += _nbChannels;
+			}
 		}
 	}
 	return sf_writef_float (_sndfile, data, frames);

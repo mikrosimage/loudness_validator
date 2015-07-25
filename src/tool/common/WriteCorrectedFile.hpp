@@ -9,12 +9,12 @@
 
 void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input, SoundFile& output, const float gain, void (*callback)(int) )
 {
-	int    bufferSize       = input.rate () / 5;
-	int    length           = input.size();
-	size_t channelsInBuffer = input.chan();
+	int    bufferSize       = input.getSampleRate() / 5;
+	int    bitDepth         = input.getBitDepth();
+	size_t channelsInBuffer = input.getNbChannels();
 	size_t cumulOfSamples   = 0;
 	
-	float* inpb             = new float [input.chan() * bufferSize];
+	float* inpb             = new float [input.getNbChannels() * bufferSize];
 	float* dataPerChannel[ channelsInBuffer ];
 	
 	for( size_t i = 0; i< channelsInBuffer; i++ )
@@ -22,7 +22,7 @@ void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input,
 	
 	input.seek( 0 );
 	
-	analyser.initAndStart( channelsInBuffer, input.rate() );
+	analyser.initAndStart( channelsInBuffer, input.getSampleRate() );
 	
 	while (true)
 	{
@@ -49,7 +49,7 @@ void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input,
 		
 		samples = output.write( inpb, samples );
 		cumulOfSamples += samples;
-		callback( (float)cumulOfSamples / length * 100 );
+		callback( (float)cumulOfSamples / bitDepth * 100 );
 	}
 	for( size_t i=0; i < channelsInBuffer; i++ )
 		delete[] dataPerChannel[i];
@@ -58,12 +58,12 @@ void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input,
 
 void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input, SoundFile& output, const float gain, float lookAhead, float threshold, void (*callback)(int) )
 {
-	int    bufferSize       = input.rate () / 5;
-	int    length           = input.size();
-	size_t channelsInBuffer = input.chan();
+	int    bufferSize       = input.getSampleRate() / 5;
+	int    bitDepth         = input.getBitDepth();
+	size_t channelsInBuffer = input.getNbChannels();
 	size_t cumulOfSamples   = 0;
 
-	float* inpb  = new float [ input.chan() * bufferSize ];
+	float* inpb  = new float [ input.getNbChannels() * bufferSize ];
 	float* dataPerChannel[ channelsInBuffer ];
 	
 	for( size_t i = 0; i< channelsInBuffer; i++ )
@@ -73,13 +73,13 @@ void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input,
 	
 	for( size_t i = 0; i< channelsInBuffer; i++ )
 	{
-		LookAheadLimiter* lim = new LookAheadLimiter( lookAhead, input.rate(), threshold );
+		LookAheadLimiter* lim = new LookAheadLimiter( lookAhead, input.getSampleRate(), threshold );
 		limiters.push_back( lim );
 	}
 
 	input.seek( 0 );
 	
-	analyser.initAndStart( channelsInBuffer, input.rate() );
+	analyser.initAndStart( channelsInBuffer, input.getSampleRate() );
 	
 	while (true)
 	{
@@ -108,7 +108,7 @@ void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input,
 		samples = output.write( inpb, s );
 		
 		cumulOfSamples += samples;
-		callback( (float)cumulOfSamples / length * 100 );
+		callback( (float)cumulOfSamples / bitDepth * 100 );
 	}
 	
 	while (true)
@@ -136,7 +136,7 @@ void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input,
 		s = output.write( inpb, s );
 		
 		cumulOfSamples += s;
-		callback( (float)cumulOfSamples / length * 100 );
+		callback( (float)cumulOfSamples / bitDepth * 100 );
 	}
 	
 	

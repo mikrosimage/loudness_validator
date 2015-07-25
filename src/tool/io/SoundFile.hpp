@@ -31,60 +31,60 @@ class SoundFile
 {
 public:
 
-	enum
+	enum ERwMode
 	{
-		MODE_NONE,
-		MODE_READ,
-		MODE_WRITE
+		eRwModeNone,
+		eRwModeRead,
+		eRwModeWrite
 	};
 	
-	enum
+	enum EAudioCodec
 	{
-		TYPE_OTHER,
-		TYPE_CAF,
-		TYPE_WAV,
-		TYPE_AMB
+		eAudioCodecOther,
+		eAudioCodecCaf,
+		eAudioCodecWav,
+		eAudioCodecAmb
 	};
 	
-	enum
+	enum EBitDepth
 	{
-		FORM_OTHER,
-		FORM_16BIT,
-		FORM_24BIT,
-		FORM_32BIT,
-		FORM_FLOAT,
+		eBitDepthOther,
+		eBitDepth16Bits,
+		eBitDepth24Bits,
+		eBitDepth32Bits,
+		eBitDepthFloat,
 	};
 	
-	enum
+	enum EError
 	{
-		ERR_NONE    = 0,
-		ERR_MODE    = -1,
-		ERR_TYPE    = -2,
-		ERR_FORM    = -3,
-		ERR_OPEN    = -4,
-		ERR_SEEK    = -5,
-		ERR_DATA    = -6,
-		ERR_READ    = -7,
-		ERR_WRITE   = -8
+		eErrorNone = 0,
+		eErrorRwMode = -1,
+		eErrorAudioCodec = -2,
+		eErrorBitDepth = -3,
+		eErrorOpen = -4,
+		eErrorSeek = -5,
+		eErrorData = -6,
+		eErrorRead = -7,
+		eErrorWrite = -8
 	};
 	
 	SoundFile (void);
 	~SoundFile (void);
 	
-	int mode (void) const { return _mode; }
-	int type (void) const { return _type; }
-	int form (void) const { return _form; }
-	int rate (void) const { return _rate; }
-	int chan (void) const { return _chan; }
-	uint32_t size (void) const { return _size; }
+	int getReadWriteMode(void) const { return _readWriteMode; }
+	int getAudioCodec(void) const { return _audioCodec; }
+	int getBitDepth(void) const { return _bitDepth; }
+	int getSampleRate(void) const { return _sampleRate; }
+	int getNbChannels(void) const { return _nbChannels; }
+	uint32_t getBbSamples(void) const { return _nbSamples; }
 	
-	int open_read (const char *name);
-	int open_write (const char *name, int type, int form, int rate, int chan);
-	int close (void);
+	int open_read(const char *name);
+	int open_write(const char *name, int audioCodec, int bitDepth, int sampleRate, int nbChannels);
+	int close(void);
 	
-	int seek (uint32_t posit);
-	int read  (float *data, uint32_t frames);
-	int write (float *data, uint32_t frames);
+	int seek(uint32_t posit);
+	int read(float *data, uint32_t frames);
+	int write(float *data, uint32_t frames);
 	
 private:
 	
@@ -92,13 +92,13 @@ private:
 	
 	void reset (void);
 	
-	SNDFILE  *_sndfile;
-	int       _mode;  // read / write
-	int       _type;
-	int       _form;  // format (WAV, Core Audio...)
-	int       _rate;
-	int       _chan;  // number of channel
-	uint32_t  _size;  // number of samples
+	SNDFILE*  _sndfile;
+	int       _readWriteMode;
+	int       _audioCodec;
+	int       _bitDepth;
+	int       _sampleRate;
+	int       _nbChannels;
+	uint32_t  _nbSamples;
 };
 
 #endif

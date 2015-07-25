@@ -12,15 +12,11 @@
 namespace Loudness{
 
 
-TruePeakMeter::TruePeakMeter():
-	_z1                  ( 0 ),
-	_z2                  ( 0 ),
-	_z3                  ( 0 ),
-	_z4                  ( 0 ),
-	_maxValue            ( 0 ),
-	_maxSignal           ( 0 ),
-	_frequencySampling   ( 0 ),
-	_upsamplingFrequency ( 192000 )
+TruePeakMeter::TruePeakMeter()
+	: _maxValue            ( 0 )
+	, _maxSignal           ( 0 )
+	, _frequencySampling   ( 0 )
+	, _upsamplingFrequency ( 192000 )
 {
 }
 

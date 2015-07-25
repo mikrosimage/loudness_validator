@@ -8,17 +8,17 @@ void processAnalyseFile( Loudness::LoudnessAnalyser& analyser, SoundFile& audioF
 {
 	// Allocate buffers
 	unsigned int cumulOfSamples = 0;
-	const unsigned int length = audioFile.size();
-	const size_t channelsInBuffer = std::min( 5, audioFile.chan() ); // skip last channel if 5.1 (LRE channel)
-	const int bufferSize = audioFile.rate() / 5;
+	const unsigned int bitDepth = audioFile.getBitDepth();
+	const size_t channelsInBuffer = std::min( 5, audioFile.getNbChannels() ); // skip last channel if 5.1 (LRE channel)
+	const int bufferSize = audioFile.getSampleRate() / 5;
 	float* data [ channelsInBuffer ];
-	float* inpb = new float [ audioFile.chan() * bufferSize ];
+	float* inpb = new float [ audioFile.getNbChannels() * bufferSize ];
 	
 	for( size_t i = 0; i< channelsInBuffer; i++ )
 		data [i] = new float [bufferSize];
 	
 	// Init structures of analysis and seek at the beginning of the file
-	analyser.initAndStart( channelsInBuffer, audioFile.rate() );
+	analyser.initAndStart( channelsInBuffer, audioFile.getSampleRate() );
 	audioFile.seek( 0 );
 	
 	// While we read samples, analyse them
@@ -28,7 +28,7 @@ void processAnalyseFile( Loudness::LoudnessAnalyser& analyser, SoundFile& audioF
 		if (nbSamples == 0) break;
 
 		cumulOfSamples += nbSamples;
-		callback( (float)cumulOfSamples / length * 100 );
+		callback( (float)cumulOfSamples / bitDepth * 100 );
 		float* p = inpb;
 		for( size_t i = 0; i < nbSamples; i++ )
 		{
