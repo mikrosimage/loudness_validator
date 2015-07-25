@@ -29,6 +29,7 @@ boost_include = ''
 boost_lib = ''
 if boost_root:
     boost_include = boost_root + '/include'
+    boost_lib = boost_root + '/lib'
 
 env = Environment()
 
@@ -48,10 +49,17 @@ env.Append(
         LIBPATH = [
                 '#src',
                 sndfile_lib,
+                boost_lib,
         ],
         SHLIBVERSION = loudnessAssessmentVersionStr,
         )
 
+if env['PLATFORM'] == "darwin":
+    env.Append(
+        FRAMEWORKPATH = [
+            '/usr/local/Frameworks',
+        ],
+    )
 
 Export( 'env' )
 
