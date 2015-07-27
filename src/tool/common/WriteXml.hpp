@@ -22,7 +22,6 @@ private:
 	std::string getDate();
 	
 	std::ofstream xmlFile;
-	const char* filename;
 	const char* srcAudioFilename;
 };
 

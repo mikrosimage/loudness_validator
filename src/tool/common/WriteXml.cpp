@@ -1,9 +1,8 @@
 #include "WriteXml.hpp"
 #include <ctime>
 
-WriteXml::WriteXml( const char* filename, const char* srcAudioFilename ) :
-	filename( filename ),
-	srcAudioFilename( srcAudioFilename )
+WriteXml::WriteXml( const char* filename, const char* srcAudioFilename )
+	: srcAudioFilename( srcAudioFilename )
 {
 	xmlFile.precision( 1 );
 	xmlFile.setf( std::ios::fixed, std::ios::floatfield );

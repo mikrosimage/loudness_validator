@@ -136,7 +136,7 @@ int main( int argc, char** argv )
 			if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 			{
 				if( printLength )
-					std::cout << "\t length = " << (float) audioFile.size() / audioFile.rate() << "\t" << std::flush;
+					std::cout << "\t length = " << (float) audioFile.getNbSamples() / audioFile.getSampleRate() << "\t" << std::flush;
 				processAnalyseFile( analyser, audioFile, progress );
 				if( showResults )
 					analyser.printPloudValues();
@@ -155,7 +155,7 @@ int main( int argc, char** argv )
 				SoundFile outputAudioFile;
 				Loudness::LoudnessAnalyser analyserAfterCorrection( levels );
 				
-				if( ! outputAudioFile.open_write( outputFilename.c_str(), audioFile.type(), audioFile.form(), audioFile.rate(), audioFile.chan() ) )
+				if( ! outputAudioFile.open_write( outputFilename.c_str(), audioFile.getAudioCodec(), audioFile.getBitDepth(), audioFile.getSampleRate(), audioFile.getNbChannels() ) )
 				{
 					gain = analyser.getCorrectionGain( enableLimiter );
 					std::cout << " => applying correction: " << gain << std::endl;
