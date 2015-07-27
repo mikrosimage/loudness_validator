@@ -168,7 +168,8 @@ int main( int argc, char** argv )
 					}
 					else
 					{
-						writeCorrectedFile( loudnessAfterCorrection, audioFile, outputAudioFile, gain, progress );
+						CorrectFile corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain );
+						corrector( progress );
 					}
 					outputAudioFile.close();
 				}

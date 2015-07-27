@@ -3,6 +3,8 @@
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 #include <tool/io/SoundFile.hpp>
+#include "CorrectBuffer.hpp"
+#include "LookAheadLimiter.hpp"
 
 // Based class for functor which process audio file and fill LoudnessAnalyser
 class Processor
@@ -77,6 +79,50 @@ public:
 			callback( (float)_cumulOfSamples / _totalNbSamples * 100 );
 		}
 	}
+};
+
+// Functor to correct audio file
+class CorrectFile : public Processor
+{
+public:
+	CorrectFile( Loudness::LoudnessAnalyser& analyser, SoundFile& inputAudioFile, SoundFile& outputAudioFile, const float gain )
+		: Processor( analyser, inputAudioFile )
+		, _outputAudioFile( outputAudioFile )
+		, _gain( gain )
+	{}
+
+	void operator()( void (*callback)(int) )
+	{
+		while (true)
+		{
+			const size_t nbSamples = _inputAudioFile.read( _inpb, _bufferSize );
+			if (nbSamples == 0) break;
+
+			float* p = _inpb;
+			correctBuffer( p, nbSamples, _channelsInBuffer, _gain );
+
+			// re-analyse output
+			p = _inpb;
+
+			for( size_t i = 0; i < nbSamples; i++ )
+			{
+				for( size_t c = 0; c < _channelsInBuffer; c++ )
+					_data [c][i] = (*p++);
+			}
+
+			_analyser.processSamples( _data, nbSamples );
+			const size_t nbSamplesWritten = _outputAudioFile.write( _inpb, nbSamples );
+
+			// Callback for progression
+			_cumulOfSamples += nbSamplesWritten;
+			callback( (float)_cumulOfSamples / _totalNbSamples * 100 );
+		}
+	}
+
+private:
+	SoundFile& _outputAudioFile;
+
+	const float _gain;
 };
 
 #endif
