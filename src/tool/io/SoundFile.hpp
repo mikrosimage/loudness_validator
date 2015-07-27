@@ -76,7 +76,7 @@ public:
 	int getBitDepth(void) const { return _bitDepth; }
 	int getSampleRate(void) const { return _sampleRate; }
 	int getNbChannels(void) const { return _nbChannels; }
-	uint32_t getBbSamples(void) const { return _nbSamples; }
+	uint32_t getNbSamples(void) const { return _nbSamples; }
 	
 	int open_read(const char *name);
 	int open_write(const char *name, int audioCodec, int bitDepth, int sampleRate, int nbChannels);
