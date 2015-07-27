@@ -56,7 +56,7 @@ int SoundFile::open_read (const char *name)
 	if ((_sndfile = sf_open (name, SFM_READ, &I)) == 0)
 		return eErrorOpen;
 	
-	_readWriteMode = eErrorRead;
+	_readWriteMode = eRwModeRead;
 	
 	switch (I.format & SF_FORMAT_TYPEMASK)
 	{
