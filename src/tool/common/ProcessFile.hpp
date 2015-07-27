@@ -39,6 +39,18 @@ public:
 			delete[] _data[i];
 	}
 
+	// Analyse the nbSamples in _data, and fill LoudnessAnalyser
+	void processSamples( const size_t nbSamples )
+	{
+		float* p = _inpb;
+		for( size_t i = 0; i < nbSamples; i++ )
+		{
+			for( size_t c = 0; c < _channelsInBuffer; c++ )
+				_data [c][i] = (*p++);
+		}
+		_analyser.processSamples( _data, nbSamples );
+	}
+
 protected:
 	Loudness::LoudnessAnalyser& _analyser;
 	Loudness::io::SoundFile& _inputAudioFile;
@@ -69,13 +81,8 @@ public:
 			const size_t nbSamples = _inputAudioFile.read( _inpb, _bufferSize );
 			if (nbSamples == 0) break;
 
-			float* p = _inpb;
-			for( size_t i = 0; i < nbSamples; i++ )
-			{
-				for( size_t c = 0; c < _channelsInBuffer; c++ )
-					_data [c][i] = (*p++);
-			}
-			_analyser.processSamples( _data, nbSamples );
+			// Analyse input
+			processSamples( nbSamples );
 
 			// Callback for progression
 			_cumulOfSamples += nbSamples;
@@ -101,19 +108,14 @@ public:
 			const size_t nbSamples = _inputAudioFile.read( _inpb, _bufferSize );
 			if (nbSamples == 0) break;
 
+			// Correct input
 			float* p = _inpb;
 			correctBuffer( p, nbSamples, _channelsInBuffer, _gain );
 
-			// re-analyse output
-			p = _inpb;
+			// Analyse output
+			processSamples( nbSamples );
 
-			for( size_t i = 0; i < nbSamples; i++ )
-			{
-				for( size_t c = 0; c < _channelsInBuffer; c++ )
-					_data [c][i] = (*p++);
-			}
-
-			_analyser.processSamples( _data, nbSamples );
+			// Write output
 			const size_t nbSamplesWritten = _outputAudioFile.write( _inpb, nbSamples );
 
 			// Callback for progression
@@ -160,20 +162,14 @@ public:
 			const size_t nbSamples = _inputAudioFile.read( _inpb, _bufferSize );
 			if( nbSamples == 0 ) break;
 
+			// Correct input
 			float* ptr = _inpb;
-
 			size_t nbSamplesCorrected = correctBuffer( _limiters, ptr, nbSamples, _channelsInBuffer, _gain );
 
-			// re-analyse output
-			ptr = _inpb;
+			// Analyse output
+			processSamples( nbSamples );
 
-			for( size_t i = 0; i < nbSamples; i++ )
-			{
-				for( size_t c = 0; c < _channelsInBuffer; c++ )
-					_data [c][i] = (*ptr++);
-			}
-
-			_analyser.processSamples( _data, nbSamplesCorrected );
+			// Write output
 			const size_t nbSamplesWritten = _outputAudioFile.write( _inpb, nbSamplesCorrected );
 
 			// Callback for progression
@@ -186,18 +182,12 @@ public:
 			float* ptr = _inpb;
 
 			const size_t lastSamples = getLastData( _limiters, ptr, _bufferSize, _channelsInBuffer, _gain );
-
 			if( lastSamples == 0 ) break;
-			// re-analyse output
-			ptr = _inpb;
 
-			for( size_t i = 0; i < lastSamples; i++ )
-			{
-				for( size_t c = 0; c < _channelsInBuffer; c++ )
-					_data [c][i] = (*ptr++);
-			}
+			// Analyse output
+			processSamples( lastSamples );
 
-			_analyser.processSamples( _data, lastSamples );
+			// Write output
 			const size_t lastSamplesWritten = _outputAudioFile.write( _inpb, lastSamples );
 
 			// Callback for progression
