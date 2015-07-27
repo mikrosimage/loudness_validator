@@ -106,16 +106,17 @@ int main( int argc, char** argv )
 													standards.at(j) == 1 ? Loudness::LoudnessLevels::Loudness_EBU_R128() : 
 																		   Loudness::LoudnessLevels::Loudness_ATSC_A85() ;
 				
-				Loudness::LoudnessAnalyser analyser( levels );
+				Loudness::LoudnessAnalyser loudness( levels );
 				if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 				{
 					time( &start );
-					processAnalyseFile( analyser, audioFile, progress );
+					AnalyseFile analyser( loudness, audioFile );
+					analyser( progress );
 					time( &end );
 					if( showResults )
-						analyser.printPloudValues();
+						loudness.printPloudValues();
 					audioFile.close();
-					writerXml.writeResults( "unknown", analyser );
+					writerXml.writeResults( "unknown", loudness );
 					double dif = difftime (end,start);
 					if( showTime )
 						std::cout << "processing time: " << dif << " seconds." << std::endl;
