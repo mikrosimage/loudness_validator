@@ -32,7 +32,7 @@ public:
 	
 private:
 	std::vector<std::string> filenames;
-	std::vector<SoundFile*>  audioFiles;
+	std::vector<Loudness::io::SoundFile*>  audioFiles;
 };
 
 #endif

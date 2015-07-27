@@ -97,11 +97,11 @@ int main( int argc, char** argv )
 					filename.erase( filename.length() - 5, 5 );
 
 			filename.append("_PLoud.xml");
-			WriteXml writerXml ( filename.c_str(), filenames.at(i).c_str() );
+			Loudness::tool::WriteXml writerXml ( filename.c_str(), filenames.at(i).c_str() );
 
 			for( size_t j=0; j < standards.size(); j++ )
 			{
-				SoundFile audioFile;
+				Loudness::io::SoundFile audioFile;
 				Loudness::LoudnessLevels levels =	standards.at(j) == 0 ? Loudness::LoudnessLevels::Loudness_CST_R017() : 
 													standards.at(j) == 1 ? Loudness::LoudnessLevels::Loudness_EBU_R128() : 
 																		   Loudness::LoudnessLevels::Loudness_ATSC_A85() ;
@@ -110,7 +110,7 @@ int main( int argc, char** argv )
 				if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 				{
 					time( &start );
-					AnalyseFile analyser( loudness, audioFile );
+					Loudness::tool::AnalyseFile analyser( loudness, audioFile );
 					analyser( progress );
 					time( &end );
 					if( showResults )

@@ -1,8 +1,10 @@
-
 #ifndef ROLLING_MAX_HPP
 #define ROLLING_MAX_HPP
 
 #include <boost/circular_buffer.hpp>
+
+namespace Loudness {
+namespace tool {
 
 template<typename Sample>
 class RollingMax
@@ -27,5 +29,8 @@ RollingMax<Sample>::RollingMax( size_t windowSize ) :
 }
 
 #include "RollingMax.tcc"
+
+}
+}
 
 #endif

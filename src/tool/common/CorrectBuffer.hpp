@@ -4,6 +4,9 @@
 #include <vector>
 #include "LookAheadLimiter.hpp"
 
+namespace Loudness {
+namespace tool {
+
 size_t correctBuffer( float* data, const size_t samples, const size_t channelsInBuffer, const float gain )
 {
 	for( size_t c = 0; c < channelsInBuffer; c++ )
@@ -65,6 +68,9 @@ size_t getLastData( std::vector<LookAheadLimiter*>& limiters, float* data, const
 		}
 	}
 	return count / channelsInBuffer;
+}
+
+}
 }
 
 #endif

@@ -6,11 +6,14 @@
 #include "CorrectBuffer.hpp"
 #include "LookAheadLimiter.hpp"
 
+namespace Loudness {
+namespace tool {
+
 // Based class for functor which process audio file and fill LoudnessAnalyser
 class Processor
 {
 public:
-	Processor( Loudness::LoudnessAnalyser& analyser, SoundFile& audioFile )
+	Processor( Loudness::LoudnessAnalyser& analyser, Loudness::io::SoundFile& audioFile )
 		: _analyser( analyser )
 		, _inputAudioFile( audioFile )
 		, _cumulOfSamples( 0 )
@@ -38,7 +41,7 @@ public:
 
 protected:
 	Loudness::LoudnessAnalyser& _analyser;
-	SoundFile& _inputAudioFile;
+	Loudness::io::SoundFile& _inputAudioFile;
 
 	size_t _cumulOfSamples;
 	const size_t _totalNbSamples;
@@ -54,7 +57,7 @@ protected:
 class AnalyseFile : public Processor
 {
 public:
-	AnalyseFile( Loudness::LoudnessAnalyser& analyser, SoundFile& audioFile )
+	AnalyseFile( Loudness::LoudnessAnalyser& analyser, Loudness::io::SoundFile& audioFile )
 		: Processor( analyser, audioFile )
 	{}
 
@@ -85,7 +88,7 @@ public:
 class CorrectFile : public Processor
 {
 public:
-	CorrectFile( Loudness::LoudnessAnalyser& analyser, SoundFile& inputAudioFile, SoundFile& outputAudioFile, const float gain )
+	CorrectFile( Loudness::LoudnessAnalyser& analyser, Loudness::io::SoundFile& inputAudioFile, Loudness::io::SoundFile& outputAudioFile, const float gain )
 		: Processor( analyser, inputAudioFile )
 		, _outputAudioFile( outputAudioFile )
 		, _gain( gain )
@@ -120,7 +123,7 @@ public:
 	}
 
 protected:
-	SoundFile& _outputAudioFile;
+	Loudness::io::SoundFile& _outputAudioFile;
 
 	const float _gain;
 };
@@ -130,7 +133,7 @@ protected:
 class CorrectFileWithCompressor : public CorrectFile
 {
 public:
-	CorrectFileWithCompressor( Loudness::LoudnessAnalyser& analyser, SoundFile& inputAudioFile, SoundFile& outputAudioFile, const float gain, const float lookAhead, const float threshold )
+	CorrectFileWithCompressor( Loudness::LoudnessAnalyser& analyser, Loudness::io::SoundFile& inputAudioFile, Loudness::io::SoundFile& outputAudioFile, const float gain, const float lookAhead, const float threshold )
 		: CorrectFile( analyser, inputAudioFile, outputAudioFile, gain )
 		, _lookAhead( lookAhead )
 		, _threshold( threshold )
@@ -209,5 +212,8 @@ private:
 	const float _lookAhead;
 	const float _threshold;
 };
+
+}
+}
 
 #endif
