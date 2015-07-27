@@ -4,7 +4,7 @@
 #ifndef _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 #define _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 
-#define FILTER_SIZE 125.0
+#include <vector>
 
 namespace Loudness{
 
@@ -46,6 +46,8 @@ public:
 	}
 
 private:
+	static const int FILTER_SIZE = 125;
+
 	std::vector<float>  _historySamples;
 	std::vector<float>  _coefficients;
 	

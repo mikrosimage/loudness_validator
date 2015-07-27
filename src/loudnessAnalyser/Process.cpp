@@ -23,11 +23,11 @@ void Process::init ( const int numberOfChannels, const float frequencySampling, 
 	_frequencySampling = frequencySampling;
 	_fragmentSize      = (int) frequencySampling / 20;
 
-	for( int i=0; i < _numberOfChannels; i++)
+	for( size_t channel = 0; channel < _numberOfChannels; channel++ )
 	{
-		_filters[i].initializeFilterCoefficients ( _frequencySampling );
-		_truePeakMeter[i].initialize             ( _frequencySampling );
-		_truePeakMeter[i].enableOptimisation     ( enableOptimisation );
+		_filters[channel].initializeFilterCoefficients ( _frequencySampling );
+		_truePeakMeter[channel].initialize             ( _frequencySampling );
+		_truePeakMeter[channel].enableOptimisation     ( enableOptimisation );
 	}
 
 	reset();
@@ -44,7 +44,7 @@ void Process::reset ( )
 
 	_vectorOfTruePeakValue.clear();
 	
-	for (int c = 0; c < _numberOfChannels; c++)
+	for( size_t c = 0; c < _numberOfChannels; c++ )
 		_filters [c].reset ();
 	
 	s_measureLoudness.reset();
@@ -54,22 +54,23 @@ void Process::reset ( )
 
 void Process::setUpsamplingFrequencyForTruePeak ( const size_t frequency )
 {
-	for( int i=0; i< MAX_CHANNELS; i++)
+	for( size_t channel = 0; channel < MAX_CHANNELS; channel++ )
 	{
-		_truePeakMeter[i].setUpsamplingFrequencyInHz( frequency );
+		_truePeakMeter[channel].setUpsamplingFrequencyInHz( frequency );
 	}
 }
 
-void Process::process ( int numberOfFrames, float *inputData [] )
+void Process::process ( size_t nbSamples, float *inputData [] )
 {
-	int i, samplesForOneBloc;
+	size_t channel;
+	size_t samplesForOneBloc;
 
-	for (i = 0; i < _numberOfChannels; i++)
-		_inputPointerData [i] = inputData [i];
+	for( channel = 0; channel < _numberOfChannels; channel++ )
+		_inputPointerData [channel] = inputData [channel];
 
-	while ( numberOfFrames )
+	while ( nbSamples )
 	{
-		samplesForOneBloc = (_fragmentCount < numberOfFrames) ? _fragmentCount : numberOfFrames;
+		samplesForOneBloc = (_fragmentCount < nbSamples) ? _fragmentCount : nbSamples;
 
 		_fragmentPower += detectProcess ( samplesForOneBloc, _tmpTruePeakValue );
 
@@ -85,7 +86,7 @@ void Process::process ( int numberOfFrames, float *inputData [] )
 				_truePeakValue = std::max( _truePeakValue, _tmpTruePeakValue );
 				_tmpTruePeakValue = 0.0;
 				_countTruePeakPeriod = 0;
-				for (int channel = 0; channel < _numberOfChannels; channel++)
+				for( channel = 0; channel < _numberOfChannels; channel++ )
 					_truePeakMeter[channel].resetMaxValue();
 			}
 
@@ -98,36 +99,37 @@ void Process::process ( int numberOfFrames, float *inputData [] )
 			_writeIndex &= 63;
 		}
 
-		for ( i = 0; i < _numberOfChannels; i++ )
-		  _inputPointerData [i] += samplesForOneBloc;
+		for ( channel = 0; channel < _numberOfChannels; channel++ )
+		  _inputPointerData [channel] += samplesForOneBloc;
 
-		numberOfFrames -= samplesForOneBloc;
+		nbSamples -= samplesForOneBloc;
 	}
 }
 
-float Process::detectProcess ( const int numberOfFrames, float& truePeakValue )
+float Process::detectProcess ( const size_t nbSamples, float& truePeakValue )
 {
 	// process on a bloc of 50ms, compute the loudness value, and the found the TruePeak on the buffer
-	int   channel, frame;
+	size_t channel;
+	size_t sample;
 	float sumOfChannelPower, sumOfWeightedPowerChannels;
 	float filteredChannel;
-	float *sample;
+	float* sampleData;
 
 	truePeakValue = 0.0; // reset the TruePeak to be sure to take the max value after.
 
 	sumOfWeightedPowerChannels = 0;
 	for (channel = 0; channel < _numberOfChannels; channel++)
 	{
-		sample = _inputPointerData [channel];
+		sampleData = _inputPointerData [channel];
 		sumOfChannelPower = 0;
 
-		for ( frame = 0; frame < numberOfFrames; frame++ )
+		for ( sample = 0; sample < nbSamples; sample++ )
 		{
 			// process filtering value
-			filteredChannel = _filters      [channel].processSample( sample[frame] );
+			filteredChannel = _filters[channel].processSample( sampleData[sample] );
 
 			// process the true peak value (with inter-samples)
-			truePeakValue  = std::max( truePeakValue, _truePeakMeter[channel].processSample( sample[frame] ) );
+			truePeakValue = std::max( truePeakValue, _truePeakMeter[channel].processSample( sampleData[sample] ) );
 
 			// process power value of the filtered value
 			sumOfChannelPower += filteredChannel * filteredChannel;

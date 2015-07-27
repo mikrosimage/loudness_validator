@@ -2,9 +2,7 @@
 #include <iostream>
 
 PLoudProcess::PLoudProcess( Loudness::LoudnessLevels levels, float frequencyForTruePeak )
-	:
-		Loudness::LoudnessAnalyser( levels ),
-		isMultichannelFile ( false )
+	: Loudness::LoudnessAnalyser( levels )
 {
 	setUpsamplingFrequencyForTruePeak( frequencyForTruePeak );
 }
@@ -16,7 +14,7 @@ bool PLoudProcess::openAudioFiles( std::vector<std::string>& files )
 	{
 		filenames.push_back( files.at( i ) );
 		SoundFile* audioFile = new SoundFile();
-		bool tmpRet = audioFile->open_read ( files.at( i ).c_str() );
+		bool tmpRet = audioFile->open_read( files.at( i ).c_str() );
 		tmpRet = !tmpRet;
 		if( tmpRet )
 		{
@@ -46,7 +44,7 @@ float PLoudProcess::getProgramDuration()
 	if( audioFiles.size() < 1 )
 		return -1.0;
 	
-        return audioFiles.at(0)->size() / audioFiles.at(0)->rate();
+        return audioFiles.at(0)->getNbSamples() / audioFiles.at(0)->getSampleRate();
 }
 
 int PLoudProcess::getProgramLength()
@@ -54,7 +52,7 @@ int PLoudProcess::getProgramLength()
 	if( audioFiles.size() < 1 )
 		return -1.0;
 	
-        return audioFiles.at(0)->size();
+        return audioFiles.at(0)->getNbSamples();
 }
 
 void PLoudProcess::processAnalyseFile( void (*callback)(void*, int), void* object, double gain )
@@ -62,15 +60,15 @@ void PLoudProcess::processAnalyseFile( void (*callback)(void*, int), void* objec
 	int cumulOfSamples = 0;
 	SoundFile* audioFile = audioFiles.at(0);
 	
-	size_t channelsInBuffer = std::min( 5, audioFile->chan() );
-	int bufferSize = audioFile->rate () / 5;
+	size_t channelsInBuffer = std::min( 5, audioFile->getNbChannels() );
+	int bufferSize = audioFile->getSampleRate() / 5;
 	float *data [ channelsInBuffer ];
-	float* inpb = new float [ audioFile->chan() * bufferSize ];
+	float* inpb = new float [ audioFile->getNbChannels() * bufferSize ];
 	
 	for( size_t i = 0; i< channelsInBuffer; i++ )
 		data [i] = new float [bufferSize];
 	
-	initAndStart( channelsInBuffer, audioFile->rate() );
+	initAndStart( channelsInBuffer, audioFile->getSampleRate() );
 	
 	audioFile->seek( 0 );
 	
@@ -92,7 +90,7 @@ void PLoudProcess::processAnalyseFile( void (*callback)(void*, int), void* objec
 	}
 	
 	delete[] inpb;
-	for( int i=0; i< audioFile->chan(); i++ )
+	for( int i=0; i< audioFile->getNbChannels(); i++ )
 		delete[] data[i];
 }
 
@@ -185,16 +183,16 @@ void PLoudProcess::writeFile( void (*callback)(void*, int), void* object, double
 	
 	outputFilemane.insert( outputFilemane.length() - position, "_corrected" );
 	
-	audioOutputFile.open_write ( outputFilemane.c_str(), audioFiles.at(0)->type(), audioFiles.at(0)->form(), audioFiles.at(0)->rate(), audioFiles.at(0)->chan() );
+	audioOutputFile.open_write ( outputFilemane.c_str(), audioFiles.at(0)->getAudioCodec(), audioFiles.at(0)->getBitDepth(), audioFiles.at(0)->getSampleRate(), audioFiles.at(0)->getNbChannels() );
 	
 	// correction of the file, and write into a corrected file.
 	
-	int bufferSize = audioFiles.at(0)->rate () / 5;
-	size_t channelsInBuffer = std::min( 5, audioFiles.at(0)->chan() );
+	int bufferSize = audioFiles.at(0)->getSampleRate() / 5;
+	size_t channelsInBuffer = std::min( 5, audioFiles.at(0)->getNbChannels() );
 	size_t cumulOfSamples = 0;
 	
 	float* data [ channelsInBuffer ];
-	float* inpb  = new float [audioFiles.at(0)->chan() * bufferSize];
+	float* inpb  = new float [audioFiles.at(0)->getNbChannels() * bufferSize];
 	
 	for( size_t i=0; i < channelsInBuffer; i++ )
 		data [i] = new float [bufferSize];
@@ -217,7 +215,7 @@ void PLoudProcess::writeFile( void (*callback)(void*, int), void* object, double
 		callback( object, cumulOfSamples );
 	}
 	
-	for( int i=0; i< audioFiles.at(0)->chan(); i++ )
+	for( int i=0; i< audioFiles.at(0)->getNbChannels(); i++ )
 		delete[] data[i];
 	
 	audioOutputFile.close();

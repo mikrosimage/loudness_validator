@@ -26,7 +26,7 @@ public:
 
 	void        init                              ( const int numberOfChannels, const float frequencySampling, bool enableOptimisation = false );
 	void        reset                             ( );
-	void        process                           ( const int numberOfFrames, float *inputData [] );
+	void        process                           ( size_t nbSamples, float *inputData [] );
 
 	void        setUpsamplingFrequencyForTruePeak ( const size_t frequency );
 
@@ -66,13 +66,13 @@ public:
 	float       getCorrectionGain                 ( const LoudnessLevels& levels, const bool isShortProgram, bool limiterIsEnable ) { return s_measureLoudness.getCorrectionGain( levels, isShortProgram, getTruePeakValueInDb(), limiterIsEnable ); }
 	
 private:
-	// process on a bloc of 50ms, compute the loudness value, and the found the TruePeak on the buffer
-	float       detectProcess                     ( const int numberOfFrames, float& truePeakValue );
+	// process on a bloc of 50ms, compute the loudness value, and found the TruePeak on the buffer
+	float       detectProcess                     ( const size_t nbSamples, float& truePeakValue );
 
-	int                   _numberOfChannels;        // Number of channels, 2 or 5.
+	size_t                _numberOfChannels;        // Number of channels, 2 or 5.
 	float                 _frequencySampling;       // Sample rate.
-	int                   _fragmentSize;            // Fragments size, 1/20 second.
-	int                   _fragmentCount;           // Number of samples remaining in current fragment.
+	size_t                _fragmentSize;            // Fragments size, 1/20 second.
+	size_t                _fragmentCount;           // Number of samples remaining in current fragment.
 	float                 _fragmentPower;           // Power accumulated for current fragment.
 	int                   _writeIndex;              // Write index into _frpwr
 

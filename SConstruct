@@ -41,6 +41,7 @@ env.Append(
                 '#src',
                 sndfile_include,
                 boost_include,
+		'/usr/include/qt4',
         ],
         CXXFLAGS = [
                 '-Wall',
