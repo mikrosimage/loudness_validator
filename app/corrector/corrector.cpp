@@ -8,7 +8,6 @@
 #include <tool/io/SoundFile.hpp>
 #include <tool/common/WriteXml.hpp>
 #include <tool/common/ProcessFile.hpp>
-#include <tool/common/WriteCorrectedFile.hpp>
 
 bool showProgress = false;
 bool showResults = false;
@@ -164,7 +163,8 @@ int main( int argc, char** argv )
 					
 					if( enableLimiter )
 					{
-						writeCorrectedFile( loudnessAfterCorrection, audioFile, outputAudioFile, gain, lookaheadTime, threshold, progress );
+						CorrectFileWithCompressor corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain, lookaheadTime, threshold );
+						corrector( progress );
 					}
 					else
 					{

@@ -119,10 +119,95 @@ public:
 		}
 	}
 
-private:
+protected:
 	SoundFile& _outputAudioFile;
 
 	const float _gain;
+};
+
+// Functor to correct audio file with limiters
+// @note: experimental class
+class CorrectFileWithCompressor : public CorrectFile
+{
+public:
+	CorrectFileWithCompressor( Loudness::LoudnessAnalyser& analyser, SoundFile& inputAudioFile, SoundFile& outputAudioFile, const float gain, const float lookAhead, const float threshold )
+		: CorrectFile( analyser, inputAudioFile, outputAudioFile, gain )
+		, _lookAhead( lookAhead )
+		, _threshold( threshold )
+	{
+		for( size_t i = 0; i< _channelsInBuffer; i++ )
+		{
+			LookAheadLimiter* lim = new LookAheadLimiter( _lookAhead, _inputAudioFile.getSampleRate(), _threshold );
+			_limiters.push_back( lim );
+		}
+	}
+
+	~CorrectFileWithCompressor()
+	{
+		for( size_t i = 0; i < _channelsInBuffer; i++ )
+		{
+			delete _limiters.at( i );
+		}
+	}
+
+	void operator()( void (*callback)(int) )
+	{
+		while (true)
+		{
+			const size_t nbSamples = _inputAudioFile.read( _inpb, _bufferSize );
+			if( nbSamples == 0 ) break;
+
+			float* ptr = _inpb;
+
+			size_t nbSamplesCorrected = correctBuffer( _limiters, ptr, nbSamples, _channelsInBuffer, _gain );
+
+			// re-analyse output
+			ptr = _inpb;
+
+			for( size_t i = 0; i < nbSamples; i++ )
+			{
+				for( size_t c = 0; c < _channelsInBuffer; c++ )
+					_data [c][i] = (*ptr++);
+			}
+
+			_analyser.processSamples( _data, nbSamplesCorrected );
+			const size_t nbSamplesWritten = _outputAudioFile.write( _inpb, nbSamplesCorrected );
+
+			// Callback for progression
+			_cumulOfSamples += nbSamplesWritten;
+			callback( (float)_cumulOfSamples / _totalNbSamples * 100 );
+		}
+
+		while (true)
+		{
+			float* ptr = _inpb;
+
+			const size_t lastSamples = getLastData( _limiters, ptr, _bufferSize, _channelsInBuffer, _gain );
+
+			if( lastSamples == 0 ) break;
+			// re-analyse output
+			ptr = _inpb;
+
+			for( size_t i = 0; i < lastSamples; i++ )
+			{
+				for( size_t c = 0; c < _channelsInBuffer; c++ )
+					_data [c][i] = (*ptr++);
+			}
+
+			_analyser.processSamples( _data, lastSamples );
+			const size_t lastSamplesWritten = _outputAudioFile.write( _inpb, lastSamples );
+
+			// Callback for progression
+			_cumulOfSamples += lastSamplesWritten;
+			callback( (float)_cumulOfSamples / _totalNbSamples * 100 );
+		}
+	}
+
+private:	
+	std::vector<LookAheadLimiter*> _limiters;
+
+	const float _lookAhead;
+	const float _threshold;
 };
 
 #endif
