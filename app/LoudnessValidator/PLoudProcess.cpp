@@ -44,7 +44,7 @@ float PLoudProcess::getProgramDuration()
 	if( audioFiles.size() < 1 )
 		return -1.0;
 	
-        return audioFiles.at(0)->getBitDepth() / audioFiles.at(0)->getSampleRate();
+        return audioFiles.at(0)->getNbSamples() / audioFiles.at(0)->getSampleRate();
 }
 
 int PLoudProcess::getProgramLength()
@@ -52,7 +52,7 @@ int PLoudProcess::getProgramLength()
 	if( audioFiles.size() < 1 )
 		return -1.0;
 	
-        return audioFiles.at(0)->getBitDepth();
+        return audioFiles.at(0)->getNbSamples();
 }
 
 void PLoudProcess::processAnalyseFile( void (*callback)(void*, int), void* object, double gain )

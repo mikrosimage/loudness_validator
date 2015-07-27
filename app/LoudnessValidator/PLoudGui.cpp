@@ -445,8 +445,8 @@ void PLoudGui::openSeparatedFiles( )
 	bool rateIsEqual  = true;
 	bool sizeIsEqual  = true;
 	bool monoChannels = true;
-	int sampleRate = audioInputFile[0].getSampleRate();
-	size_t bitDepth = audioInputFile[0].getBitDepth();
+	const int sampleRate = audioInputFile[0].getSampleRate();
+	const uint32_t nbSamples = audioInputFile[0].getNbSamples();
 
 	for(size_t i=0; i < numberOfChannels; i++)
 	{
@@ -454,7 +454,7 @@ void PLoudGui::openSeparatedFiles( )
 		{
 			rateIsEqual = false;
 		}
-		if( bitDepth != audioInputFile[i].getBitDepth() )
+		if( nbSamples != audioInputFile[i].getNbSamples() )
 		{
 			sizeIsEqual = false;
 		}
@@ -488,12 +488,12 @@ void PLoudGui::openSeparatedFiles( )
 	
 	//ploudMeter->initAndStart( channelsInBuffer, rate );
 	
-	progressBar.setMaximum ( audioInputFile[0].getBitDepth() ),
+	progressBar.setMaximum ( audioInputFile[0].getNbSamples() ),
 	progressBar.setMinimum ( 0 );
 	
 	//analyseFiles( audioInputFile, channelsInBuffer, ploudMeter, progressBar );
 
-	programDuration = audioInputFile[0].getBitDepth() / audioInputFile[0].getSampleRate() ;
+	programDuration = audioInputFile[0].getNbSamples() / audioInputFile[0].getSampleRate() ;
 
 	for( size_t i=0; i<numberOfChannels; i++ )
 	{

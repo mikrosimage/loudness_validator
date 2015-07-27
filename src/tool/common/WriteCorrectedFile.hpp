@@ -10,7 +10,7 @@
 void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input, SoundFile& output, const float gain, void (*callback)(int) )
 {
 	int    bufferSize       = input.getSampleRate() / 5;
-	int    bitDepth         = input.getBitDepth();
+	const size_t totalNbSamples = input.getNbSamples();
 	size_t channelsInBuffer = input.getNbChannels();
 	size_t cumulOfSamples   = 0;
 	
@@ -49,7 +49,7 @@ void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input,
 		
 		samples = output.write( inpb, samples );
 		cumulOfSamples += samples;
-		callback( (float)cumulOfSamples / bitDepth * 100 );
+		callback( (float)cumulOfSamples / totalNbSamples * 100 );
 	}
 	for( size_t i=0; i < channelsInBuffer; i++ )
 		delete[] dataPerChannel[i];
@@ -59,7 +59,7 @@ void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input,
 void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input, SoundFile& output, const float gain, float lookAhead, float threshold, void (*callback)(int) )
 {
 	int    bufferSize       = input.getSampleRate() / 5;
-	int    bitDepth         = input.getBitDepth();
+	const size_t totalNbSamples = input.getNbSamples();
 	size_t channelsInBuffer = input.getNbChannels();
 	size_t cumulOfSamples   = 0;
 
@@ -108,7 +108,7 @@ void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input,
 		samples = output.write( inpb, s );
 		
 		cumulOfSamples += samples;
-		callback( (float)cumulOfSamples / bitDepth * 100 );
+		callback( (float)cumulOfSamples / totalNbSamples * 100 );
 	}
 	
 	while (true)
@@ -136,7 +136,7 @@ void writeCorrectedFile( Loudness::LoudnessAnalyser& analyser, SoundFile& input,
 		s = output.write( inpb, s );
 		
 		cumulOfSamples += s;
-		callback( (float)cumulOfSamples / bitDepth * 100 );
+		callback( (float)cumulOfSamples / totalNbSamples * 100 );
 	}
 	
 	

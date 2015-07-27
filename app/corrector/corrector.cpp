@@ -136,7 +136,7 @@ int main( int argc, char** argv )
 			if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 			{
 				if( printLength )
-					std::cout << "\t length = " << (float) audioFile.getBitDepth() / audioFile.getSampleRate() << "\t" << std::flush;
+					std::cout << "\t length = " << (float) audioFile.getNbSamples() / audioFile.getSampleRate() << "\t" << std::flush;
 				processAnalyseFile( analyser, audioFile, progress );
 				if( showResults )
 					analyser.printPloudValues();
