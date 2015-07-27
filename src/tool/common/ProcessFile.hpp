@@ -14,12 +14,12 @@ class Processor
 {
 public:
 	Processor( Loudness::LoudnessAnalyser& analyser, Loudness::io::SoundFile& audioFile )
-		: _analyser( analyser )
-		, _inputAudioFile( audioFile )
+		: _inputAudioFile( audioFile )
 		, _cumulOfSamples( 0 )
 		, _totalNbSamples( _inputAudioFile.getNbSamples() )
 		, _channelsInBuffer( std::min( 5, _inputAudioFile.getNbChannels() ) ) // skip last channel if 5.1 (LRE channel)
 		, _bufferSize( _inputAudioFile.getSampleRate() / 5 )
+		, _analyser( analyser )
 	{
 		_data = new float* [ _channelsInBuffer ];
 		_inpb = new float [ _inputAudioFile.getNbChannels() * _bufferSize ];
@@ -52,7 +52,6 @@ public:
 	}
 
 protected:
-	Loudness::LoudnessAnalyser& _analyser;
 	Loudness::io::SoundFile& _inputAudioFile;
 
 	size_t _cumulOfSamples;
@@ -60,9 +59,11 @@ protected:
 	const size_t _channelsInBuffer;
 	const size_t _bufferSize;
 
-	// data
-	float** _data;
-	float * _inpb;
+	float * _inpb;  // input pointer buffer
+
+private:
+	Loudness::LoudnessAnalyser& _analyser;
+	float** _data; // data to analyse loudness
 };
 
 // Functor to analyse audio file
