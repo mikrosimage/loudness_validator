@@ -8,7 +8,7 @@ void processAnalyseFile( Loudness::LoudnessAnalyser& analyser, SoundFile& audioF
 {
 	// Allocate buffers
 	size_t cumulOfSamples = 0;
-	const size_t bitDepth = audioFile.getBitDepth();
+	const size_t totalNbSamples = audioFile.getNbSamples();
 	const size_t channelsInBuffer = std::min( 5, audioFile.getNbChannels() ); // skip last channel if 5.1 (LRE channel)
 	const int bufferSize = audioFile.getSampleRate() / 5;
 	float* data [ channelsInBuffer ];
@@ -28,7 +28,7 @@ void processAnalyseFile( Loudness::LoudnessAnalyser& analyser, SoundFile& audioF
 		if (nbSamples == 0) break;
 
 		cumulOfSamples += nbSamples;
-		callback( (float)cumulOfSamples / bitDepth * 100 );
+		callback( (float)cumulOfSamples / totalNbSamples * 100 );
 		float* p = inpb;
 		for( size_t i = 0; i < nbSamples; i++ )
 		{
