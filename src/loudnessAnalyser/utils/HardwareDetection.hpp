@@ -1,10 +1,8 @@
 #ifndef _LOUDNESS_ANALYSER_UTIL_HARDWARE_DETECTION_HPP_
 #define _LOUDNESS_ANALYSER_UTIL_HARDWARE_DETECTION_HPP_
 
-namespace Loudness
-{
-namespace utils
-{
+namespace Loudness {
+namespace utils {
 
 class HardwareDetection
 {

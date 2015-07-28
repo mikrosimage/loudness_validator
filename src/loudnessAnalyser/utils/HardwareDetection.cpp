@@ -5,10 +5,8 @@
 #include <intrin.h>
 #endif
 
-namespace Loudness
-{
-namespace utils
-{
+namespace Loudness {
+namespace utils {
 
 static inline void cpuid( int functionnumber, unsigned long& a, unsigned long& b, unsigned long& c, unsigned long& d )
 {
