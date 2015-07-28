@@ -111,7 +111,7 @@ void Loudness::processRangeValues()
 	_maxRange = _histogram.foundMaxPercentageFrom( 95.0, _thresholdRange, 5.0 );
 }
 
-float Loudness::getCorrectionGain( const LoudnessLevels& levels, const bool isShortProgram, const float truePeakValue, bool limiterIsEnable )
+float Loudness::getCorrectionGain( const LoudnessLevels& levels, const bool isShortProgram, const float truePeakValue, const bool limiterIsEnable )
 {
 	float integratedThreshold;
 	float integratedLoudness;

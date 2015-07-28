@@ -33,12 +33,6 @@ if boost_root:
     boost_include = boost_root + '/include'
     boost_lib = boost_root + '/lib'
 
-# Use SSE2 (on by default)
-use_sse = ARGUMENTS.get( 'sse', 'on' )
-sse_flag = ''
-if use_sse == 'on':
-    sse_flag = '-DUSE_SSE2'
-
 # Create env
 env = Environment()
 
@@ -47,6 +41,7 @@ env.Append(
                 '#src',
                 sndfile_include,
                 boost_include,
+		'/usr/include/qt4',
         ],
         CXXFLAGS = [
                 '-Wall',
@@ -54,7 +49,6 @@ env.Append(
                 '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
                 '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
                 '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
-                sse_flag,
         ],
         LIBPATH = [
                 '#src',

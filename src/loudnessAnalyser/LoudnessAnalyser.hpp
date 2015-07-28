@@ -196,8 +196,9 @@ public:
 	 * Initialize and start the Loudness meter (Integrated, Momentary and Short-Term, LRA)
 	 * \param channels set the number of channels (default = 2 = stereo)
 	 * \param frequency set the frequency sampling (default = 48000 = 48kHz)
+	 * \param  enableOptimisation enable optimisation code (based on SIMD instructions)
 	**/
-	void initAndStart( const size_t& channels, const size_t& frequency );
+	void initAndStart( const size_t channels, const size_t frequency, const bool enableOptimization = true );
 
 
 	/**
@@ -205,7 +206,7 @@ public:
 	 * Call initAndStart() after to set coefficients filters correctly.
 	 * \param frequency frequency of the upsampling data in the TruePeakMeter
 	 */
-	void setUpsamplingFrequencyForTruePeak( const size_t& frequency );
+	void setUpsamplingFrequencyForTruePeak( const size_t frequency );
 
 	/**
 	 * Add samples need to be processed
@@ -331,7 +332,7 @@ public:
 	 * Return gain to correct loudness to a valid value
 	 * if it return 0.0 and loudness is invalid, this means it's impossible to correct without a remix
 	**/
-	float               getCorrectionGain( bool limiterIsEnable = false );
+	float               getCorrectionGain( const bool limiterIsEnable = false );
 
 protected:
 	std::auto_ptr<Process> p_process;

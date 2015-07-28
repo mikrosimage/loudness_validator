@@ -19,6 +19,7 @@ public:
 		, _totalNbSamples( _inputAudioFile.getNbSamples() )
 		, _channelsInBuffer( std::min( 5, _inputAudioFile.getNbChannels() ) ) // skip last channel if 5.1 (LRE channel)
 		, _bufferSize( _inputAudioFile.getSampleRate() / 5 )
+		, _enableOptimization( true )
 		, _analyser( analyser )
 	{
 		_data = new float* [ _channelsInBuffer ];
@@ -27,16 +28,21 @@ public:
 		for( size_t i = 0; i< _channelsInBuffer; i++ )
 			_data [i] = new float [ _bufferSize ];
 
-		// Init structures of analysis and seek at the beginning of the file
-		_analyser.initAndStart( _channelsInBuffer, _inputAudioFile.getSampleRate() );
-		_inputAudioFile.seek( 0 );
+		init();
 	}
-	
+
 	~Processor()
 	{
 		delete[] _inpb;
 		for( size_t i = 0; i < _channelsInBuffer; i++ )
 			delete[] _data[i];
+	}
+
+	void init()
+	{
+		// Init structures of analysis and seek at the beginning of the file
+		_analyser.initAndStart( _channelsInBuffer, _inputAudioFile.getSampleRate(), _enableOptimization );
+		_inputAudioFile.seek( 0 );
 	}
 
 	// Analyse the nbSamples in _data, and fill LoudnessAnalyser
@@ -51,6 +57,13 @@ public:
 		_analyser.processSamples( _data, nbSamples );
 	}
 
+	void enableOptimization( const bool enableOptimization = true )
+	{
+		_enableOptimization = enableOptimization;
+		init();
+	    
+	}
+
 protected:
 	Loudness::io::SoundFile& _inputAudioFile;
 
@@ -58,6 +71,8 @@ protected:
 	const size_t _totalNbSamples;
 	const size_t _channelsInBuffer;
 	const size_t _bufferSize;
+
+	bool _enableOptimization;  // if true, use SIMD instructions
 
 	float * _inpb;  // input pointer buffer
 

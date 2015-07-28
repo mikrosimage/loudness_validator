@@ -24,7 +24,7 @@ public:
 	~Process();
 
 
-	void        init                              ( const int numberOfChannels, const float frequencySampling );
+	void        init                              ( const int numberOfChannels, const float frequencySampling, const bool enableOptimization = true );
 	void        reset                             ( );
 	void        process                           ( size_t nbSamples, float *inputData [] );
 
@@ -63,7 +63,7 @@ public:
 	const std::vector<int> getHistogramShortTerm  ( ) { return s_shortTermLoudness.getHistogram(); }
 
 
-	float       getCorrectionGain                 ( const LoudnessLevels& levels, const bool isShortProgram, bool limiterIsEnable ) { return s_measureLoudness.getCorrectionGain( levels, isShortProgram, getTruePeakValueInDb(), limiterIsEnable ); }
+	float       getCorrectionGain                 ( const LoudnessLevels& levels, const bool isShortProgram, const bool limiterIsEnable ) { return s_measureLoudness.getCorrectionGain( levels, isShortProgram, getTruePeakValueInDb(), limiterIsEnable ); }
 	
 private:
 	// process on a bloc of 50ms, compute the loudness value, and found the TruePeak on the buffer

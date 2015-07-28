@@ -1,22 +1,21 @@
 
 #include "TruePeakMeter.hpp"
 #include "common.hpp"
+#include "utils/HardwareDetection.hpp"
 
 #include <cmath>
 #include <algorithm>
 
-#ifdef USE_SSE2
 #include <emmintrin.h>
-#endif
 
 namespace Loudness{
-
 
 TruePeakMeter::TruePeakMeter()
 	: _maxValue            ( 0 )
 	, _maxSignal           ( 0 )
 	, _frequencySampling   ( 0 )
 	, _upsamplingFrequency ( 192000 )
+	, _enableOptimization  ( true )
 {
 }
 
@@ -75,9 +74,16 @@ void TruePeakMeter::initialize( const int frequencySampling )
 			_orderedCoefficientsScale8[n].push_back( _coefficients.at( i + n ) );
 		}
 	}
+
+	// detect if hardware is able to launch SSE2 instructions
+	utils::HardwareDetection hardware;
+	if( ! hardware.hasSimdSSE2() )
+	{
+		_enableOptimization = false;
+	}
 }
 
-float TruePeakMeter::processSample( const double& sample )
+float TruePeakMeter::processSample( const double sample )
 {
 	_historySamples.erase( _historySamples.begin() );
 	_historySamples.push_back( sample );
@@ -85,9 +91,9 @@ float TruePeakMeter::processSample( const double& sample )
 	for( int interSampleIdx = 0; interSampleIdx < _factor; interSampleIdx++ )
 	{
 		double tmpValue = 0.0;
-#ifdef USE_SSE2
-		
-		if( _factor == 4.0 )
+
+		// SSE2 instructions
+		if( _enableOptimization && _factor == 4.0 )
 		{
 			__m128 sum = _mm_set1_ps ( 0.0 );
 			const size_t maxIter = _orderedCoefficientsScale4[interSampleIdx].size();
@@ -112,16 +118,7 @@ float TruePeakMeter::processSample( const double& sample )
 				tmpValue += _coefficients.at( interSampleIdx + iter ) * _historySamples.at( _historySamples.size() - historySampleIndex - 1 );
 			}
 		}
-#else
-		int historySampleIndex = 0;
-		for( int iter = 0; iter + interSampleIdx < FILTER_SIZE; iter += _factor, historySampleIndex++ )
-		{
-			tmpValue += _coefficients.at( interSampleIdx + iter ) * _historySamples.at( _historySamples.size() - historySampleIndex - 1 );
-			//std::cout << "detail :  " << interSampleIdx + iter << "\t" << _historySamples.size() - historySampleIndex - 1 << std::endl;
-			//std::cout << "detail :  " << sample << "\t" << _coefficients.at( interSampleIdx + iter ) << "\t" << _historySamples.at( _historySamples.size() - historySampleIndex - 1 ) <<"\t";
-			//std::cout << "+= " << _coefficients.at( interSampleIdx + iter ) * _historySamples.at( _historySamples.size() - historySampleIndex - 1 ) << std::endl;
-		}
-#endif
+
 		//std::cout << "\t\t\t\t\t\t" << interSampleIdx << " \t " << tmpValue << std::endl;
 		_maxValue = std::max ( _maxValue, std::abs( tmpValue ) );
 	}

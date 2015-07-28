@@ -17,7 +17,7 @@ Process::~Process()
 {
 }
 
-void Process::init ( const int numberOfChannels, const float frequencySampling )
+void Process::init ( const int numberOfChannels, const float frequencySampling, const bool enableOptimization )
 {
 	_numberOfChannels  = numberOfChannels;
 	_frequencySampling = frequencySampling;
@@ -27,6 +27,7 @@ void Process::init ( const int numberOfChannels, const float frequencySampling )
 	{
 		_filters[channel].initializeFilterCoefficients ( _frequencySampling );
 		_truePeakMeter[channel].initialize             ( _frequencySampling );
+		_truePeakMeter[channel].enableOptimization     ( enableOptimization );
 	}
 
 	reset();
@@ -94,8 +95,8 @@ void Process::process ( size_t nbSamples, float *inputData [] )
 			s_measureLoudness  .addFragment( _fragmentPower / _fragmentSize );
 
 			_fragmentCount = _fragmentSize;
-			_fragmentPower = 1e-30f;  // ???
-			_writeIndex &= 63;  // ???
+			_fragmentPower = 1e-30f;
+			_writeIndex &= 63;
 		}
 
 		for ( channel = 0; channel < _numberOfChannels; channel++ )
@@ -107,11 +108,12 @@ void Process::process ( size_t nbSamples, float *inputData [] )
 
 float Process::detectProcess ( const size_t nbSamples, float& truePeakValue )
 {
+	// process on a bloc of 50ms, compute the loudness value, and the found the TruePeak on the buffer
 	size_t channel;
 	size_t sample;
 	float sumOfChannelPower, sumOfWeightedPowerChannels;
 	float filteredChannel;
-	float *sampleData;
+	float* sampleData;
 
 	truePeakValue = 0.0; // reset the TruePeak to be sure to take the max value after.
 
