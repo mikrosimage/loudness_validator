@@ -1,6 +1,9 @@
 #include "WriteXml.hpp"
 #include <ctime>
 
+namespace Loudness {
+namespace tool {
+
 WriteXml::WriteXml( const char* filename, const char* srcAudioFilename )
 	: srcAudioFilename( srcAudioFilename )
 {
@@ -83,4 +86,7 @@ std::string WriteXml::getDate()
 	if( std::strftime( buffer, 32, "%a, %d.%m.%Y %H:%M:%S", timeInfo ) != 0 )
 		date.assign( buffer );
 	return date;
+}
+
+}
 }

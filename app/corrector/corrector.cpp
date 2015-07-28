@@ -8,7 +8,6 @@
 #include <tool/io/SoundFile.hpp>
 #include <tool/common/WriteXml.hpp>
 #include <tool/common/ProcessFile.hpp>
-#include <tool/common/WriteCorrectedFile.hpp>
 
 bool showProgress = false;
 bool showResults = false;
@@ -127,24 +126,25 @@ int main( int argc, char** argv )
 					filename.erase( filename.length() - 5, 5 );
 			
 			
-			SoundFile audioFile;
+			Loudness::io::SoundFile audioFile;
 			Loudness::LoudnessLevels levels =	standard == 0 ? Loudness::LoudnessLevels::Loudness_CST_R017() : 
 												standard == 1 ? Loudness::LoudnessLevels::Loudness_EBU_R128() : 
 																Loudness::LoudnessLevels::Loudness_ATSC_A85() ;
 
-			Loudness::LoudnessAnalyser analyser( levels );
+			Loudness::LoudnessAnalyser loudness( levels );
 			if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 			{
 				if( printLength )
 					std::cout << "\t length = " << (float) audioFile.getNbSamples() / audioFile.getSampleRate() << "\t" << std::flush;
-				processAnalyseFile( analyser, audioFile, progress );
+				Loudness::tool::AnalyseFile analyser( loudness, audioFile );
+				analyser( progress );
 				if( showResults )
-					analyser.printPloudValues();
+					loudness.printPloudValues();
 				
 				std::string xmlFile = filename;
 				xmlFile.append("_measured.xml");
-				WriteXml writerXml ( xmlFile.c_str(), filenames.at(i).c_str() );
-				writerXml.writeResults( "unknown", analyser );
+				Loudness::tool::WriteXml writerXml ( xmlFile.c_str(), filenames.at(i).c_str() );
+				writerXml.writeResults( "unknown", loudness );
 				
 				std::string outputFilename = filenames.at(i);
 				int insertPoint = 4;
@@ -152,22 +152,24 @@ int main( int argc, char** argv )
 					insertPoint = 5;
 				outputFilename.insert( outputFilename.length() - insertPoint, "_corrected" );
 				
-				SoundFile outputAudioFile;
-				Loudness::LoudnessAnalyser analyserAfterCorrection( levels );
+				Loudness::io::SoundFile outputAudioFile;
+				Loudness::LoudnessAnalyser loudnessAfterCorrection( levels );
 				
 				if( ! outputAudioFile.open_write( outputFilename.c_str(), audioFile.getAudioCodec(), audioFile.getBitDepth(), audioFile.getSampleRate(), audioFile.getNbChannels() ) )
 				{
-					gain = analyser.getCorrectionGain( enableLimiter );
+					gain = loudness.getCorrectionGain( enableLimiter );
 					std::cout << " => applying correction: " << gain << std::endl;
 					float threshold = std::pow ( 10, ( levels.truePeakTargetLevel ) / 20 );
 					
 					if( enableLimiter )
 					{
-						writeCorrectedFile( analyserAfterCorrection, audioFile, outputAudioFile, gain, lookaheadTime, threshold, progress );
+						Loudness::tool::CorrectFileWithCompressor corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain, lookaheadTime, threshold );
+						corrector( progress );
 					}
 					else
 					{
-						writeCorrectedFile( analyserAfterCorrection, audioFile, outputAudioFile, gain, progress );
+						Loudness::tool::CorrectFile corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain );
+						corrector( progress );
 					}
 					outputAudioFile.close();
 				}
@@ -177,15 +179,15 @@ int main( int argc, char** argv )
 				if( analyseAfterCorrecting )
 				{
 					if( showResults )
-						analyserAfterCorrection.printPloudValues();
+						loudnessAfterCorrection.printPloudValues();
 				}
 				
 				std::string xmlFileCorrected = filename;
 				xmlFileCorrected.append("_corrected_measured.xml");
 				
-				WriteXml writerXmlCorrected ( xmlFileCorrected.c_str(), outputFilename.c_str() );
-				writerXmlCorrected.writeResults( "unknown", analyserAfterCorrection );
-				result = analyserAfterCorrection.isValidProgram();
+				Loudness::tool::WriteXml writerXmlCorrected ( xmlFileCorrected.c_str(), outputFilename.c_str() );
+				writerXmlCorrected.writeResults( "unknown", loudnessAfterCorrection );
+				result = loudnessAfterCorrection.isValidProgram();
 			}
 			std::cout << std::endl;
 		}

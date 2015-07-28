@@ -27,6 +27,9 @@
 #include <stdint.h>
 #include <sndfile.h>
 
+namespace Loudness {
+namespace io {
+
 class SoundFile
 {
 public:
@@ -100,6 +103,9 @@ private:
 	int       _nbChannels;
 	uint32_t  _nbSamples;
 };
+
+}
+}
 
 #endif
 

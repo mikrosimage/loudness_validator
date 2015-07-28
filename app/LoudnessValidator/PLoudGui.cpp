@@ -317,7 +317,7 @@ void PLoudGui::callbackProgress( void* object, int value )
 	pb->setValue( value );
 }
 
-void analyseFiles( SoundFile* audioFile, size_t channels, Loudness::LoudnessAnalyser* ploudMeter, QProgressBar& progressBar, double gain = 1.0 )
+void analyseFiles( Loudness::io::SoundFile* audioFile, size_t channels, Loudness::LoudnessAnalyser* ploudMeter, QProgressBar& progressBar, double gain = 1.0 )
 {
 	int cumulOfSamples = 0;
 	int bufferSize = audioFile[0].getSampleRate() / 5;
@@ -410,7 +410,7 @@ void PLoudGui::openSeparatedFiles( )
 	}
 	
 	
-	SoundFile audioInputFile [5];
+	Loudness::io::SoundFile audioInputFile [5];
 	size_t    numberOfChannels = 0;
 
 	for(size_t i=0; i<5; i++)

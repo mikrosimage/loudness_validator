@@ -9,7 +9,11 @@
 
 #include <iostream>
 #include <cmath>
+
 using namespace boost::accumulators;
+
+namespace Loudness {
+namespace tool {
 
 class LookAheadLimiter
 {
@@ -35,5 +39,8 @@ private:
 	size_t processTime;
 	size_t lastSamples;
 };
+
+}
+}
 
 #endif

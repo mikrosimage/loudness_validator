@@ -23,6 +23,8 @@
 #include <string.h>
 #include "SoundFile.hpp"
 
+namespace Loudness {
+namespace io {
 
 SoundFile::SoundFile (void)
 {
@@ -211,4 +213,5 @@ int SoundFile::write (float *data, uint32_t frames)
 	return sf_writef_float (_sndfile, data, frames);
 }
 
-
+}
+}
