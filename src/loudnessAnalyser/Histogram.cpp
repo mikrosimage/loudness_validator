@@ -6,7 +6,7 @@
 namespace Loudness
 {
 
-Histogram::Histogram( float minValue, float maxValue, float step ) :
+Histogram::Histogram( const float minValue, const float maxValue, const float step ) :
 	_minValue      ( minValue ),
 	_maxValue      ( maxValue ),
 	_step          ( step ),
@@ -75,7 +75,7 @@ float Histogram::integratedValue( const float fromValue, const float toValue )
 }
 
 
-float Histogram::foundMinPercentageFrom( float percentile, float fromValue, float toValue )
+float Histogram::foundMinPercentageFrom( const float percentile, const float fromValue, const float toValue )
 {
 	int fromIndex = std::max( 0,                      convertDbToIndex( fromValue ) );
 	int toIndex   = std::min( (int)_histogram.size(), convertDbToIndex( toValue   ) );
@@ -108,7 +108,7 @@ float Histogram::foundMinPercentageFrom( float percentile, float fromValue, floa
 	return convertIndexToDb( correctIndex );
 }
 
-float Histogram::foundMaxPercentageFrom( float percentile, float fromValue, float toValue )
+float Histogram::foundMaxPercentageFrom( const float percentile, const float fromValue, const float toValue )
 {
 	int fromIndex = std::max( 0,                      convertDbToIndex( fromValue ) );
 	int toIndex   = std::min( (int)_histogram.size(), convertDbToIndex( toValue   ) );
@@ -137,7 +137,7 @@ std::vector<int> Histogram::getHistogram()
 	return _histogram;
 }
 
-void Histogram::applyGain( float gainInDb )
+void Histogram::applyGain( const float gainInDb )
 {
 	std::vector<int> histogram;
 	histogram.resize( _size, 0 );
@@ -156,12 +156,12 @@ void Histogram::applyGain( float gainInDb )
 	}
 }
 
-int Histogram::convertDbToIndex( float value )
+int Histogram::convertDbToIndex( const float value )
 {
 	return ( value - _minValue ) * _size / ( _maxValue - _minValue );
 }
 
-float Histogram::convertIndexToDb( int index )
+float Histogram::convertIndexToDb( const int index )
 {
 	return 1.f * index * ( _maxValue - _minValue ) / ( 1.0 * _size ) + _minValue;
 }
