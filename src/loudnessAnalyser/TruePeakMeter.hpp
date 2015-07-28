@@ -1,6 +1,7 @@
 #ifndef _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 #define _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 
+#include <cstdlib>
 #include <vector>
 
 namespace Loudness{
@@ -8,13 +9,13 @@ namespace Loudness{
 class TruePeakMeter
 {
 public:
-	TruePeakMeter( bool enableOptimization = false );
+	TruePeakMeter();
 
 	void initialize( const int frequencySampling );
 
-	void enableOptimization( bool enable )
+	void enableOptimization( bool enableOptimization = true )
 	{
-		_enableOptimization = enable;
+		_enableOptimization = enableOptimization;
 	}
 
 	void reset()
@@ -29,7 +30,7 @@ public:
 		_maxValue            = 0;
 	}
 
-	float processSample( const double& sample );
+	float processSample( const double sample );
 
 	float getTruePeakValue()
 	{
@@ -37,7 +38,7 @@ public:
 		return _maxValue;
 	}
 
-	void setUpsamplingFrequencyInHz ( int frequency )
+	void setUpsamplingFrequencyInHz ( const size_t frequency )
 	{
 		_upsamplingFrequency = frequency;
 	}

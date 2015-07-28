@@ -10,12 +10,12 @@
 
 namespace Loudness{
 
-TruePeakMeter::TruePeakMeter( const bool enableOptimization )
+TruePeakMeter::TruePeakMeter()
 	: _maxValue            ( 0 )
 	, _maxSignal           ( 0 )
 	, _frequencySampling   ( 0 )
 	, _upsamplingFrequency ( 192000 )
-	, _enableOptimization  ( enableOptimization )
+	, _enableOptimization  ( true )
 {
 }
 
@@ -75,7 +75,7 @@ void TruePeakMeter::initialize( const int frequencySampling )
 		}
 	}
 
-	// detect if hardware has not able to launch SSE2 instructions
+	// detect if hardware is able to launch SSE2 instructions
 	utils::HardwareDetection hardware;
 	if( ! hardware.hasSimdSSE2() )
 	{
@@ -83,7 +83,7 @@ void TruePeakMeter::initialize( const int frequencySampling )
 	}
 }
 
-float TruePeakMeter::processSample( const double& sample )
+float TruePeakMeter::processSample( const double sample )
 {
 	_historySamples.erase( _historySamples.begin() );
 	_historySamples.push_back( sample );
