@@ -19,7 +19,7 @@ public:
 		, _totalNbSamples( _inputAudioFile.getNbSamples() )
 		, _channelsInBuffer( std::min( 5, _inputAudioFile.getNbChannels() ) ) // skip last channel if 5.1 (LRE channel)
 		, _bufferSize( _inputAudioFile.getSampleRate() / 5 )
-		, _enableOptimization(true)
+		, _enableOptimization( true )
 		, _analyser( analyser )
 	{
 		_data = new float* [ _channelsInBuffer ];
@@ -30,7 +30,7 @@ public:
 
 		init();
 	}
-	
+
 	~Processor()
 	{
 		delete[] _inpb;

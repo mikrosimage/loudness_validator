@@ -1,3 +1,6 @@
+
+#include <vector>
+
 #ifndef _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 #define _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 
