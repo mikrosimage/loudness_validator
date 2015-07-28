@@ -10,12 +10,12 @@
 
 namespace Loudness{
 
-TruePeakMeter::TruePeakMeter( bool enableOptimisation ):
-	_maxValue            ( 0 ),
-	_maxSignal           ( 0 ),
-	_frequencySampling   ( 0 ),
-	_upsamplingFrequency ( 192000 ),
-	_enableOptimisation  ( enableOptimisation )
+TruePeakMeter::TruePeakMeter( const bool enableOptimization )
+	: _maxValue            ( 0 )
+	, _maxSignal           ( 0 )
+	, _frequencySampling   ( 0 )
+	, _upsamplingFrequency ( 192000 )
+	, _enableOptimization  ( enableOptimization )
 {
 }
 
@@ -79,7 +79,7 @@ void TruePeakMeter::initialize( const int frequencySampling )
 	utils::HardwareDetection hardware;
 	if( ! hardware.hasSimdSSE2() )
 	{
-		_enableOptimisation = false;
+		_enableOptimization = false;
 	}
 }
 
@@ -91,15 +91,18 @@ float TruePeakMeter::processSample( const double& sample )
 	for( int interSampleIdx = 0; interSampleIdx < _factor; interSampleIdx++ )
 	{
 		double tmpValue = 0.0;
-		
-		if( _enableOptimisation && _factor == 4.0 )
+
+		// SSE2 instructions
+		if( _enableOptimization && _factor == 4.0 )
 		{
 			__m128 sum = _mm_set1_ps ( 0.0 );
-			
-			for( size_t iter = 0; iter < _orderedCoefficientsScale4[interSampleIdx].size(); iter += 4 )
+			const size_t maxIter = _orderedCoefficientsScale4[interSampleIdx].size();
+			const float* coefsPtr = &_orderedCoefficientsScale4[interSampleIdx][0];
+			const float* histPtr = &_historySamples[0];
+			for( size_t iter = 0; iter < maxIter; iter += 4 )
 			{
-				__m128 input = _mm_loadu_ps( &_historySamples.at( iter ) );
-				__m128 coefs = _mm_loadu_ps( &_orderedCoefficientsScale4[interSampleIdx].at( iter ) );
+				__m128 input = _mm_loadu_ps( (histPtr+iter) );
+				__m128 coefs = _mm_loadu_ps( (coefsPtr+iter) );
 			
 				sum = _mm_add_ps( _mm_mul_ps( input, coefs ), sum );
 			}

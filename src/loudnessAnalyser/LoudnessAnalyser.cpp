@@ -17,11 +17,11 @@ LoudnessAnalyser::LoudnessAnalyser( LoudnessLevels& levels ) :
 {
 }
 
-void LoudnessAnalyser::initAndStart( const size_t& channels, const size_t& frequency, bool enableOptimisation )
+void LoudnessAnalyser::initAndStart( const size_t& channels, const size_t& frequency, const bool enableOptimization )
 {
 	s_durationInSamples = 0;
 	s_frequency         = frequency;
-	p_process->init( channels , frequency, enableOptimisation );
+	p_process->init( channels , frequency, enableOptimization );
 }
 
 void LoudnessAnalyser::setUpsamplingFrequencyForTruePeak( const size_t& frequency )
@@ -29,10 +29,10 @@ void LoudnessAnalyser::setUpsamplingFrequencyForTruePeak( const size_t& frequenc
 	p_process->setUpsamplingFrequencyForTruePeak( frequency );
 }
 
-void LoudnessAnalyser::processSamples( float** samplesData, const size_t& samples )
+void LoudnessAnalyser::processSamples( float** samplesData, const size_t nbSamples )
 {
-	s_durationInSamples += samples;
-	p_process->process( samples, samplesData );
+	s_durationInSamples += nbSamples;
+	p_process->process( nbSamples, samplesData );
 }
 
 bool LoudnessAnalyser::isShortProgram( )

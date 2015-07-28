@@ -22,7 +22,7 @@ int main( int argc, char** argv )
 {
 	bool validToProcess = false;
 	bool showTime = false;
-	bool enableOptimisation = true;
+	bool enableOptimization = true;
 	std::vector<int> standards;
 	std::vector<std::string> filenames;
 	
@@ -44,9 +44,9 @@ int main( int argc, char** argv )
 		{
 			showTime = true;
 		}
-		if( strcmp ( argv[i], "--disable-optimisation" ) == 0 )
+		if( strcmp ( argv[i], "--disable-optimization" ) == 0 )
 		{
-			enableOptimisation = false;
+			enableOptimization = false;
 		}
 		if( strncmp ( argv[i], "--standard=", 11 ) == 0 )
 		{
@@ -102,25 +102,27 @@ int main( int argc, char** argv )
 					filename.erase( filename.length() - 5, 5 );
 
 			filename.append("_PLoud.xml");
-			WriteXml writerXml ( filename.c_str(), filenames.at(i).c_str() );
+			Loudness::tool::WriteXml writerXml ( filename.c_str(), filenames.at(i).c_str() );
 
 			for( size_t j=0; j < standards.size(); j++ )
 			{
-				SoundFile audioFile;
+				Loudness::io::SoundFile audioFile;
 				Loudness::LoudnessLevels levels =	standards.at(j) == 0 ? Loudness::LoudnessLevels::Loudness_CST_R017() : 
 													standards.at(j) == 1 ? Loudness::LoudnessLevels::Loudness_EBU_R128() : 
 																		   Loudness::LoudnessLevels::Loudness_ATSC_A85() ;
 				
-				Loudness::LoudnessAnalyser analyser( levels );
+				Loudness::LoudnessAnalyser loudness( levels );
 				if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 				{
 					time( &start );
-					processAnalyseFile( analyser, audioFile, enableOptimisation, progress );
+					Loudness::tool::AnalyseFile analyser( loudness, audioFile );
+					analyser.enableOptimization( enableOptimization );
+					analyser( progress );
 					time( &end );
 					if( showResults )
-						analyser.printPloudValues();
+						loudness.printPloudValues();
 					audioFile.close();
-					writerXml.writeResults( "unknown", analyser );
+					writerXml.writeResults( "unknown", loudness );
 					double dif = difftime (end,start);
 					if( showTime )
 						std::cout << "processing time: " << dif << " seconds." << std::endl;

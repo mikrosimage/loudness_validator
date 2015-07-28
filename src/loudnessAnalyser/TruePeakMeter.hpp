@@ -1,23 +1,20 @@
-
-#include <vector>
-
 #ifndef _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 #define _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 
-#define FILTER_SIZE 125.0
+#include <vector>
 
 namespace Loudness{
 
 class TruePeakMeter
 {
 public:
-	TruePeakMeter( bool enableOptimisation = false );
+	TruePeakMeter( bool enableOptimization = false );
 
 	void initialize( const int frequencySampling );
 
-	void enableOptimisation( bool enable )
+	void enableOptimization( bool enable )
 	{
-		_enableOptimisation = enable;
+		_enableOptimization = enable;
 	}
 
 	void reset()
@@ -46,6 +43,9 @@ public:
 	}
 
 private:
+	static const int FILTER_SIZE = 125;
+
+private:
 	std::vector<float>  _historySamples;
 	std::vector<float>  _coefficients;
 	
@@ -58,9 +58,8 @@ private:
 	double              _upsamplingFrequency; /// output frequency sampling
 	double              _factor;              /// upsampling scale factor
 
-	bool                _enableOptimisation;
+	bool                _enableOptimization;
 };
-
 
 }
 

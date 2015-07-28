@@ -6,6 +6,9 @@
 #include <sstream>
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
+namespace Loudness {
+namespace tool {
+
 class WriteXml
 {
 public:
@@ -22,8 +25,10 @@ private:
 	std::string getDate();
 	
 	std::ofstream xmlFile;
-	const char* filename;
 	const char* srcAudioFilename;
 };
+
+}
+}
 
 #endif

@@ -31,9 +31,8 @@ public:
 	bool analyseToFindCorrectionGain( void (*callback)(void*, int), void* object, double& foundedGain );
 	
 private:
-	bool                     isMultichannelFile;
 	std::vector<std::string> filenames;
-	std::vector<SoundFile*>  audioFiles;
+	std::vector<Loudness::io::SoundFile*>  audioFiles;
 };
 
 #endif

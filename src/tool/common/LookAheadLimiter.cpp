@@ -1,5 +1,8 @@
 #include "LookAheadLimiter.hpp"
 
+namespace Loudness {
+namespace tool {
+
 /**
   * lookAheadTime [ ms ]
   * inputGain [ dB ]
@@ -60,4 +63,7 @@ bool LookAheadLimiter::getLastSamples( float &value )
 		return false;
 	
 	return true;
+}
+
+}
 }
