@@ -10,26 +10,26 @@ cd loudness_validator
 
 ## Build
 
-#### Build all tools in release mode.
+#### Build all tools in release mode
 ```
 scons
 ```
 
-#### Build in debug mode.
+#### Build in debug mode
 ```
 scons mode=debug
 ```
 
-#### Build with a specific path to libraries.
+#### Build with a specific path to libraries
 ```
-scons BOOST_ROOT=/path/to/boost SNDFILE_ROOT=/path/to/sndfile
+scons BOOST_ROOT=/path/to/boost SNDFILE_ROOT=/path/to/sndfile QTDIR=/path/to/qt4
 ```
 
 
 ## Dependencies
 
 #### Libraries
-libloudnessAnalyser and loudnessTools require libsndfile and boost accumulators.
+__libloudnessAnalyser__ and __loudnessTools__ require __libsndfile__ and __boost accumulators__.
 
 #### Apps
 loudnessValidator requires also Qt4.

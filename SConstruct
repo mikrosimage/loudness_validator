@@ -33,6 +33,9 @@ if boost_root:
     boost_include = boost_root + '/include'
     boost_lib = boost_root + '/lib'
 
+# Get qt4 install path
+qt4_dir = ARGUMENTS.get( 'QTDIR', '' )
+
 # Create env
 env = Environment()
 
@@ -41,7 +44,6 @@ env.Append(
                 '#src',
                 sndfile_include,
                 boost_include,
-		'/usr/include/qt4',
         ],
         CXXFLAGS = [
                 '-Wall',
@@ -58,12 +60,21 @@ env.Append(
         SHLIBVERSION = loudnessAssessmentVersionStr,
         )
 
+# Set QTDIR if specify
+if qt4_dir:
+    env.Append(
+        QTDIR = qt4_dir,
+    )
+
+# Set frameworks path if MacOS
 if env['PLATFORM'] == "darwin":
     env.Append(
         FRAMEWORKPATH = [
             '/usr/local/Frameworks',
         ],
     )
+
+# Add compile flags
 if buildMode == 'release':
     env.Append( CXXFLAGS=['-O3'] )
 else:
