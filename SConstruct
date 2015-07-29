@@ -34,7 +34,7 @@ if boost_root:
     boost_lib = boost_root + '/lib'
 
 # Get qt4 install path
-qt4_dir = ARGUMENTS.get( 'QTDIR', '' )
+qt4_dir = ARGUMENTS.get( 'QTDIR', '/usr/' )
 
 # Create env
 env = Environment()
