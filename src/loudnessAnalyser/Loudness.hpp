@@ -11,7 +11,9 @@
 #include "Histogram.hpp"
 #include "LoudnessAnalyser.hpp"
 
+#ifndef SWIG
 using namespace boost::accumulators;
+#endif
 
 namespace Loudness{
 

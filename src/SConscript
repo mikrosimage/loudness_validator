@@ -15,6 +15,32 @@ if not conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
     Exit(1)
 env = conf.Finish()
 
+# check swig application
+if env.WhereIs('swig'):
+    swigEnv = env.Clone()
+
+    # According to swig, going to use optimisations turned on with gcc (for example -O2), ensure you do not break C/C++ aliasing rules
+    if buildMode == 'release':
+        swigEnv.Append( CXXFLAGS=[
+            '-fno-strict-aliasing',
+            ] )
+
+    swigEnv.Append( SWIGFLAGS=[
+      '-c++',
+      '-java',
+      '-package',
+      'org.loudness',
+      '-fcompact',
+      '-small',
+      '-O',
+      '-Werror',
+    ] )
+
+    # loudnessAnalyser java shared library
+    jloudnessAnalyserLib = swigEnv.SharedLibrary('jloudnessAnalyser', 'loudnessAnalyser.i')
+    swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( 'lib', jloudnessAnalyserLib ) )
+else:
+    print 'Swig not found: will not built java binding.'
 
 # loudnessAnalyser shared library
 loudnessAnalyserLib = env.SharedLibrary(
