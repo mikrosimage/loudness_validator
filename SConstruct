@@ -17,6 +17,9 @@ buildMode = ARGUMENTS.get( 'mode', 'release' )
 if not ( buildMode in [ 'debug', 'release' ] ) :
         raise Exception( "Can't select build mode ['debug', 'release']" )
 
+# Get install path
+installPath = ARGUMENTS.get( 'install', '' )
+
 # Get libsndfile install path
 sndfile_root = ARGUMENTS.get( 'SNDFILE_ROOT', '' )
 sndfile_include = ''
@@ -73,6 +76,7 @@ else:
 
 Export( 'env' )
 Export( 'buildMode' )
+Export( 'installPath' )
 
 VariantDir( 'build/' + buildMode + '/src', 'src', duplicate = 0 )
 VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )

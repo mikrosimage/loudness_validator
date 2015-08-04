@@ -1,8 +1,7 @@
-import os
 Import( 'env' )
-
 Import( 'loudnessAnalyserLibStatic' )
 Import( 'loudnessToolsLibStatic' )
+Import( 'installPath' )
 
 loudnessAnalyserProgram = env.Program(
 	'loudness-analyser',
@@ -52,6 +51,6 @@ loudnessValidatorProgram = qtEnv.Program(
 	FRAMEWORKS = loudnessValidatorFrameworks,
 )
 
-env.Alias( 'install', env.Install( 'bin', loudnessAnalyserProgram ) )
-env.Alias( 'install', env.Install( 'bin', loudnessCorrectorProgram ) )
-env.Alias( 'install', env.Install( 'bin', loudnessValidatorProgram ) )
+env.Alias( 'install', env.Install( installPath + '/bin', loudnessAnalyserProgram ) )
+env.Alias( 'install', env.Install( installPath + '/bin', loudnessCorrectorProgram ) )
+env.Alias( 'install', env.Install( installPath + '/bin', loudnessValidatorProgram ) )
