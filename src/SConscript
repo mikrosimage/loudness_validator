@@ -30,7 +30,7 @@ if env.WhereIs('swig'):
       '-c++',
       '-java',
       '-package',
-      'org.loudness',
+      'org.ploud',
       '-fcompact',
       '-small',
       '-O',
