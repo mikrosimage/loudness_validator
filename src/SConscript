@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+import os
+
 Import( 'env' )
 Import( 'buildMode' )
 Import( 'installPath' )
@@ -45,8 +49,8 @@ if env.WhereIs('swig'):
     jar = swigEnv.Jar( target='jloudnessAnalyser.jar', source=['classes'], JARCHDIR='$SOURCE' )
 
     # Install
-    swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( installPath + '/lib/java', jloudnessAnalyserLib ) )
-    swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( installPath + '/share/java', jar ) )
+    swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'lib/java' ), jloudnessAnalyserLib ) )
+    swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'share/java' ), jar ) )
 else:
     print 'Swig not found: will not built java binding.'
 
@@ -82,13 +86,13 @@ loudnessToolsLibStatic = env.StaticLibrary(
     ],
 )
 
-env.Alias( 'install', env.InstallVersionedLib( installPath + '/lib', loudnessAnalyserLib ) )
-env.Alias( 'install', env.Install( installPath + '/lib', loudnessAnalyserLibStatic ) )
+env.Alias( 'install', env.InstallVersionedLib( os.path.join( installPath, 'lib' ), loudnessAnalyserLib ) )
+env.Alias( 'install', env.Install( os.path.join( installPath, 'lib' ), loudnessAnalyserLibStatic ) )
 
-env.Alias( 'install', env.InstallVersionedLib( installPath + '/lib', loudnessToolsLib ) )
-env.Alias( 'install', env.Install( installPath + '/lib', loudnessToolsLibStatic ) )
+env.Alias( 'install', env.InstallVersionedLib( os.path.join( installPath, 'lib' ), loudnessToolsLib ) )
+env.Alias( 'install', env.Install( os.path.join( installPath, 'lib' ), loudnessToolsLibStatic ) )
 
-env.Alias( 'install', env.Install( installPath + '/include/loudnessAnalyser', 'loudnessAnalyser/LoudnessAnalyser.hpp' ) )
+env.Alias( 'install', env.Install( os.path.join( installPath, 'include/loudnessAnalyser' ), 'loudnessAnalyser/LoudnessAnalyser.hpp' ) )
 
 Export( 'loudnessAnalyserLibStatic' )
 Export( 'loudnessToolsLibStatic' )

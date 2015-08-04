@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+import os
+
 EnsureSConsVersion( 2, 3, 0 )
 
 # Versions
@@ -78,8 +82,8 @@ Export( 'env' )
 Export( 'buildMode' )
 Export( 'installPath' )
 
-VariantDir( 'build/' + buildMode + '/src', 'src', duplicate = 0 )
-VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
+VariantDir( os.path.join( 'build', buildMode, 'src' ), 'src', duplicate = 0 )
+VariantDir( os.path.join( 'build', buildMode, 'app' ), 'app', duplicate = 0 )
 
-SConscript( 'src/SConscript', variant_dir = 'build/' + buildMode + '/src' )
-SConscript( 'app/SConscript', variant_dir = 'build/' + buildMode + '/app' )
+SConscript( 'src/SConscript', variant_dir = os.path.join( 'build', buildMode, 'src' ) )
+SConscript( 'app/SConscript', variant_dir = os.path.join( 'build', buildMode, 'app' ) )
