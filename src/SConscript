@@ -16,18 +16,21 @@ if not conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
 env = conf.Finish()
 
 
+# loudnessAnalyser shared library
 loudnessAnalyserLib = env.SharedLibrary(
     'loudnessAnalyser',
     Glob( 'loudnessAnalyser/*.cpp' ) +
     Glob( 'loudnessAnalyser/utils/*.cpp' ),
 )
 
+# loudnessAnalyser static library
 loudnessAnalyserLibStatic = env.StaticLibrary(
     'loudnessAnalyser',
     Glob( 'loudnessAnalyser/*.cpp' ) +
     Glob( 'loudnessAnalyser/utils/*.cpp' ),
 )
 
+# loudnessTools shared library
 loudnessToolsLib = env.SharedLibrary(
     'loudnessTools',
     Glob( 'tool/*/*.cpp' ),
@@ -36,6 +39,7 @@ loudnessToolsLib = env.SharedLibrary(
     ],
 )
 
+# loudnessTools static library
 loudnessToolsLibStatic = env.StaticLibrary(
     'loudnessTools',
     Glob( 'tool/*/*.cpp' ),
@@ -54,4 +58,3 @@ env.Alias( 'install', env.Install( 'include/loudnessAnalyser', "loudnessAnalyser
 
 Export( 'loudnessAnalyserLibStatic' )
 Export( 'loudnessToolsLibStatic' )
-
