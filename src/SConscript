@@ -39,7 +39,14 @@ if env.WhereIs('swig'):
 
     # loudnessAnalyser java shared library
     jloudnessAnalyserLib = swigEnv.SharedLibrary('jloudnessAnalyser', 'loudnessAnalyser.i')
+
+    # Create jar
+    classes = swigEnv.Java( target='classes', source='src', JAVAVERSION='1.7' )
+    jar = swigEnv.Jar( target='jloudnessAnalyser.jar', source=['classes'], JARCHDIR='$SOURCE' )
+
+    # Install
     swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( installPath + '/lib/java', jloudnessAnalyserLib ) )
+    swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( installPath + '/share/java', jar ) )
 else:
     print 'Swig not found: will not built java binding.'
 
