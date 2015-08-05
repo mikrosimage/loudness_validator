@@ -65,13 +65,14 @@ if env.WhereIs('swig'):
         ],
     )
 
-    # Create jar
-    classes = swigEnv.Java( target='classes', source='java', JAVAVERSION='1.7' )
-    jar = swigEnv.Jar( target='jloudnessAnalyser.jar', source=['classes'], JARCHDIR='$SOURCE' )
-
     # Install
     swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'lib/java' ), jloudnessAnalyserLib ) )
-    swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'share/java' ), jar ) )
+
+    # Compile java classes and create jar
+    if os.path.exists( os.path.join( Dir('.').abspath, 'java') ):
+        classes = swigEnv.Java( target='classes', source='java', JAVAVERSION='1.7' )
+        jar = swigEnv.Jar( target='jloudnessAnalyser.jar', source=['classes'], JARCHDIR='$SOURCE' )
+        swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'share/java' ), jar ) )
 else:
     print 'Swig not found: will not built java binding.'
 
