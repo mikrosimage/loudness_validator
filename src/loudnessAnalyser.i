@@ -16,6 +16,7 @@
 #include <loudnessAnalyser/Loudness.hpp>
 #include <loudnessAnalyser/Process.hpp>
 #include <loudnessAnalyser/TruePeakMeter.hpp>
+#include <loudnessAnalyser/utils/HardwareDetection.hpp>
 %}
 
 %include <loudnessAnalyser/LoudnessAnalyser.hpp>
@@ -24,3 +25,4 @@
 %include <loudnessAnalyser/Loudness.hpp>
 %include <loudnessAnalyser/Process.hpp>
 %include <loudnessAnalyser/TruePeakMeter.hpp>
+%include <loudnessAnalyser/utils/HardwareDetection.hpp>
