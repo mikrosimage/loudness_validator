@@ -1,19 +1,13 @@
 Import( 'env' )
 
-# check libsndfile
-conf = Configure(env)
-if not conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
-    print 'Error: did not find sndfile library, exiting.'
-    Exit(1)
-env = conf.Finish()
+### loudness Analyser ###
 
-# check boost accumulators (header only library) 
+# check boost accumulators (header only library)
 conf = Configure(env)
 if not conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
     print 'Error: did not find boost accumulators headers, exiting.'
     Exit(1)
 env = conf.Finish()
-
 
 loudnessAnalyserLib = env.SharedLibrary(
     'loudnessAnalyser',
@@ -27,30 +21,41 @@ loudnessAnalyserLibStatic = env.StaticLibrary(
     Glob( 'loudnessAnalyser/utils/*.cpp' ),
 )
 
-loudnessToolsLib = env.SharedLibrary(
-    'loudnessTools',
-    Glob( 'tool/*/*.cpp' ),
-    LIBS = [
-        "sndfile",
-    ],
-)
-
-loudnessToolsLibStatic = env.StaticLibrary(
-    'loudnessTools',
-    Glob( 'tool/*/*.cpp' ),
-    LIBS = [
-        "sndfile",
-    ],
-)
-
+# Install loudnessAnalyser libs
 env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessAnalyserLib ) )
 env.Alias( 'install', env.Install( 'lib', loudnessAnalyserLibStatic ) )
-
-env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessToolsLib ) )
-env.Alias( 'install', env.Install( 'lib', loudnessToolsLibStatic ) )
-
+# Install loudnessAnalyser headers
 env.Alias( 'install', env.Install( 'include/loudnessAnalyser', "loudnessAnalyser/LoudnessAnalyser.hpp" ) )
 
 Export( 'loudnessAnalyserLibStatic' )
-Export( 'loudnessToolsLibStatic' )
 
+### loudness Tools ###
+
+# check libsndfile
+conf = Configure(env)
+if conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
+    env = conf.Finish()
+
+    loudnessToolsLib = env.SharedLibrary(
+        'loudnessTools',
+        Glob( 'tool/*/*.cpp' ),
+        LIBS = [
+            "sndfile",
+        ],
+    )
+
+    loudnessToolsLibStatic = env.StaticLibrary(
+        'loudnessTools',
+        Glob( 'tool/*/*.cpp' ),
+        LIBS = [
+            "sndfile",
+        ],
+    )
+
+    # Install
+    env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessToolsLib ) )
+    env.Alias( 'install', env.Install( 'lib', loudnessToolsLibStatic ) )
+
+    Export( 'loudnessToolsLibStatic' )
+else:
+    print 'Warning: sndfile library not found, will not build loudnessTools.'
