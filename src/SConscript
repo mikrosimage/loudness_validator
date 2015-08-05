@@ -54,6 +54,7 @@ if env.WhereIs('swig'):
       '-O',
       '-Werror',
     ] )
+    swigEnv.Append( SWIGOUTDIR= os.path.join( Dir('.').abspath, 'java') )
 
     # loudnessAnalyser java shared library
     jloudnessAnalyserLib = swigEnv.SharedLibrary(
@@ -65,7 +66,7 @@ if env.WhereIs('swig'):
     )
 
     # Create jar
-    classes = swigEnv.Java( target='classes', source='src', JAVAVERSION='1.7' )
+    classes = swigEnv.Java( target='classes', source='java', JAVAVERSION='1.7' )
     jar = swigEnv.Jar( target='jloudnessAnalyser.jar', source=['classes'], JARCHDIR='$SOURCE' )
 
     # Install
