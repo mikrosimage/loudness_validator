@@ -24,6 +24,7 @@ loudnessAnalyserLibStatic = env.StaticLibrary(
 # Install loudnessAnalyser libs
 env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessAnalyserLib ) )
 env.Alias( 'install', env.Install( 'lib', loudnessAnalyserLibStatic ) )
+
 # Install loudnessAnalyser headers
 env.Alias( 'install', env.Install( 'include/loudnessAnalyser', "loudnessAnalyser/LoudnessAnalyser.hpp" ) )
 
@@ -40,7 +41,7 @@ if conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
         'loudnessTools',
         Glob( 'tool/*/*.cpp' ),
         LIBS = [
-            "sndfile",
+            'sndfile',
         ],
     )
 
@@ -48,7 +49,7 @@ if conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
         'loudnessTools',
         Glob( 'tool/*/*.cpp' ),
         LIBS = [
-            "sndfile",
+            'sndfile',
         ],
     )
 
@@ -58,4 +59,4 @@ if conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
 
     Export( 'loudnessToolsLibStatic' )
 else:
-    print 'Warning: sndfile library not found, will not build loudnessTools.'
+    print('Warning: sndfile library not found, will not build loudnessTools.')
