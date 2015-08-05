@@ -20,6 +20,20 @@ if not conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
     Exit(1)
 env = conf.Finish()
 
+# loudnessAnalyser shared library
+loudnessAnalyserLib = env.SharedLibrary(
+    'loudnessAnalyser',
+    Glob( 'loudnessAnalyser/*.cpp' ) +
+    Glob( 'loudnessAnalyser/utils/*.cpp' ),
+)
+
+# loudnessAnalyser static library
+loudnessAnalyserLibStatic = env.StaticLibrary(
+    'loudnessAnalyser',
+    Glob( 'loudnessAnalyser/*.cpp' ) +
+    Glob( 'loudnessAnalyser/utils/*.cpp' ),
+)
+
 # check swig application
 if env.WhereIs('swig'):
     swigEnv = env.Clone()
@@ -42,7 +56,13 @@ if env.WhereIs('swig'):
     ] )
 
     # loudnessAnalyser java shared library
-    jloudnessAnalyserLib = swigEnv.SharedLibrary('jloudnessAnalyser', 'loudnessAnalyser.i')
+    jloudnessAnalyserLib = swigEnv.SharedLibrary(
+        'jloudnessAnalyser',
+        'loudnessAnalyser.i',
+        LIBS = [
+            loudnessAnalyserLib,
+        ],
+    )
 
     # Create jar
     classes = swigEnv.Java( target='classes', source='src', JAVAVERSION='1.7' )
@@ -53,20 +73,6 @@ if env.WhereIs('swig'):
     swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'share/java' ), jar ) )
 else:
     print 'Swig not found: will not built java binding.'
-
-# loudnessAnalyser shared library
-loudnessAnalyserLib = env.SharedLibrary(
-    'loudnessAnalyser',
-    Glob( 'loudnessAnalyser/*.cpp' ) +
-    Glob( 'loudnessAnalyser/utils/*.cpp' ),
-)
-
-# loudnessAnalyser static library
-loudnessAnalyserLibStatic = env.StaticLibrary(
-    'loudnessAnalyser',
-    Glob( 'loudnessAnalyser/*.cpp' ) +
-    Glob( 'loudnessAnalyser/utils/*.cpp' ),
-)
 
 # loudnessTools shared library
 loudnessToolsLib = env.SharedLibrary(
