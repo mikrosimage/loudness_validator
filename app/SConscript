@@ -35,11 +35,11 @@ if 'loudnessToolsLibStatic' in locals():
 	### loudness-validator ###
 
 	# check qt4 library
-	conf = Configure(env)
+	qtEnv = env.Clone()
+	conf = Configure(qtEnv)
 	if conf.CheckLib('QtCore', language='cxx'):
-	    env = conf.Finish()
+	    qtEnv = conf.Finish()
 
-	    qtEnv = env.Clone()
 	    qtEnv.Tool('qt')
 
 	    loudnessValidatorLibraries = [
