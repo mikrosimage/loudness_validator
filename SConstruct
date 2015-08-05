@@ -46,8 +46,6 @@ env.Append(
                 boost_include,
         ],
         CXXFLAGS = [
-                '-Wall',
-                '-fPIC',
                 '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
                 '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
                 '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
@@ -75,10 +73,12 @@ if env['PLATFORM'] == "darwin":
     )
 
 # Add compile flags
-if buildMode == 'release':
-    env.Append( CXXFLAGS=['-O3'] )
-else:
-    env.Append( CXXFLAGS=['-g'] )
+if env['CC'] == 'gcc':
+    env.Append( CXXFLAGS = ['-Wall', '-fPIC'] )
+    if buildMode == 'release':
+        env.Append( CXXFLAGS = ['-O3'] )
+    else:
+        env.Append( CXXFLAGS=['-g'] )
 
 # Build src and app
 
