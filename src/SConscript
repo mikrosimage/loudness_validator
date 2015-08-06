@@ -48,6 +48,10 @@ if env['PLATFORM'] == 'win32':
 if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
     sndfileEnv = conf.Finish()
 
+    loudnessToolsLibName = 'loudnessTools'
+    # add version number to the name of the shared library if Windows platform
+    if env['PLATFORM'] == 'win32':
+        loudnessToolsLibName += '-' + loudnessAssessmentVersionStr
     loudnessToolsLib = sndfileEnv.SharedLibrary(
         loudnessToolsLibName,
         Glob( 'tool/*/*.cpp' ),
