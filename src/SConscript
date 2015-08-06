@@ -40,14 +40,19 @@ Export( 'loudnessAnalyserLibStatic' )
 # check libsndfile
 sndfileEnv = env.Clone()
 conf = Configure(sndfileEnv)
-if conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
+
+sndfileLib = 'sndfile'
+if env['PLATFORM'] == 'win32':
+    sndfileLib = 'lib' + sndfileLib
+
+if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
     sndfileEnv = conf.Finish()
 
     loudnessToolsLib = sndfileEnv.SharedLibrary(
-        'loudnessTools',
+        loudnessToolsLibName,
         Glob( 'tool/*/*.cpp' ),
         LIBS = [
-            'sndfile',
+            sndfileLib,
         ],
     )
 
@@ -55,7 +60,7 @@ if conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
         'loudnessTools',
         Glob( 'tool/*/*.cpp' ),
         LIBS = [
-            'sndfile',
+            sndfileLib,
         ],
     )
 

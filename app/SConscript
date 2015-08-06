@@ -5,6 +5,11 @@ Import( '*' )
 
 if 'loudnessToolsLibStatic' in locals():
 
+	# Get sndfile lib name
+	sndfileLib = 'sndfile'
+	if env['PLATFORM'] == 'win32':
+	    sndfileLib = 'lib' + sndfileLib
+
 	### loudness-analyser ###
 
 	loudnessAnalyserProgram = env.Program(
@@ -13,7 +18,7 @@ if 'loudnessToolsLibStatic' in locals():
 		LIBS = [
 			loudnessAnalyserLibStatic,
 			loudnessToolsLibStatic,
-			'sndfile',
+			sndfileLib,
 		]
 	)
 
@@ -25,7 +30,7 @@ if 'loudnessToolsLibStatic' in locals():
 		LIBS = [
 			loudnessAnalyserLibStatic,
 			loudnessToolsLibStatic,
-			'sndfile',
+			sndfileLib,
 		]
 	)
 
@@ -45,7 +50,7 @@ if 'loudnessToolsLibStatic' in locals():
 	    loudnessValidatorLibraries = [
 	        loudnessAnalyserLibStatic,
 	        loudnessToolsLibStatic,
-	        'sndfile',
+	        sndfileLib,
 	    ]
 
 	    loudnessValidatorFrameworks = []
