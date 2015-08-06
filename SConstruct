@@ -1,3 +1,5 @@
+import os
+
 EnsureSConsVersion( 2, 3, 0 )
 
 # Versions
@@ -22,16 +24,16 @@ sndfile_root = ARGUMENTS.get( 'SNDFILE_ROOT', '' )
 sndfile_include = ''
 sndfile_lib = ''
 if sndfile_root:
-    sndfile_include = sndfile_root + '/include'
-    sndfile_lib = sndfile_root + '/lib'
+    sndfile_include = os.path.join( sndfile_root, 'include' )
+    sndfile_lib = os.path.join( sndfile_root, 'lib' )
 
 # Get libboost install path
 boost_root = ARGUMENTS.get( 'BOOST_ROOT', '' )
 boost_include = ''
 boost_lib = ''
 if boost_root:
-    boost_include = boost_root + '/include'
-    boost_lib = boost_root + '/lib'
+    boost_include = os.path.join( boost_root, 'include' )
+    boost_lib = os.path.join( boost_root, 'lib' )
 
 # Get qt4 install path
 qt4_dir = ARGUMENTS.get( 'QTDIR', '/usr/' )
