@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#define LoudnessExport __declspec(dllexport)
+
 #ifndef PLOUD_NO_COUT
 /**
  * @param[in] ... : all parameters with an operator << defined
