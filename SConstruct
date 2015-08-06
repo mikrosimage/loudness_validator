@@ -80,7 +80,16 @@ if env['CC'] == 'gcc':
     if buildMode == 'release':
         env.Append( CXXFLAGS = ['-O3'] )
     else:
-        env.Append( CXXFLAGS=['-g'] )
+        env.Append( CXXFLAGS = ['-g'] )
+elif env['CC'] == 'cl':  # msvc
+    # Exception handling used by the compiler
+    env.Append( CXXFLAGS = ['/EHsc'] )
+    if buildMode == 'release':
+        # Use the multithread, static version of the run-time library
+        env.Append( CXXFLAGS = ['/MT'] )
+    else:
+        # Plus DEBUG option
+        env.Append( CXXFLAGS = ['/MTd'] )
 
 # Build src and app
 
