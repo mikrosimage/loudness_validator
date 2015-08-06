@@ -94,6 +94,7 @@ elif env['CC'] == 'cl':  # msvc
 # Build src and app
 
 Export( 'env' )
+Export( 'loudnessAssessmentVersionStr' )
 
 VariantDir( 'build/' + buildMode + '/src', 'src', duplicate = 0 )
 VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
