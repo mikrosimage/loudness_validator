@@ -56,6 +56,7 @@ if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
         loudnessToolsLibName,
         Glob( 'tool/*/*.cpp' ),
         LIBS = [
+            loudnessAnalyserLibStatic,
             sndfileLib,
         ],
     )
@@ -64,6 +65,7 @@ if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
         'loudnessTools',
         Glob( 'tool/*/*.cpp' ),
         LIBS = [
+            loudnessAnalyserLibStatic,
             sndfileLib,
         ],
     )
