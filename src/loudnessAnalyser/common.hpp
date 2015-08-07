@@ -2,6 +2,9 @@
 #ifndef _LOUDNESS_ANALYSER_COMMON_HPP_
 #define _LOUDNESS_ANALYSER_COMMON_HPP_
 
+#define MAX_CHANNELS 5
+#define FRAGMENT_SIZE 64
+
 #include "system.hpp"
 
 #include <iostream>
