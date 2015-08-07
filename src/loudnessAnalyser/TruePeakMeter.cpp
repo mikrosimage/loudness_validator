@@ -1,11 +1,11 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 #include "TruePeakMeter.hpp"
 #include "common.hpp"
 #include "utils/HardwareDetection.hpp"
 
-#include <cmath>
 #include <algorithm>
-
 #include <emmintrin.h>
 
 namespace Loudness{

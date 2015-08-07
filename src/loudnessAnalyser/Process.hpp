@@ -2,6 +2,7 @@
 #ifndef _LOUDNESS_ANALYSER_PROCESS_HPP_
 #define _LOUDNESS_ANALYSER_PROCESS_HPP_
 
+#include "common.hpp"
 #include "Loudness.hpp"
 #include "Filter.hpp"
 #include "Histogram.hpp"
@@ -11,9 +12,6 @@
 #include <cmath>
 
 namespace Loudness{
-
-#define MAX_CHANNELS 5
-#define FRAGMENT_SIZE 64
 
 struct LoudnessLevels;
 

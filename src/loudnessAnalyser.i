@@ -10,6 +10,8 @@
 %template(FloatVector) std::vector< float >;
 
 %{
+#include <loudnessAnalyser/system.hpp>
+#include <loudnessAnalyser/common.hpp>
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 #include <loudnessAnalyser/Filter.hpp>
 #include <loudnessAnalyser/Histogram.hpp>
@@ -19,6 +21,7 @@
 #include <loudnessAnalyser/utils/HardwareDetection.hpp>
 %}
 
+%include <loudnessAnalyser/common.hpp>
 %include <loudnessAnalyser/LoudnessAnalyser.hpp>
 %include <loudnessAnalyser/Filter.hpp>
 %include <loudnessAnalyser/Histogram.hpp>

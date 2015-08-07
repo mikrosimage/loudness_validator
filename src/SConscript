@@ -5,15 +5,11 @@ import os
 Import( 'env' )
 Import( 'buildMode' )
 Import( 'installPath' )
+Import( 'loudnessAssessmentVersionStr' )
 
-# check libsndfile
-conf = Configure(env)
-if not conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
-    print 'Error: did not find sndfile library, exiting.'
-    Exit(1)
-env = conf.Finish()
+### loudness Analyser ###
 
-# check boost accumulators (header only library) 
+# check boost accumulators (header only library)
 conf = Configure(env)
 if not conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
     print 'Error: did not find boost accumulators headers, exiting.'
@@ -21,8 +17,13 @@ if not conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
 env = conf.Finish()
 
 # loudnessAnalyser shared library
+loudnessAnalyserLibName = 'loudnessAnalyser'
+# add version number to the name of the shared library if Windows platform
+if env['PLATFORM'] == 'win32':
+    loudnessAnalyserLibName += '-' + loudnessAssessmentVersionStr
+
 loudnessAnalyserLib = env.SharedLibrary(
-    'loudnessAnalyser',
+    loudnessAnalyserLibName,
     Glob( 'loudnessAnalyser/*.cpp' ) +
     Glob( 'loudnessAnalyser/utils/*.cpp' ),
 )
@@ -33,6 +34,15 @@ loudnessAnalyserLibStatic = env.StaticLibrary(
     Glob( 'loudnessAnalyser/*.cpp' ) +
     Glob( 'loudnessAnalyser/utils/*.cpp' ),
 )
+
+# Install loudnessAnalyser libs
+env.Alias( 'install', env.InstallVersionedLib( os.path.join( installPath, 'lib' ), loudnessAnalyserLib ) )
+env.Alias( 'install', env.Install( os.path.join( installPath, 'lib' ), loudnessAnalyserLibStatic ) )
+
+# Install loudnessAnalyser headers
+env.Alias( 'install', env.Install( os.path.join( installPath, 'include/loudnessAnalyser' ), "loudnessAnalyser/LoudnessAnalyser.hpp" ) )
+
+Export( 'loudnessAnalyserLibStatic' )
 
 # check swig application
 if env.WhereIs('swig'):
@@ -66,41 +76,56 @@ if env.WhereIs('swig'):
     )
 
     # Install
-    swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'lib/java' ), jloudnessAnalyserLib ) )
+    swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'lib', 'java' ), jloudnessAnalyserLib ) )
 
     # Compile java classes and create jar
     if os.path.exists( os.path.join( Dir('.').abspath, 'java') ):
         classes = swigEnv.Java( target='classes', source='java', JAVAVERSION='1.7' )
         jar = swigEnv.Jar( target='jloudnessAnalyser.jar', source=['classes'], JARCHDIR='$SOURCE' )
-        swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'share/java' ), jar ) )
+        swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'share', 'java' ), jar ) )
 else:
     print 'Swig not found: will not built java binding.'
 
-# loudnessTools shared library
-loudnessToolsLib = env.SharedLibrary(
-    'loudnessTools',
-    Glob( 'tool/*/*.cpp' ),
-    LIBS = [
-        "sndfile",
-    ],
-)
 
-# loudnessTools static library
-loudnessToolsLibStatic = env.StaticLibrary(
-    'loudnessTools',
-    Glob( 'tool/*/*.cpp' ),
-    LIBS = [
-        "sndfile",
-    ],
-)
+### loudness Tools ###
 
-env.Alias( 'install', env.InstallVersionedLib( os.path.join( installPath, 'lib' ), loudnessAnalyserLib ) )
-env.Alias( 'install', env.Install( os.path.join( installPath, 'lib' ), loudnessAnalyserLibStatic ) )
+# check libsndfile
+sndfileEnv = env.Clone()
+conf = Configure(sndfileEnv)
 
-env.Alias( 'install', env.InstallVersionedLib( os.path.join( installPath, 'lib' ), loudnessToolsLib ) )
-env.Alias( 'install', env.Install( os.path.join( installPath, 'lib' ), loudnessToolsLibStatic ) )
+sndfileLib = 'sndfile'
+if env['PLATFORM'] == 'win32':
+    sndfileLib = 'lib' + sndfileLib
 
-env.Alias( 'install', env.Install( os.path.join( installPath, 'include/loudnessAnalyser' ), 'loudnessAnalyser/LoudnessAnalyser.hpp' ) )
+if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
+    sndfileEnv = conf.Finish()
 
-Export( 'loudnessAnalyserLibStatic' )
-Export( 'loudnessToolsLibStatic' )
+    loudnessToolsLibName = 'loudnessTools'
+    # add version number to the name of the shared library if Windows platform
+    if env['PLATFORM'] == 'win32':
+        loudnessToolsLibName += '-' + loudnessAssessmentVersionStr
+    loudnessToolsLib = sndfileEnv.SharedLibrary(
+        loudnessToolsLibName,
+        Glob( 'tool/*/*.cpp' ),
+        LIBS = [
+            loudnessAnalyserLibStatic,
+            sndfileLib,
+        ],
+    )
+
+    loudnessToolsLibStatic = sndfileEnv.StaticLibrary(
+        'loudnessTools',
+        Glob( 'tool/*/*.cpp' ),
+        LIBS = [
+            loudnessAnalyserLibStatic,
+            sndfileLib,
+        ],
+    )
+
+    # Install
+    sndfileEnv.Alias( 'install', sndfileEnv.InstallVersionedLib( os.path.join( installPath, 'lib' ), loudnessToolsLib ) )
+    sndfileEnv.Alias( 'install', sndfileEnv.Install( os.path.join( installPath, 'lib' ), loudnessToolsLibStatic ) )
+
+    Export( 'loudnessToolsLibStatic' )
+else:
+    print('Warning: sndfile library not found, will not build loudnessTools.')

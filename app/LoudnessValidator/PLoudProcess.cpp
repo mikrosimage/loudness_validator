@@ -1,5 +1,9 @@
 #include "PLoudProcess.hpp"
+
+#include <loudnessAnalyser/common.hpp>
+
 #include <iostream>
+#include <algorithm>
 
 PLoudProcess::PLoudProcess( Loudness::LoudnessLevels levels, float frequencyForTruePeak )
 	: Loudness::LoudnessAnalyser( levels )
@@ -62,7 +66,7 @@ void PLoudProcess::processAnalyseFile( void (*callback)(void*, int), void* objec
 	
 	size_t channelsInBuffer = std::min( 5, audioFile->getNbChannels() );
 	int bufferSize = audioFile->getSampleRate() / 5;
-	float *data [ channelsInBuffer ];
+	float *data [ MAX_CHANNELS ];
 	float* inpb = new float [ audioFile->getNbChannels() * bufferSize ];
 	
 	for( size_t i = 0; i< channelsInBuffer; i++ )
@@ -190,8 +194,8 @@ void PLoudProcess::writeFile( void (*callback)(void*, int), void* object, double
 	int bufferSize = audioFiles.at(0)->getSampleRate() / 5;
 	size_t channelsInBuffer = std::min( 5, audioFiles.at(0)->getNbChannels() );
 	size_t cumulOfSamples = 0;
-	
-	float* data [ channelsInBuffer ];
+
+	float* data [ MAX_CHANNELS ];
 	float* inpb  = new float [audioFiles.at(0)->getNbChannels() * bufferSize];
 	
 	for( size_t i=0; i < channelsInBuffer; i++ )

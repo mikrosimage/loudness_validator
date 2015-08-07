@@ -12,6 +12,7 @@
 #include "HelpDialog.h"
 #include "AudioFile.h"
 
+#include <loudnessAnalyser/common.hpp>
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 #include <tool/io/SoundFile.hpp>
 
@@ -321,8 +322,8 @@ void analyseFiles( Loudness::io::SoundFile* audioFile, size_t channels, Loudness
 {
 	int cumulOfSamples = 0;
 	int bufferSize = audioFile[0].getSampleRate() / 5;
-	
-	float *data [ channels ];
+
+	float* data[ MAX_CHANNELS ];
 
 	for( size_t i = 0; i< channels; i++ )
 		data [i] = new float [bufferSize];
