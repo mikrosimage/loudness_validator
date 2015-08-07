@@ -1,4 +1,3 @@
-
 #ifndef _LOUDNESS_ANALYSER_COMMON_HPP_
 #define _LOUDNESS_ANALYSER_COMMON_HPP_
 
@@ -9,6 +8,10 @@
 
 #include <iostream>
 
+
+#ifdef SWIG
+ #define LoudnessExport
+#else
 #if defined( __WINDOWS__ )
  #define LoudnessExport __declspec( dllexport )
 #elif defined( __GNUC__ )     // Add compiler definition here...
@@ -20,6 +23,7 @@
  #endif
 #else
  #error "LoudnessExport not defined for this compiler..."
+#endif
 #endif
 
 #ifndef PLOUD_NO_COUT

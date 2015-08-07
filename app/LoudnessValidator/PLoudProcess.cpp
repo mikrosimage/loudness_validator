@@ -1,4 +1,7 @@
 #include "PLoudProcess.hpp"
+
+#include <loudnessAnalyser/common.hpp>
+
 #include <iostream>
 #include <algorithm>
 

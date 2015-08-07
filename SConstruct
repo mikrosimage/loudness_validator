@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 
 EnsureSConsVersion( 2, 3, 0 )
@@ -17,7 +19,10 @@ loudnessAssessmentVersionStr = ".".join( loudnessAssessmentVersion )
 # Get build mode
 buildMode = ARGUMENTS.get( 'mode', 'release' )
 if not ( buildMode in [ 'debug', 'release' ] ) :
-        raise Exception( "Can't select build mode ['debug', 'release']" )
+    raise Exception( "Can't select build mode ['debug', 'release']" )
+
+# Get install path
+installPath = ARGUMENTS.get( 'install', '' )
 
 # Get libsndfile install path
 sndfile_root = ARGUMENTS.get( 'SNDFILE_ROOT', '' )
@@ -43,19 +48,19 @@ env = Environment()
 
 env.Append(
         CPPPATH = [
-                '#src',
-                sndfile_include,
-                boost_include,
+            '#src',
+            sndfile_include,
+            boost_include,
         ],
         CXXFLAGS = [
-                '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
-                '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
-                '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
+            '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
+            '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
+            '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
         ],
         LIBPATH = [
-                '#src',
-                sndfile_lib,
-                boost_lib,
+            '#src',
+            sndfile_lib,
+            boost_lib,
         ],
         SHLIBVERSION = loudnessAssessmentVersionStr,
         )
@@ -94,10 +99,12 @@ elif env['CC'] == 'cl':  # msvc
 # Build src and app
 
 Export( 'env' )
+Export( 'buildMode' )
+Export( 'installPath' )
 Export( 'loudnessAssessmentVersionStr' )
 
-VariantDir( 'build/' + buildMode + '/src', 'src', duplicate = 0 )
-VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
+VariantDir( os.path.join( 'build', buildMode, 'src' ), 'src', duplicate = 0 )
+VariantDir( os.path.join( 'build', buildMode, 'app' ), 'app', duplicate = 0 )
 
-SConscript( 'src/SConscript', variant_dir = 'build/' + buildMode + '/src' )
-SConscript( 'app/SConscript', variant_dir = 'build/' + buildMode + '/app' )
+SConscript( 'src/SConscript', variant_dir = os.path.join( 'build', buildMode, 'src' ) )
+SConscript( 'app/SConscript', variant_dir = os.path.join( 'build', buildMode, 'app' ) )

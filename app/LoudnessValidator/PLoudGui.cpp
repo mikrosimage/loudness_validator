@@ -12,6 +12,7 @@
 #include "HelpDialog.h"
 #include "AudioFile.h"
 
+#include <loudnessAnalyser/common.hpp>
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 #include <tool/io/SoundFile.hpp>
 

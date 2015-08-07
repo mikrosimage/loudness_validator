@@ -1,4 +1,10 @@
+#!/usr/bin/env python
+
+import os
+
 Import( 'env' )
+Import( 'buildMode' )
+Import( 'installPath' )
 Import( 'loudnessAssessmentVersionStr' )
 
 ### loudness Analyser ###
@@ -10,16 +16,19 @@ if not conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
     Exit(1)
 env = conf.Finish()
 
+# loudnessAnalyser shared library
 loudnessAnalyserLibName = 'loudnessAnalyser'
 # add version number to the name of the shared library if Windows platform
 if env['PLATFORM'] == 'win32':
     loudnessAnalyserLibName += '-' + loudnessAssessmentVersionStr
+
 loudnessAnalyserLib = env.SharedLibrary(
     loudnessAnalyserLibName,
     Glob( 'loudnessAnalyser/*.cpp' ) +
     Glob( 'loudnessAnalyser/utils/*.cpp' ),
 )
 
+# loudnessAnalyser static library
 loudnessAnalyserLibStatic = env.StaticLibrary(
     'loudnessAnalyser',
     Glob( 'loudnessAnalyser/*.cpp' ) +
@@ -27,13 +36,56 @@ loudnessAnalyserLibStatic = env.StaticLibrary(
 )
 
 # Install loudnessAnalyser libs
-env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessAnalyserLib ) )
-env.Alias( 'install', env.Install( 'lib', loudnessAnalyserLibStatic ) )
+env.Alias( 'install', env.InstallVersionedLib( os.path.join( installPath, 'lib' ), loudnessAnalyserLib ) )
+env.Alias( 'install', env.Install( os.path.join( installPath, 'lib' ), loudnessAnalyserLibStatic ) )
 
 # Install loudnessAnalyser headers
-env.Alias( 'install', env.Install( 'include/loudnessAnalyser', "loudnessAnalyser/LoudnessAnalyser.hpp" ) )
+env.Alias( 'install', env.Install( os.path.join( installPath, 'include/loudnessAnalyser' ), "loudnessAnalyser/LoudnessAnalyser.hpp" ) )
 
 Export( 'loudnessAnalyserLibStatic' )
+
+# check swig application
+if env.WhereIs('swig'):
+    swigEnv = env.Clone()
+
+    # According to swig, going to use optimisations turned on with gcc (for example -O2), ensure you do not break C/C++ aliasing rules
+    if buildMode == 'release' and env['CC'] == 'gcc':
+        swigEnv.Append( CXXFLAGS=[
+            '-fno-strict-aliasing',
+            ] )
+
+    swigEnv.Append( SWIGFLAGS=[
+      '-c++',
+      '-java',
+      '-package',
+      'org.ploud',
+      '-fcompact',
+      '-small',
+      '-O',
+      '-Werror',
+    ] )
+    swigEnv.Append( SWIGOUTDIR= os.path.join( Dir('.').abspath, 'java') )
+
+    # loudnessAnalyser java shared library
+    jloudnessAnalyserLib = swigEnv.SharedLibrary(
+        'jloudnessAnalyser',
+        'loudnessAnalyser.i',
+        LIBS = [
+            loudnessAnalyserLib,
+        ],
+    )
+
+    # Install
+    swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'lib', 'java' ), jloudnessAnalyserLib ) )
+
+    # Compile java classes and create jar
+    if os.path.exists( os.path.join( Dir('.').abspath, 'java') ):
+        classes = swigEnv.Java( target='classes', source='java', JAVAVERSION='1.7' )
+        jar = swigEnv.Jar( target='jloudnessAnalyser.jar', source=['classes'], JARCHDIR='$SOURCE' )
+        swigEnv.Alias( 'install', swigEnv.InstallVersionedLib( os.path.join( installPath, 'share', 'java' ), jar ) )
+else:
+    print 'Swig not found: will not built java binding.'
+
 
 ### loudness Tools ###
 
@@ -71,8 +123,8 @@ if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
     )
 
     # Install
-    sndfileEnv.Alias( 'install', sndfileEnv.InstallVersionedLib( 'lib', loudnessToolsLib ) )
-    sndfileEnv.Alias( 'install', sndfileEnv.Install( 'lib', loudnessToolsLibStatic ) )
+    sndfileEnv.Alias( 'install', sndfileEnv.InstallVersionedLib( os.path.join( installPath, 'lib' ), loudnessToolsLib ) )
+    sndfileEnv.Alias( 'install', sndfileEnv.Install( os.path.join( installPath, 'lib' ), loudnessToolsLibStatic ) )
 
     Export( 'loudnessToolsLibStatic' )
 else:
