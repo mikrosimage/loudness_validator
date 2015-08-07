@@ -12,9 +12,6 @@
 
 namespace Loudness{
 
-#define MAX_CHANNELS 5
-#define FRAGMENT_SIZE 64
-
 struct LoudnessLevels;
 
 class Process

@@ -2,6 +2,8 @@
 #ifndef _LOUDNESS_ANALYSER_LOUDNESS_ANALYSER_HPP_
 #define _LOUDNESS_ANALYSER_LOUDNESS_ANALYSER_HPP_
 
+#include "common.hpp"
+
 #include <cstdlib>
 #include <vector>
 #include <memory>
@@ -12,7 +14,7 @@ namespace Loudness
 
 #define LOUDNESS_NAN std::numeric_limits<float>::quiet_NaN()
 
-enum EStandard
+enum LoudnessExport EStandard
 {
 	eStandardCST_R017 = 0,
 	eStandardEBU_R128,
@@ -20,7 +22,7 @@ enum EStandard
 	eStandardUnknown
 };
 
-struct LoudnessLevels
+struct LoudnessExport LoudnessLevels
 {
 	float programLoudnessLongProgramMaxValue;
 	float programLoudnessLongProgramMinValue;
@@ -187,7 +189,7 @@ enum ELoudnessResult
 
 class Process;
 
-class LoudnessAnalyser
+class LoudnessExport LoudnessAnalyser
 {
 public:
 	LoudnessAnalyser( LoudnessLevels& levels );

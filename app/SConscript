@@ -1,57 +1,87 @@
 import os
 Import( 'env' )
-
 Import( 'loudnessAnalyserLibStatic' )
-Import( 'loudnessToolsLibStatic' )
+Import( '*' )
 
-loudnessAnalyserProgram = env.Program(
-	'loudness-analyser',
-	Glob( 'analyser/*.cpp' ),
-	LIBS = [
-		loudnessAnalyserLibStatic,
-		loudnessToolsLibStatic,
-		"sndfile",
-	]
-)
+if 'loudnessToolsLibStatic' in locals():
 
-loudnessCorrectorProgram = env.Program(
-	'loudness-corrector',
-	Glob( 'corrector/*.cpp' ),
-	LIBS = [
-		loudnessAnalyserLibStatic,
-		loudnessToolsLibStatic,
-		"sndfile",
-	]
-)
+	# Get sndfile lib name
+	sndfileLib = 'sndfile'
+	if env['PLATFORM'] == 'win32':
+	    sndfileLib = 'lib' + sndfileLib
 
-qtEnv = env.Clone()
-qtEnv.Tool('qt')
+	### loudness-analyser ###
 
-loudnessValidatorLibraries = [
-	loudnessAnalyserLibStatic,
-	loudnessToolsLibStatic,
-	"sndfile",
-]
+	loudnessAnalyserProgram = env.Program(
+		'loudness-analyser',
+		Glob( 'analyser/*.cpp' ),
+		LIBS = [
+			loudnessAnalyserLibStatic,
+			loudnessToolsLibStatic,
+			sndfileLib,
+		]
+	)
 
-loudnessValidatorFrameworks = []
+	### loudness-corrector ###
 
-QtLibs = [
-	"QtCore",
-	"QtGui",
-]
+	loudnessCorrectorProgram = env.Program(
+		'loudness-corrector',
+		Glob( 'corrector/*.cpp' ),
+		LIBS = [
+			loudnessAnalyserLibStatic,
+			loudnessToolsLibStatic,
+			sndfileLib,
+		]
+	)
 
-if not env['PLATFORM'] == "darwin":
-	loudnessValidatorLibraries.append( QtLibs )
+	env.Alias( 'install', env.Install( 'bin', loudnessAnalyserProgram ) )
+	env.Alias( 'install', env.Install( 'bin', loudnessCorrectorProgram ) )
+
+	### loudness-validator ###
+
+	# Get qt4 lib name
+	qt4CoreLib = 'QtCore'
+	qt4GuiLib = 'QtGui'
+	if env['PLATFORM'] == 'win32':
+		qt4CoreLib = qt4CoreLib + '4'
+		qt4GuiLib = qt4GuiLib + '4'
+
+	# check qt4 library
+	qtEnv = env.Clone()
+	conf = Configure(qtEnv)
+	if conf.CheckLib(qt4CoreLib, language='cxx'):
+	    qtEnv = conf.Finish()
+
+	    qtEnv.Tool('qt')
+
+	    loudnessValidatorLibraries = [
+	        loudnessAnalyserLibStatic,
+	        loudnessToolsLibStatic,
+	        sndfileLib,
+	    ]
+
+	    loudnessValidatorFrameworks = []
+
+	    QtLibs = [
+	        qt4CoreLib,
+	        qt4GuiLib,
+	    ]
+
+	    if not qtEnv['PLATFORM'] == 'darwin':
+	        loudnessValidatorLibraries.append( QtLibs )
+	    else:
+	        loudnessValidatorFrameworks.append( QtLibs )
+
+	    loudnessValidatorProgram = qtEnv.Program(
+	        'loudness-validator',
+	        Glob( 'LoudnessValidator/*.cpp' ),
+	        LIBS = loudnessValidatorLibraries,
+	        FRAMEWORKS = loudnessValidatorFrameworks,
+	    )
+
+	    qtEnv.Alias( 'install', qtEnv.Install( 'bin', loudnessValidatorProgram ) )
+
+	else:
+	    print('Warning: did not find QtCore library, will not build loudness-validator app.')
 else:
-	loudnessValidatorFrameworks.append( QtLibs )
-
-loudnessValidatorProgram = qtEnv.Program(
-	'loudness-validator',
-	Glob( 'LoudnessValidator/*.cpp' ),
-	LIBS = loudnessValidatorLibraries,
-	FRAMEWORKS = loudnessValidatorFrameworks,
-)
-
-env.Alias( 'install', env.Install( 'bin', loudnessAnalyserProgram ) )
-env.Alias( 'install', env.Install( 'bin', loudnessCorrectorProgram ) )
-env.Alias( 'install', env.Install( 'bin', loudnessValidatorProgram ) )
+	print('Warning: loudnessTools has not been built, will not build applications.')

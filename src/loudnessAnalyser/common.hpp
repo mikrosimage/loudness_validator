@@ -2,7 +2,25 @@
 #ifndef _LOUDNESS_ANALYSER_COMMON_HPP_
 #define _LOUDNESS_ANALYSER_COMMON_HPP_
 
+#define MAX_CHANNELS 5
+#define FRAGMENT_SIZE 64
+
+#include "system.hpp"
+
 #include <iostream>
+
+#if defined( __WINDOWS__ )
+ #define LoudnessExport __declspec( dllexport )
+#elif defined( __GNUC__ )     // Add compiler definition here...
+ #if __GNUC__ - 0 > 3 || ( __GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2 )
+  #define LoudnessExport __attribute__ ( ( visibility( "default" ) ) )
+ #else
+  #define LoudnessExport
+  #warning "LoudnessExport not set because of a too old gcc version. The plug-in may not compile with the option -fvisible=hidden."
+ #endif
+#else
+ #error "LoudnessExport not defined for this compiler..."
+#endif
 
 #ifndef PLOUD_NO_COUT
 /**

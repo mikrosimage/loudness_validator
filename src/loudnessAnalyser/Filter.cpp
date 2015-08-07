@@ -10,6 +10,7 @@
 #define WIDTH_DOUBLE_PRINT 20
 #endif
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 

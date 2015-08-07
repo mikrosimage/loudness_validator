@@ -1,7 +1,9 @@
 
 #include "Histogram.hpp"
-#include <cmath>
 #include "common.hpp"
+
+#include <cmath>
+#include <algorithm>
 
 namespace Loudness
 {

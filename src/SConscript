@@ -1,22 +1,21 @@
 Import( 'env' )
+Import( 'loudnessAssessmentVersionStr' )
 
-# check libsndfile
-conf = Configure(env)
-if not conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'c'):
-    print 'Error: did not find sndfile library, exiting.'
-    Exit(1)
-env = conf.Finish()
+### loudness Analyser ###
 
-# check boost accumulators (header only library) 
+# check boost accumulators (header only library)
 conf = Configure(env)
 if not conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
     print 'Error: did not find boost accumulators headers, exiting.'
     Exit(1)
 env = conf.Finish()
 
-
+loudnessAnalyserLibName = 'loudnessAnalyser'
+# add version number to the name of the shared library if Windows platform
+if env['PLATFORM'] == 'win32':
+    loudnessAnalyserLibName += '-' + loudnessAssessmentVersionStr
 loudnessAnalyserLib = env.SharedLibrary(
-    'loudnessAnalyser',
+    loudnessAnalyserLibName,
     Glob( 'loudnessAnalyser/*.cpp' ) +
     Glob( 'loudnessAnalyser/utils/*.cpp' ),
 )
@@ -27,30 +26,54 @@ loudnessAnalyserLibStatic = env.StaticLibrary(
     Glob( 'loudnessAnalyser/utils/*.cpp' ),
 )
 
-loudnessToolsLib = env.SharedLibrary(
-    'loudnessTools',
-    Glob( 'tool/*/*.cpp' ),
-    LIBS = [
-        "sndfile",
-    ],
-)
-
-loudnessToolsLibStatic = env.StaticLibrary(
-    'loudnessTools',
-    Glob( 'tool/*/*.cpp' ),
-    LIBS = [
-        "sndfile",
-    ],
-)
-
+# Install loudnessAnalyser libs
 env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessAnalyserLib ) )
 env.Alias( 'install', env.Install( 'lib', loudnessAnalyserLibStatic ) )
 
-env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessToolsLib ) )
-env.Alias( 'install', env.Install( 'lib', loudnessToolsLibStatic ) )
-
+# Install loudnessAnalyser headers
 env.Alias( 'install', env.Install( 'include/loudnessAnalyser', "loudnessAnalyser/LoudnessAnalyser.hpp" ) )
 
 Export( 'loudnessAnalyserLibStatic' )
-Export( 'loudnessToolsLibStatic' )
 
+### loudness Tools ###
+
+# check libsndfile
+sndfileEnv = env.Clone()
+conf = Configure(sndfileEnv)
+
+sndfileLib = 'sndfile'
+if env['PLATFORM'] == 'win32':
+    sndfileLib = 'lib' + sndfileLib
+
+if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
+    sndfileEnv = conf.Finish()
+
+    loudnessToolsLibName = 'loudnessTools'
+    # add version number to the name of the shared library if Windows platform
+    if env['PLATFORM'] == 'win32':
+        loudnessToolsLibName += '-' + loudnessAssessmentVersionStr
+    loudnessToolsLib = sndfileEnv.SharedLibrary(
+        loudnessToolsLibName,
+        Glob( 'tool/*/*.cpp' ),
+        LIBS = [
+            loudnessAnalyserLibStatic,
+            sndfileLib,
+        ],
+    )
+
+    loudnessToolsLibStatic = sndfileEnv.StaticLibrary(
+        'loudnessTools',
+        Glob( 'tool/*/*.cpp' ),
+        LIBS = [
+            loudnessAnalyserLibStatic,
+            sndfileLib,
+        ],
+    )
+
+    # Install
+    sndfileEnv.Alias( 'install', sndfileEnv.InstallVersionedLib( 'lib', loudnessToolsLib ) )
+    sndfileEnv.Alias( 'install', sndfileEnv.Install( 'lib', loudnessToolsLibStatic ) )
+
+    Export( 'loudnessToolsLibStatic' )
+else:
+    print('Warning: sndfile library not found, will not build loudnessTools.')
