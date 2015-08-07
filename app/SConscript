@@ -39,10 +39,17 @@ if 'loudnessToolsLibStatic' in locals():
 
 	### loudness-validator ###
 
+	# Get qt4 lib name
+	qt4CoreLib = 'QtCore'
+	qt4GuiLib = 'QtGui'
+	if env['PLATFORM'] == 'win32':
+		qt4CoreLib = qt4CoreLib + '4'
+		qt4GuiLib = qt4GuiLib + '4'
+
 	# check qt4 library
 	qtEnv = env.Clone()
 	conf = Configure(qtEnv)
-	if conf.CheckLib('QtCore', language='cxx'):
+	if conf.CheckLib(qt4CoreLib, language='cxx'):
 	    qtEnv = conf.Finish()
 
 	    qtEnv.Tool('qt')
@@ -56,8 +63,8 @@ if 'loudnessToolsLibStatic' in locals():
 	    loudnessValidatorFrameworks = []
 
 	    QtLibs = [
-	        'QtCore',
-	        'QtGui',
+	        qt4CoreLib,
+	        qt4GuiLib,
 	    ]
 
 	    if not qtEnv['PLATFORM'] == 'darwin':
