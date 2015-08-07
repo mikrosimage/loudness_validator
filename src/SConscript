@@ -49,7 +49,7 @@ if env.WhereIs('swig'):
     swigEnv = env.Clone()
 
     # According to swig, going to use optimisations turned on with gcc (for example -O2), ensure you do not break C/C++ aliasing rules
-    if buildMode == 'release':
+    if buildMode == 'release' and env['CC'] == 'gcc':
         swigEnv.Append( CXXFLAGS=[
             '-fno-strict-aliasing',
             ] )
