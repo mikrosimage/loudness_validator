@@ -1,7 +1,7 @@
-
 #ifndef _LOUDNESS_ANALYSER_PROCESS_HPP_
 #define _LOUDNESS_ANALYSER_PROCESS_HPP_
 
+#include <loudnessCommon/common.hpp>
 #include "Loudness.hpp"
 #include "Filter.hpp"
 #include "Histogram.hpp"

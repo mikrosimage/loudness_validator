@@ -1,6 +1,8 @@
 import os
 Import( 'env' )
+Import( 'loudnessCommonLibStatic' )
 Import( 'loudnessAnalyserLibStatic' )
+Import( 'loudnessCorrectorLibStatic' )
 Import( '*' )
 
 if 'loudnessToolsLibStatic' in locals():
@@ -16,7 +18,9 @@ if 'loudnessToolsLibStatic' in locals():
 		'loudness-analyser',
 		Glob( 'analyser/*.cpp' ),
 		LIBS = [
+			loudnessCommonLibStatic,
 			loudnessAnalyserLibStatic,
+			loudnessCorrectorLibStatic,
 			loudnessToolsLibStatic,
 			sndfileLib,
 		]
@@ -28,7 +32,9 @@ if 'loudnessToolsLibStatic' in locals():
 		'loudness-corrector',
 		Glob( 'corrector/*.cpp' ),
 		LIBS = [
+			loudnessCommonLibStatic,
 			loudnessAnalyserLibStatic,
+			loudnessCorrectorLibStatic,
 			loudnessToolsLibStatic,
 			sndfileLib,
 		]
@@ -55,7 +61,9 @@ if 'loudnessToolsLibStatic' in locals():
 	    qtEnv.Tool('qt')
 
 	    loudnessValidatorLibraries = [
+	        loudnessCommonLibStatic,
 	        loudnessAnalyserLibStatic,
+	        loudnessCorrectorLibStatic,
 	        loudnessToolsLibStatic,
 	        sndfileLib,
 	    ]

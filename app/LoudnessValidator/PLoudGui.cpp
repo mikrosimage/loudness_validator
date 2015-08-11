@@ -13,7 +13,7 @@
 #include "AudioFile.h"
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
-#include <tool/io/SoundFile.hpp>
+#include <loudnessTools/io/SoundFile.hpp>
 
 #define BUFFER_SIZE 4096
 

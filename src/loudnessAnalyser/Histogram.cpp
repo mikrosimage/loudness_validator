@@ -1,6 +1,4 @@
-
 #include "Histogram.hpp"
-#include "common.hpp"
 
 #include <cmath>
 #include <algorithm>

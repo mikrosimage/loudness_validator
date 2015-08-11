@@ -1,9 +1,8 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#include <loudnessCommon/HardwareDetection.hpp>
 #include "TruePeakMeter.hpp"
-#include "common.hpp"
-#include "utils/HardwareDetection.hpp"
 
 #include <algorithm>
 #include <emmintrin.h>

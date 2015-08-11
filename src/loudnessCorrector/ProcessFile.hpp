@@ -1,8 +1,10 @@
 #ifndef PROCESS_FILE_H
 #define PROCESS_FILE_H
 
+#include <loudnessCommon/common.hpp>
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
-#include <tool/io/SoundFile.hpp>
+#include <loudnessTools/io/SoundFile.hpp>
+
 #include "CorrectBuffer.hpp"
 #include "LookAheadLimiter.hpp"
 
@@ -10,7 +12,7 @@ namespace Loudness {
 namespace tool {
 
 // Based class for functor which process audio file and fill LoudnessAnalyser
-class Processor
+class LoudnessExport Processor
 {
 public:
 	Processor( Loudness::LoudnessAnalyser& analyser, Loudness::io::SoundFile& audioFile )
@@ -61,7 +63,7 @@ public:
 	{
 		_enableOptimization = enableOptimization;
 		init();
-	    
+
 	}
 
 protected:
@@ -212,7 +214,7 @@ public:
 		}
 	}
 
-private:	
+private:
 	std::vector<LookAheadLimiter*> _limiters;
 
 	const float _lookAhead;

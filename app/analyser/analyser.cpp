@@ -5,9 +5,9 @@
 #include <ctime>
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
-#include <tool/io/SoundFile.hpp>
-#include <tool/common/WriteXml.hpp>
-#include <tool/common/ProcessFile.hpp>
+#include <loudnessCorrector/ProcessFile.hpp>
+#include <loudnessTools/io/SoundFile.hpp>
+#include <loudnessTools/WriteXml.hpp>
 
 bool showProgress = false;
 bool showResults = false;

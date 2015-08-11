@@ -1,6 +1,7 @@
-
 #ifndef _LOUDNESS_ANALYSER_HISTOGRAM_HPP_
 #define _LOUDNESS_ANALYSER_HISTOGRAM_HPP_
+
+#include <loudnessCommon/common.hpp>
 
 #include <vector>
 
