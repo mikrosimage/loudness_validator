@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 
 EnsureSConsVersion( 2, 3, 0 )
@@ -101,8 +103,11 @@ Export( 'loudnessAssessmentVersionStr' )
 Export( 'buildMode' )
 Export( 'installPath' )
 
-VariantDir( 'build/' + buildMode + '/src', 'src', duplicate = 0 )
-VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
+pathToSrc = os.path.join( 'build', buildMode, 'src')
+pathToApp = os.path.join( 'build', buildMode, 'app')
 
-SConscript( 'src/SConscript', variant_dir = 'build/' + buildMode + '/src' )
-SConscript( 'app/SConscript', variant_dir = 'build/' + buildMode + '/app' )
+VariantDir( pathToSrc, 'src', duplicate = 0 )
+VariantDir( pathToApp, 'app', duplicate = 0 )
+
+SConscript( os.path.join( 'src', 'SConscript' ), variant_dir = pathToSrc )
+SConscript( os.path.join( 'app', 'SConscript' ), variant_dir = pathToApp )
