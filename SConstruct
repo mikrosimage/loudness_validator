@@ -17,7 +17,7 @@ loudnessAssessmentVersionStr = ".".join( loudnessAssessmentVersion )
 # Get build mode
 buildMode = ARGUMENTS.get( 'mode', 'release' )
 if not ( buildMode in [ 'debug', 'release' ] ) :
-        raise Exception( "Can't select build mode ['debug', 'release']" )
+    raise Exception( "Can't select build mode ['debug', 'release']" )
 
 # Get install path
 installPath = ARGUMENTS.get( 'install', '' )
@@ -45,23 +45,23 @@ qt4_dir = ARGUMENTS.get( 'QTDIR', '/usr/' )
 env = Environment()
 
 env.Append(
-        CPPPATH = [
-                '#src',
-                sndfile_include,
-                boost_include,
-        ],
-        CXXFLAGS = [
-                '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
-                '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
-                '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
-        ],
-        LIBPATH = [
-                '#src',
-                sndfile_lib,
-                boost_lib,
-        ],
-        SHLIBVERSION = loudnessAssessmentVersionStr,
-        )
+    CPPPATH = [
+        '#src',
+        sndfile_include,
+        boost_include,
+    ],
+    CXXFLAGS = [
+        '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
+        '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
+        '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
+    ],
+    LIBPATH = [
+        '#src',
+        sndfile_lib,
+        boost_lib,
+    ],
+    SHLIBVERSION = loudnessAssessmentVersionStr,
+    )
 
 # Set QTDIR if specify
 if qt4_dir:
