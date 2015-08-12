@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import os
-
 Import( 'env' )
 Import( 'loudnessAnalyserLibStatic' )
 Import( '*' )
@@ -37,8 +35,8 @@ if 'loudnessToolsLibStatic' in locals():
         ]
     )
 
-    env.Alias( 'install', env.Install( os.path.join( installPath, 'bin' ), loudnessAnalyserProgram ) )
-    env.Alias( 'install', env.Install( os.path.join( installPath, 'bin' ), loudnessCorrectorProgram ) )
+    env.Alias( 'install', env.Install( 'bin', loudnessAnalyserProgram ) )
+    env.Alias( 'install', env.Install( 'bin', loudnessCorrectorProgram ) )
 
     ### loudness-validator ###
 
@@ -82,7 +80,7 @@ if 'loudnessToolsLibStatic' in locals():
             FRAMEWORKS = loudnessValidatorFrameworks,
         )
 
-        qtEnv.Alias( 'install', qtEnv.Install( os.path.join( installPath, 'bin' ), loudnessValidatorProgram ) )
+        qtEnv.Alias( 'install', qtEnv.Install( 'bin', loudnessValidatorProgram ) )
 
     else:
         print('Warning: did not find QtCore library, will not build loudness-validator app.')

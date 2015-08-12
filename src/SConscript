@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
-import os
-
 Import( 'env' )
 Import( 'loudnessAssessmentVersionStr' )
 Import( 'buildMode' )
-Import( 'installPath' )
 
 ### loudness Analyser ###
 
@@ -33,11 +30,11 @@ loudnessAnalyserLibStatic = env.StaticLibrary(
 )
 
 # Install loudnessAnalyser libs
-env.Alias( 'install', env.InstallVersionedLib( os.path.join( installPath, 'lib' ), loudnessAnalyserLib ) )
-env.Alias( 'install', env.Install( os.path.join( installPath, 'lib' ), loudnessAnalyserLibStatic ) )
+env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessAnalyserLib ) )
+env.Alias( 'install', env.Install( 'lib', loudnessAnalyserLibStatic ) )
 
 # Install loudnessAnalyser headers
-env.Alias( 'install', env.Install( os.path.join( installPath, 'include/loudnessAnalyser'), 'loudnessAnalyser/LoudnessAnalyser.hpp' ) )
+env.Alias( 'install', env.Install( 'include/loudnessAnalyser', 'loudnessAnalyser/LoudnessAnalyser.hpp' ) )
 
 Export( 'loudnessAnalyserLibStatic' )
 
@@ -77,8 +74,8 @@ if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
     )
 
     # Install
-    sndfileEnv.Alias( 'install', sndfileEnv.InstallVersionedLib( os.path.join( installPath, 'lib' ), loudnessToolsLib ) )
-    sndfileEnv.Alias( 'install', sndfileEnv.Install( os.path.join( installPath, 'lib' ), loudnessToolsLibStatic ) )
+    sndfileEnv.Alias( 'install', sndfileEnv.InstallVersionedLib( 'lib', loudnessToolsLib ) )
+    sndfileEnv.Alias( 'install', sndfileEnv.Install( 'lib', loudnessToolsLibStatic ) )
 
     Export( 'loudnessToolsLibStatic' )
 else:

@@ -21,9 +21,6 @@ buildMode = ARGUMENTS.get( 'mode', 'release' )
 if not ( buildMode in [ 'debug', 'release' ] ) :
     raise Exception( "Can't select build mode ['debug', 'release']" )
 
-# Get install path
-installPath = ARGUMENTS.get( 'install', '' )
-
 # Get libsndfile install path
 sndfile_root = ARGUMENTS.get( 'SNDFILE_ROOT', '' )
 sndfile_include = ''
@@ -101,7 +98,6 @@ elif env['CC'] == 'cl':  # msvc
 Export( 'env' )
 Export( 'loudnessAssessmentVersionStr' )
 Export( 'buildMode' )
-Export( 'installPath' )
 
 pathToSrc = os.path.join( 'build', buildMode, 'src')
 pathToApp = os.path.join( 'build', buildMode, 'app')
