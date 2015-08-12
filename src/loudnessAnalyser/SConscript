@@ -15,7 +15,7 @@ loudnessAnalyserLibName = 'loudnessAnalyser'
 if env['PLATFORM'] == 'win32':
     loudnessAnalyserLibName += '-' + loudnessAssessmentVersionStr
 
-loudnessAnalyserSrc = Glob( '*.cpp' ) + Glob( 'utils/*.cpp' )
+loudnessAnalyserSrc = Glob( '*.cpp' )
 
 loudnessAnalyserLib = env.SharedLibrary(
     target = loudnessAnalyserLibName,
@@ -32,6 +32,7 @@ env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessAnalyserLib ) )
 env.Alias( 'install', env.Install( 'lib', loudnessAnalyserLibStatic ) )
 
 # Install loudnessAnalyser headers
-env.Alias( 'install', env.Install( 'include/loudnessAnalyser', 'LoudnessAnalyser.hpp' ) )
+loudnessAnalyserHeaders = Glob( '*.hpp' )
+env.Alias( 'install', env.Install( 'include/loudnessAnalyser', loudnessAnalyserHeaders ) )
 
 Export( 'loudnessAnalyserLibStatic' )
