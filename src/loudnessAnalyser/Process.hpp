@@ -10,7 +10,8 @@
 #include <vector>
 #include <cmath>
 
-namespace Loudness{
+namespace Loudness {
+namespace analyser {
 
 struct LoudnessLevels;
 
@@ -96,6 +97,7 @@ private:
 	static float          _channelGain        [MAX_CHANNELS];
 };
 
+}
 }
 
 #endif

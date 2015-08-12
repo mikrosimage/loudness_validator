@@ -2,7 +2,9 @@
 #ifndef _LOUDNESS_ANALYSER_FILTER_HPP_
 #define _LOUDNESS_ANALYSER_FILTER_HPP_
 
-namespace Loudness{
+namespace Loudness {
+namespace analyser {
+
 
 class Filter
 {
@@ -25,6 +27,7 @@ private:
 };
 
 
+}
 }
 
 #endif

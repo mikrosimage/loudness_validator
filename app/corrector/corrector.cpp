@@ -32,7 +32,7 @@ int main( int argc, char** argv )
 	float lookaheadTime = 60.0;
 	
 	
-	Loudness::ELoudnessResult result = Loudness::eNoImportance;
+	Loudness::analyser::ELoudnessResult result = Loudness::analyser::eNoImportance;
 	
 	for(int i = 1; i < argc; i++)
 	{
@@ -130,18 +130,18 @@ int main( int argc, char** argv )
 					filename.erase( filename.length() - 5, 5 );
 			
 			
-			Loudness::io::SoundFile audioFile;
-			Loudness::LoudnessLevels levels =	standard == 0 ? Loudness::LoudnessLevels::Loudness_CST_R017() : 
-												standard == 1 ? Loudness::LoudnessLevels::Loudness_EBU_R128() : 
-																Loudness::LoudnessLevels::Loudness_ATSC_A85() ;
+			Loudness::tools::SoundFile audioFile;
+			Loudness::analyser::LoudnessLevels levels =	standard == 0 ? Loudness::analyser::LoudnessLevels::Loudness_CST_R017() : 
+												standard == 1 ? Loudness::analyser::LoudnessLevels::Loudness_EBU_R128() : 
+																Loudness::analyser::LoudnessLevels::Loudness_ATSC_A85() ;
 
-			Loudness::LoudnessAnalyser loudness( levels );
+			Loudness::analyser::LoudnessAnalyser loudness( levels );
 			if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 			{
 				if( printLength )
 					std::cout << "\t length = " << (float) audioFile.getNbSamples() / audioFile.getSampleRate() << "\t" << std::flush;
 
-				Loudness::tool::AnalyseFile analyser( loudness, audioFile );
+				Loudness::tools::AnalyseFile analyser( loudness, audioFile );
 				analyser.enableOptimization( enableOptimization );
 				analyser( progress );
 
@@ -150,7 +150,7 @@ int main( int argc, char** argv )
 				
 				std::string xmlFile = filename;
 				xmlFile.append("_measured.xml");
-				Loudness::tool::WriteXml writerXml ( xmlFile.c_str(), filenames.at(i).c_str() );
+				Loudness::tools::WriteXml writerXml ( xmlFile.c_str(), filenames.at(i).c_str() );
 				writerXml.writeResults( "unknown", loudness );
 				
 				std::string outputFilename = filenames.at(i);
@@ -159,8 +159,8 @@ int main( int argc, char** argv )
 					insertPoint = 5;
 				outputFilename.insert( outputFilename.length() - insertPoint, "_corrected" );
 				
-				Loudness::io::SoundFile outputAudioFile;
-				Loudness::LoudnessAnalyser loudnessAfterCorrection( levels );
+				Loudness::tools::SoundFile outputAudioFile;
+				Loudness::analyser::LoudnessAnalyser loudnessAfterCorrection( levels );
 				
 				if( ! outputAudioFile.open_write( outputFilename.c_str(), audioFile.getAudioCodec(), audioFile.getBitDepth(), audioFile.getSampleRate(), audioFile.getNbChannels() ) )
 				{
@@ -170,12 +170,12 @@ int main( int argc, char** argv )
 					
 					if( enableLimiter )
 					{
-						Loudness::tool::CorrectFileWithCompressor corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain, lookaheadTime, threshold );
+						Loudness::tools::CorrectFileWithCompressor corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain, lookaheadTime, threshold );
 						corrector( progress );
 					}
 					else
 					{
-						Loudness::tool::CorrectFile corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain );
+						Loudness::tools::CorrectFile corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain );
 						corrector( progress );
 					}
 					outputAudioFile.close();
@@ -192,7 +192,7 @@ int main( int argc, char** argv )
 				std::string xmlFileCorrected = filename;
 				xmlFileCorrected.append("_corrected_measured.xml");
 				
-				Loudness::tool::WriteXml writerXmlCorrected ( xmlFileCorrected.c_str(), outputFilename.c_str() );
+				Loudness::tools::WriteXml writerXmlCorrected ( xmlFileCorrected.c_str(), outputFilename.c_str() );
 				writerXmlCorrected.writeResults( "unknown", loudnessAfterCorrection );
 				result = loudnessAfterCorrection.isValidProgram();
 			}
@@ -223,10 +223,10 @@ int main( int argc, char** argv )
 	
 	switch( result )
 	{
-		case Loudness::eValidResult: returnValue = 0; break;
-		case Loudness::eNotValidResult: returnValue = 2; break;
-		case Loudness::eNotValidResultButNotIllegal: returnValue = 1; break;
-		case Loudness::eNoImportance: returnValue = 10;break;
+		case Loudness::analyser::eValidResult: returnValue = 0; break;
+		case Loudness::analyser::eNotValidResult: returnValue = 2; break;
+		case Loudness::analyser::eNotValidResultButNotIllegal: returnValue = 1; break;
+		case Loudness::analyser::eNoImportance: returnValue = 10;break;
 	}
 	
 	if( std::isnan( gain ) )

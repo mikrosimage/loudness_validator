@@ -6,7 +6,8 @@
 #include <cstdlib>
 #include <vector>
 
-namespace Loudness{
+namespace Loudness {
+namespace analyser {
 
 class TruePeakMeter
 {
@@ -64,6 +65,7 @@ private:
 	bool                _enableOptimization;
 };
 
+}
 }
 
 #endif

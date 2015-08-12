@@ -28,7 +28,7 @@
 #include <sndfile.h>
 
 namespace Loudness {
-namespace io {
+namespace tools {
 
 class SoundFile
 {
@@ -108,4 +108,3 @@ private:
 }
 
 #endif
-

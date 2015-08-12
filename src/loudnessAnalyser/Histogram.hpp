@@ -5,8 +5,8 @@
 
 #include <vector>
 
-namespace Loudness
-{
+namespace Loudness {
+namespace analyser {
 
 class Histogram
 {
@@ -59,4 +59,6 @@ private:
 };
 
 }
+}
+
 #endif

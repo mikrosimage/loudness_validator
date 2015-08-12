@@ -16,7 +16,7 @@
 using namespace boost::accumulators;
 
 namespace Loudness {
-namespace tool {
+namespace corrector {
 
 class LoudnessExport LookAheadLimiter
 {

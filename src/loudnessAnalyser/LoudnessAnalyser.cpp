@@ -7,8 +7,8 @@
 #include <limits>
 #include <vector>
 
-namespace Loudness
-{
+namespace Loudness {
+namespace analyser {
 
 LoudnessAnalyser::LoudnessAnalyser( LoudnessLevels& levels ) :
 	p_process ( new Process( levels.absoluteThresholdValue, levels.relativeThresholdValue ) ),
@@ -242,4 +242,5 @@ float LoudnessAnalyser::getCorrectionGain( const bool limiterIsEnable )
 }
 
 
+}
 }

@@ -345,21 +345,21 @@ void Properties::setDefaultValues( int norm )
 		case 0:
 		{
 			setEnableProperties( false );
-			Loudness::LoudnessLevels levels = Loudness::LoudnessLevels::Loudness_CST_R017();
+			Loudness::analyser::LoudnessLevels levels = Loudness::analyser::LoudnessLevels::Loudness_CST_R017();
 			setPropertiesValues( levels );
 			break;
 		}
 		case 1:
 		{
 			setEnableProperties( false );
-			Loudness::LoudnessLevels levels = Loudness::LoudnessLevels::Loudness_EBU_R128();
+			Loudness::analyser::LoudnessLevels levels = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
 			setPropertiesValues( levels );
 			break;
 		}
 		case 2:
 		{
 			setEnableProperties( false );
-			Loudness::LoudnessLevels levels = Loudness::LoudnessLevels::Loudness_ATSC_A85();
+			Loudness::analyser::LoudnessLevels levels = Loudness::analyser::LoudnessLevels::Loudness_ATSC_A85();
 			setPropertiesValues( levels );
 			break;
 		}
@@ -394,7 +394,7 @@ void Properties::setEnableProperties( bool enable )
 	comboFrequencyTruePeak.setEnabled     ( enable );
 }
 
-void Properties::setPropertiesValues( Loudness::LoudnessLevels values )
+void Properties::setPropertiesValues( Loudness::analyser::LoudnessLevels values )
 {
 	spinProgramLoudnessLongProgramMaxValue.setValue( values.programLoudnessLongProgramMaxValue );
 	spinProgramLoudnessLongProgramMinValue.setValue( values.programLoudnessLongProgramMinValue );

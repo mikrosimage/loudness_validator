@@ -3,8 +3,8 @@
 #include <cmath>
 #include <algorithm>
 
-namespace Loudness
-{
+namespace Loudness {
+namespace analyser {
 
 Histogram::Histogram( const float minValue, const float maxValue, const float step ) :
 	_minValue      ( minValue ),
@@ -166,4 +166,5 @@ float Histogram::convertIndexToDb( const int index )
 	return 1.f * index * ( _maxValue - _minValue ) / ( 1.0 * _size ) + _minValue;
 }
 
+}
 }

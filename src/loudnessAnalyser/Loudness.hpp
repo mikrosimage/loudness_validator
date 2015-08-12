@@ -15,7 +15,8 @@
 
 using namespace boost::accumulators;
 
-namespace Loudness{
+namespace Loudness {
+namespace analyser {
 
 enum ELoudnessType{
 	eCorrectionLoudness = 0,
@@ -86,6 +87,7 @@ private:
 	std::vector<float> _temporalValues;     ///< use to return ShortTerm values
 };
 
+}
 }
 
 #endif

@@ -9,8 +9,8 @@
 #include <memory>
 #include <limits>
 
-namespace Loudness
-{
+namespace Loudness {
+namespace analyser {
 
 #define LOUDNESS_NAN std::numeric_limits<float>::quiet_NaN()
 
@@ -344,4 +344,6 @@ protected:
 };
 
 }
+}
+
 #endif

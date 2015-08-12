@@ -2,7 +2,7 @@
 #include <ctime>
 
 namespace Loudness {
-namespace tool {
+namespace tools {
 
 WriteXml::WriteXml( const char* filename, const char* srcAudioFilename )
 	: srcAudioFilename( srcAudioFilename )
@@ -20,7 +20,7 @@ WriteXml::~WriteXml()
 	xmlFile.close();
 }
 
-void WriteXml::writeResults( const char* channelType, Loudness::LoudnessAnalyser& analyser )
+void WriteXml::writeResults( const char* channelType, Loudness::analyser::LoudnessAnalyser& analyser )
 {
 	xmlFile << "<Program filename=\"" << srcAudioFilename << "\" " 
 			<< printStandard( analyser.getStandard() ) << " " 
@@ -38,28 +38,28 @@ void WriteXml::writeResults( const char* channelType, Loudness::LoudnessAnalyser
 	xmlFile << "</Program>\n";
 }
 
-std::string WriteXml::convertValid( Loudness::ELoudnessResult result )
+std::string WriteXml::convertValid( Loudness::analyser::ELoudnessResult result )
 {
 	std::string st = "";
 	switch( result )
 	{
-		case Loudness::eValidResult                 : st = "valid\" ";       break;
-		case Loudness::eNotValidResult              : st = "illegal\" ";     break;
-		case Loudness::eNotValidResultButNotIllegal : st = "not illegal\" "; break;
-		case Loudness::eNoImportance                : break;
+		case Loudness::analyser::eValidResult                 : st = "valid\" ";       break;
+		case Loudness::analyser::eNotValidResult              : st = "illegal\" ";     break;
+		case Loudness::analyser::eNotValidResultButNotIllegal : st = "not illegal\" "; break;
+		case Loudness::analyser::eNoImportance                : break;
 	}
 	return " status=\'" + st + "'";
 }
 
-std::string WriteXml::printStandard( Loudness::EStandard standard )
+std::string WriteXml::printStandard( Loudness::analyser::EStandard standard )
 {
 	std::string st = "";
 	switch( standard )
 	{
-		case Loudness::eStandardCST_R017 : st = "CST-R017"; break;
-		case Loudness::eStandardEBU_R128 : st = "EBU-R128"; break;
-		case Loudness::eStandardATSC_A85 : st = "ATSC-A85"; break;
-		case Loudness::eStandardUnknown  : st = "Unknown";  break;
+		case Loudness::analyser::eStandardCST_R017 : st = "CST-R017"; break;
+		case Loudness::analyser::eStandardEBU_R128 : st = "EBU-R128"; break;
+		case Loudness::analyser::eStandardATSC_A85 : st = "ATSC-A85"; break;
+		case Loudness::analyser::eStandardUnknown  : st = "Unknown";  break;
 	}
 	return " standard=\'" + st + "'";
 }

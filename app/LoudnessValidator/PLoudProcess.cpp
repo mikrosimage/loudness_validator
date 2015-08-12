@@ -2,8 +2,8 @@
 #include <iostream>
 #include <algorithm>
 
-PLoudProcess::PLoudProcess( Loudness::LoudnessLevels levels, float frequencyForTruePeak )
-	: Loudness::LoudnessAnalyser( levels )
+PLoudProcess::PLoudProcess( Loudness::analyser::LoudnessLevels levels, float frequencyForTruePeak )
+	: Loudness::analyser::LoudnessAnalyser( levels )
 {
 	setUpsamplingFrequencyForTruePeak( frequencyForTruePeak );
 }
@@ -14,7 +14,7 @@ bool PLoudProcess::openAudioFiles( std::vector<std::string>& files )
 	for( size_t i = 0; i< files.size(); i++ )
 	{
 		filenames.push_back( files.at( i ) );
-		Loudness::io::SoundFile* audioFile = new Loudness::io::SoundFile();
+		Loudness::tools::SoundFile* audioFile = new Loudness::tools::SoundFile();
 		bool tmpRet = audioFile->open_read( files.at( i ).c_str() );
 		tmpRet = !tmpRet;
 		if( tmpRet )
@@ -59,7 +59,7 @@ int PLoudProcess::getProgramLength()
 void PLoudProcess::processAnalyseFile( void (*callback)(void*, int), void* object, double gain )
 {
 	int cumulOfSamples = 0;
-	Loudness::io::SoundFile* audioFile = audioFiles.at(0);
+	Loudness::tools::SoundFile* audioFile = audioFiles.at(0);
 	
 	size_t channelsInBuffer = std::min( 5, audioFile->getNbChannels() );
 	int bufferSize = audioFile->getSampleRate() / 5;
@@ -171,7 +171,7 @@ bool PLoudProcess::analyseToFindCorrectionGain( void (*callback)(void*, int), vo
 
 void PLoudProcess::writeFile( void (*callback)(void*, int), void* object, double outputGain )
 {
-	Loudness::io::SoundFile audioOutputFile;
+	Loudness::tools::SoundFile audioOutputFile;
 	
 	std::string outputFilemane = filenames.at(0);
 	

@@ -11,13 +11,13 @@
 #include <loudnessCorrector/LookAheadLimiter.hpp>
 
 namespace Loudness {
-namespace tool {
+namespace tools {
 
 // Based class for functor which process audio file and fill LoudnessAnalyser
 class LoudnessExport Processor
 {
 public:
-	Processor( Loudness::LoudnessAnalyser& analyser, Loudness::io::SoundFile& audioFile )
+	Processor( Loudness::analyser::LoudnessAnalyser& analyser, Loudness::tools::SoundFile& audioFile )
 		: _inputAudioFile( audioFile )
 		, _cumulOfSamples( 0 )
 		, _totalNbSamples( _inputAudioFile.getNbSamples() )
@@ -69,7 +69,7 @@ public:
 	}
 
 protected:
-	Loudness::io::SoundFile& _inputAudioFile;
+	Loudness::tools::SoundFile& _inputAudioFile;
 
 	size_t _cumulOfSamples;
 	const size_t _totalNbSamples;
@@ -81,7 +81,7 @@ protected:
 	float * _inpb;  // input pointer buffer
 
 private:
-	Loudness::LoudnessAnalyser& _analyser;
+	Loudness::analyser::LoudnessAnalyser& _analyser;
 	float** _data; // data to analyse loudness
 };
 
@@ -89,7 +89,7 @@ private:
 class AnalyseFile : public Processor
 {
 public:
-	AnalyseFile( Loudness::LoudnessAnalyser& analyser, Loudness::io::SoundFile& audioFile )
+	AnalyseFile( Loudness::analyser::LoudnessAnalyser& analyser, Loudness::tools::SoundFile& audioFile )
 		: Processor( analyser, audioFile )
 	{}
 
@@ -115,7 +115,7 @@ public:
 class CorrectFile : public Processor
 {
 public:
-	CorrectFile( Loudness::LoudnessAnalyser& analyser, Loudness::io::SoundFile& inputAudioFile, Loudness::io::SoundFile& outputAudioFile, const float gain )
+	CorrectFile( Loudness::analyser::LoudnessAnalyser& analyser, Loudness::tools::SoundFile& inputAudioFile, Loudness::tools::SoundFile& outputAudioFile, const float gain )
 		: Processor( analyser, inputAudioFile )
 		, _outputAudioFile( outputAudioFile )
 		, _gain( gain )
@@ -130,7 +130,7 @@ public:
 
 			// Correct input
 			float* p = _inpb;
-			correctBuffer( p, nbSamples, _channelsInBuffer, _gain );
+			corrector::correctBuffer( p, nbSamples, _channelsInBuffer, _gain );
 
 			// Analyse output
 			processSamples( nbSamples );
@@ -145,7 +145,7 @@ public:
 	}
 
 protected:
-	Loudness::io::SoundFile& _outputAudioFile;
+	Loudness::tools::SoundFile& _outputAudioFile;
 
 	const float _gain;
 };
@@ -155,14 +155,14 @@ protected:
 class CorrectFileWithCompressor : public CorrectFile
 {
 public:
-	CorrectFileWithCompressor( Loudness::LoudnessAnalyser& analyser, Loudness::io::SoundFile& inputAudioFile, Loudness::io::SoundFile& outputAudioFile, const float gain, const float lookAhead, const float threshold )
+	CorrectFileWithCompressor( Loudness::analyser::LoudnessAnalyser& analyser, Loudness::tools::SoundFile& inputAudioFile, Loudness::tools::SoundFile& outputAudioFile, const float gain, const float lookAhead, const float threshold )
 		: CorrectFile( analyser, inputAudioFile, outputAudioFile, gain )
 		, _lookAhead( lookAhead )
 		, _threshold( threshold )
 	{
 		for( size_t i = 0; i< _channelsInBuffer; i++ )
 		{
-			LookAheadLimiter* lim = new LookAheadLimiter( _lookAhead, _inputAudioFile.getSampleRate(), _threshold );
+			corrector::LookAheadLimiter* lim = new corrector::LookAheadLimiter( _lookAhead, _inputAudioFile.getSampleRate(), _threshold );
 			_limiters.push_back( lim );
 		}
 	}
@@ -184,7 +184,7 @@ public:
 
 			// Correct input
 			float* ptr = _inpb;
-			size_t nbSamplesCorrected = correctBuffer( _limiters, ptr, nbSamples, _channelsInBuffer, _gain );
+			size_t nbSamplesCorrected = corrector::correctBuffer( _limiters, ptr, nbSamples, _channelsInBuffer, _gain );
 
 			// Analyse output
 			processSamples( nbSamples );
@@ -217,7 +217,7 @@ public:
 	}
 
 private:
-	std::vector<LookAheadLimiter*> _limiters;
+	std::vector<corrector::LookAheadLimiter*> _limiters;
 
 	const float _lookAhead;
 	const float _threshold;

@@ -1,6 +1,7 @@
 #include "Process.hpp"
 
-namespace Loudness{
+namespace Loudness {
+namespace analyser {
 
 float Process::_channelGain [MAX_CHANNELS] = { 1.0f, 1.0f, 1.0f, 1.41f, 1.41f };
 
@@ -143,4 +144,5 @@ float Process::detectProcess ( const size_t nbSamples, float& truePeakValue )
 	return sumOfWeightedPowerChannels;
 }
 
+}
 }

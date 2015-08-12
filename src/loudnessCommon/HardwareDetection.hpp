@@ -2,7 +2,7 @@
 #define _LOUDNESS_ANALYSER_UTIL_HARDWARE_DETECTION_HPP_
 
 namespace Loudness {
-namespace utils {
+namespace common {
 namespace details {
 
 #if defined (_MSC_VER) || defined (__INTEL_COMPILER)
