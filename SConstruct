@@ -35,6 +35,22 @@ if boost_root:
     boost_include = os.path.join( boost_root, 'include' )
     boost_lib = os.path.join( boost_root, 'lib' )
 
+# Get avtranscoder install path
+avtranscoder_root = ARGUMENTS.get( 'AVTRANSCODER_ROOT', '' )
+avtranscoder_include = ''
+avtranscoder_lib = ''
+if avtranscoder_root:
+    avtranscoder_include = os.path.join( avtranscoder_root, 'include' )
+    avtranscoder_lib = os.path.join( avtranscoder_root, 'lib' )
+
+# Get ffmpeg install path
+ffmpeg_root = ARGUMENTS.get( 'FFMPEG_ROOT', '' )
+ffmpeg_include = ''
+ffmpeg_lib = ''
+if ffmpeg_root:
+    ffmpeg_include = os.path.join( ffmpeg_root, 'include' )
+    ffmpeg_libs = [os.path.join( ffmpeg_root, 'lib' ), os.path.join( ffmpeg_root, 'lib64' )]
+
 # Get qt4 install path
 qt4_dir = ARGUMENTS.get( 'QTDIR', '/usr/' )
 
@@ -46,6 +62,8 @@ env.Append(
                 '#src',
                 sndfile_include,
                 boost_include,
+                avtranscoder_include,
+                ffmpeg_include,
         ],
         CXXFLAGS = [
                 '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
@@ -56,6 +74,8 @@ env.Append(
                 '#src',
                 sndfile_lib,
                 boost_lib,
+                avtranscoder_lib,
+                ffmpeg_libs,
         ],
         SHLIBVERSION = loudnessAssessmentVersionStr,
         )

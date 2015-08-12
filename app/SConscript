@@ -89,3 +89,29 @@ if 'loudnessToolsLibStatic' in locals():
 	    print('Warning: did not find QtCore library, will not build loudness-validator app.')
 else:
 	print('Warning: loudnessTools has not been built, will not build applications.')
+
+
+### loudness-analyser-complete ###
+
+# check libavtranscoder
+avtranscoderEnv = env.Clone()
+conf = Configure(avtranscoderEnv)
+
+avtranscoderLib = 'avtranscoder'
+
+if conf.CheckCXXHeader('AvTranscoder/common.hpp'):
+    avtranscoderEnv = conf.Finish()
+
+    loudnessAnalyserCompleteProgram = env.Program(
+        'loudness-analyser-complete',
+        Glob( 'completeAnalyser/*.cpp' ),
+        LIBS = [
+                loudnessAnalyserLibStatic,
+                avtranscoderLib,
+        ]
+    )
+
+    env.Alias( 'install', env.Install( 'bin', loudnessAnalyserCompleteProgram ) )
+
+else:
+    print('Warning: avtranscoder not found, will not build loudness-analyser-complete application')
