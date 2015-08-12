@@ -25,6 +25,11 @@ scons mode=debug
 scons BOOST_ROOT=/path/to/boost SNDFILE_ROOT=/path/to/sndfile QTDIR=/path/to/qt4
 ```
 
+#### Build and deploy in a specific location
+```
+scons --install-sandbox=/path/to/install
+```
+
 
 ## Dependencies
 
