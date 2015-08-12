@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+
 Import( 'env' )
 Import( 'loudnessAssessmentVersionStr' )
+Import( 'buildMode' )
 
 ### loudness Analyser ###
 
@@ -31,7 +34,7 @@ env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessAnalyserLib ) )
 env.Alias( 'install', env.Install( 'lib', loudnessAnalyserLibStatic ) )
 
 # Install loudnessAnalyser headers
-env.Alias( 'install', env.Install( 'include/loudnessAnalyser', "loudnessAnalyser/LoudnessAnalyser.hpp" ) )
+env.Alias( 'install', env.Install( 'include/loudnessAnalyser', 'loudnessAnalyser/LoudnessAnalyser.hpp' ) )
 
 Export( 'loudnessAnalyserLibStatic' )
 

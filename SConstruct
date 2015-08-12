@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 
 EnsureSConsVersion( 2, 3, 0 )
@@ -17,7 +19,7 @@ loudnessAssessmentVersionStr = ".".join( loudnessAssessmentVersion )
 # Get build mode
 buildMode = ARGUMENTS.get( 'mode', 'release' )
 if not ( buildMode in [ 'debug', 'release' ] ) :
-        raise Exception( "Can't select build mode ['debug', 'release']" )
+    raise Exception( "Can't select build mode ['debug', 'release']" )
 
 # Get libsndfile install path
 sndfile_root = ARGUMENTS.get( 'SNDFILE_ROOT', '' )
@@ -42,23 +44,23 @@ qt4_dir = ARGUMENTS.get( 'QTDIR', '/usr/' )
 env = Environment()
 
 env.Append(
-        CPPPATH = [
-                '#src',
-                sndfile_include,
-                boost_include,
-        ],
-        CXXFLAGS = [
-                '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
-                '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
-                '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
-        ],
-        LIBPATH = [
-                '#src',
-                sndfile_lib,
-                boost_lib,
-        ],
-        SHLIBVERSION = loudnessAssessmentVersionStr,
-        )
+    CPPPATH = [
+        '#src',
+        sndfile_include,
+        boost_include,
+    ],
+    CXXFLAGS = [
+        '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
+        '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
+        '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
+    ],
+    LIBPATH = [
+        '#src',
+        sndfile_lib,
+        boost_lib,
+    ],
+    SHLIBVERSION = loudnessAssessmentVersionStr,
+    )
 
 # Set QTDIR if specify
 if qt4_dir:
@@ -95,9 +97,13 @@ elif env['CC'] == 'cl':  # msvc
 
 Export( 'env' )
 Export( 'loudnessAssessmentVersionStr' )
+Export( 'buildMode' )
 
-VariantDir( 'build/' + buildMode + '/src', 'src', duplicate = 0 )
-VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
+pathToSrc = os.path.join( 'build', buildMode, 'src')
+pathToApp = os.path.join( 'build', buildMode, 'app')
 
-SConscript( 'src/SConscript', variant_dir = 'build/' + buildMode + '/src' )
-SConscript( 'app/SConscript', variant_dir = 'build/' + buildMode + '/app' )
+VariantDir( pathToSrc, 'src', duplicate = 0 )
+VariantDir( pathToApp, 'app', duplicate = 0 )
+
+SConscript( os.path.join( 'src', 'SConscript' ), variant_dir = pathToSrc )
+SConscript( os.path.join( 'app', 'SConscript' ), variant_dir = pathToApp )
