@@ -1,6 +1,13 @@
 Import( 'env' )
 Import( 'loudnessAssessmentVersionStr' )
 
+### Common ###
+
+loudnessCommonHeaders = Glob( 'loudnessCommon/*.hpp' )
+env.Alias( 'install', env.Install( 'include/loudnessCommon', loudnessCommonHeaders ) )
+
+### loudness libraries ###
+
 Export( 'env' )
 Export( 'loudnessAssessmentVersionStr' )
 
