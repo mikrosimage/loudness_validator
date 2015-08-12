@@ -1,0 +1,36 @@
+Import( 'env' )
+Import( 'loudnessAssessmentVersionStr' )
+
+### loudness Analyser ###
+
+# check boost accumulators (header only library)
+conf = Configure(env)
+if not conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
+    print 'Error: did not find boost accumulators headers, exiting.'
+    Exit(1)
+env = conf.Finish()
+
+loudnessAnalyserLibName = 'loudnessAnalyser'
+# add version number to the name of the shared library if Windows platform
+if env['PLATFORM'] == 'win32':
+    loudnessAnalyserLibName += '-' + loudnessAssessmentVersionStr
+loudnessAnalyserLib = env.SharedLibrary(
+    loudnessAnalyserLibName,
+    Glob( '*.cpp' ) +
+    Glob( 'utils/*.cpp' )
+)
+
+loudnessAnalyserLibStatic = env.StaticLibrary(
+    'loudnessAnalyser',
+    Glob( '*.cpp' ) +
+    Glob( 'utils/*.cpp' )
+)
+
+# Install loudnessAnalyser libs
+env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessAnalyserLib ) )
+env.Alias( 'install', env.Install( 'lib', loudnessAnalyserLibStatic ) )
+
+# Install loudnessAnalyser headers
+env.Alias( 'install', env.Install( 'include/loudnessAnalyser', 'LoudnessAnalyser.hpp' ) )
+
+Export( 'loudnessAnalyserLibStatic' )
