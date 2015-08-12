@@ -1,17 +1,6 @@
 Import( 'env' )
 Import( 'loudnessAssessmentVersionStr' )
 
-### loudness Common ###
-
-loudnessCommonLibStatic = env.StaticLibrary(
-    'loudnessCommon',
-    Glob( 'loudnessCommon/*.cpp' ),
-)
-
-env.Alias( 'install', env.Install( 'lib', loudnessCommonLibStatic ) )
-
-Export( 'loudnessCommonLibStatic' )
-
 ### loudness Analyser ###
 
 # check boost accumulators (header only library)
@@ -28,15 +17,13 @@ if env['PLATFORM'] == 'win32':
 loudnessAnalyserLib = env.SharedLibrary(
     loudnessAnalyserLibName,
     Glob( 'loudnessAnalyser/*.cpp' ) +
-    Glob( 'loudnessAnalyser/utils/*.cpp' ),
-    LIBS = [loudnessCommonLibStatic]
+    Glob( 'loudnessAnalyser/utils/*.cpp' )
 )
 
 loudnessAnalyserLibStatic = env.StaticLibrary(
     'loudnessAnalyser',
     Glob( 'loudnessAnalyser/*.cpp' ) +
-    Glob( 'loudnessAnalyser/utils/*.cpp' ),
-    LIBS = [loudnessCommonLibStatic]
+    Glob( 'loudnessAnalyser/utils/*.cpp' )
 )
 
 # Install loudnessAnalyser libs
@@ -58,7 +45,6 @@ loudnessCorrectorLib = env.SharedLibrary(
     loudnessCorrectorLibName,
     Glob( 'loudnessCorrector/*.cpp' ),
     LIBS = [
-        loudnessCommonLibStatic,
         loudnessAnalyserLibStatic,
     ]
 )
@@ -67,7 +53,6 @@ loudnessCorrectorLibStatic = env.StaticLibrary(
     'loudnessCorrector',
     Glob( 'loudnessCorrector/*.cpp' ),
     LIBS = [
-        loudnessCommonLibStatic,
         loudnessAnalyserLibStatic,
     ]
 )
@@ -100,7 +85,6 @@ if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
         Glob( 'loudnessTools/*.cpp' ) +
         Glob( 'loudnessTools/io/*.cpp' ),
         LIBS = [
-            loudnessCommonLibStatic,
             loudnessAnalyserLibStatic,
             sndfileLib,
         ],
@@ -111,7 +95,6 @@ if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
         Glob( 'loudnessTools/*.cpp' ) +
         Glob( 'loudnessTools/io/*.cpp' ),
         LIBS = [
-            loudnessCommonLibStatic,
             loudnessAnalyserLibStatic,
             sndfileLib,
         ],
