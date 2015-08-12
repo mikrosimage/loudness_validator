@@ -5,7 +5,7 @@
 #include <cmath>
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
-#include <loudnessCorrector/ProcessFile.hpp>
+#include <loudnessTools/ProcessFile.hpp>
 #include <loudnessTools/io/SoundFile.hpp>
 #include <loudnessTools/WriteXml.hpp>
 

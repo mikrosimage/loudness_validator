@@ -1,12 +1,14 @@
-#ifndef PROCESS_FILE_H
-#define PROCESS_FILE_H
+#ifndef _LOUDNESS_TOOLS_PROCESS_FILE_HPP_
+#define _LOUDNESS_TOOLS_PROCESS_FILE_HPP_
 
 #include <loudnessCommon/common.hpp>
+
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
+
 #include <loudnessTools/io/SoundFile.hpp>
 
-#include "CorrectBuffer.hpp"
-#include "LookAheadLimiter.hpp"
+#include <loudnessCorrector/CorrectBuffer.hpp>
+#include <loudnessCorrector/LookAheadLimiter.hpp>
 
 namespace Loudness {
 namespace tool {
