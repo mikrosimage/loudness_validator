@@ -34,13 +34,27 @@ scons --install-sandbox=/path/to/install
 ## Dependencies
 
 #### Libraries
-__libloudnessAnalyser__ and __loudnessTools__ require __libsndfile__ and __boost accumulators__.
+
+* __loudnessAnalyser__  
+Depends on boost accumulators.
+
+* __loudnessCorrector__  
+Depends on loudnessAnalyser and boost accumulators.
+
+* __loudnessTools__  
+Depends on loudnessAnalyser, loudnessCorrector, and [libsndfile](http://www.mega-nerd.com/libsndfile/).
+
 
 #### Apps
-loudnessValidator requires also Qt4.
 
-[libsndfile](http://www.mega-nerd.com/libsndfile/)  
-[Qt4](http://qt.nokia.com/products/)  
+* __loudness-analyser__  
+Depends on loudnessAnalyser and loudnessTools.
+
+* __loudness-corrector__  
+Depends on loudnessCorrector and loudnessTools.
+
+* __loudness-validator__  
+Depends on loudnessAnalyser, loudnessCorrector, loudnessTools and [Qt4](http://qt.nokia.com/products/).
 
 
 ## Tested compilers
