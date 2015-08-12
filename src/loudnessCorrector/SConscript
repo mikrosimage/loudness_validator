@@ -8,20 +8,23 @@ loudnessCorrectorLibName = 'loudnessCorrector'
 # add version number to the name of the shared library if Windows platform
 if env['PLATFORM'] == 'win32':
     loudnessCorrectorLibName += '-' + loudnessAssessmentVersionStr
+
+loudnessCorrectorSrc = Glob( '*.cpp' )
+
+loudnessCorrectorDeps = [
+    loudnessAnalyserLibStatic,
+]
+
 loudnessCorrectorLib = env.SharedLibrary(
-    loudnessCorrectorLibName,
-    Glob( '*.cpp' ),
-    LIBS = [
-        loudnessAnalyserLibStatic,
-    ]
+    target = loudnessCorrectorLibName,
+    source = loudnessCorrectorSrc,
+    LIBS = loudnessCorrectorDeps
 )
 
 loudnessCorrectorLibStatic = env.StaticLibrary(
-    'loudnessCorrector',
-    Glob( '*.cpp' ),
-    LIBS = [
-        loudnessAnalyserLibStatic,
-    ]
+    target = 'loudnessCorrector',
+    source = loudnessCorrectorSrc,
+    LIBS = loudnessCorrectorDeps
 )
 
 # Install loudnessCorrector libs
