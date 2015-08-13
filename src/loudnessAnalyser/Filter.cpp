@@ -14,8 +14,8 @@
 #include <cmath>
 
 
-namespace Loudness
-{
+namespace Loudness {
+namespace analyser {
 
 /// Pre-filter constants
 
@@ -95,4 +95,5 @@ float Filter::processSample( const float& sample )
 	return filteredChannel;
 }
 
+}
 }

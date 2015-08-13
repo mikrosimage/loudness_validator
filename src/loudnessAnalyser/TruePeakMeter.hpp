@@ -1,13 +1,13 @@
-
-#include <vector>
-
 #ifndef _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
 #define _LOUDNESS_ANALYSER_TRUE_PEAK_METER_HPP_
+
+#include <loudnessCommon/common.hpp>
 
 #include <cstdlib>
 #include <vector>
 
-namespace Loudness{
+namespace Loudness {
+namespace analyser {
 
 class TruePeakMeter
 {
@@ -65,6 +65,7 @@ private:
 	bool                _enableOptimization;
 };
 
+}
 }
 
 #endif

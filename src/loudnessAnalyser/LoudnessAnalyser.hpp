@@ -2,15 +2,15 @@
 #ifndef _LOUDNESS_ANALYSER_LOUDNESS_ANALYSER_HPP_
 #define _LOUDNESS_ANALYSER_LOUDNESS_ANALYSER_HPP_
 
-#include "common.hpp"
+#include <loudnessCommon/common.hpp>
 
 #include <cstdlib>
 #include <vector>
 #include <memory>
 #include <limits>
 
-namespace Loudness
-{
+namespace Loudness {
+namespace analyser {
 
 #define LOUDNESS_NAN std::numeric_limits<float>::quiet_NaN()
 
@@ -344,4 +344,6 @@ protected:
 };
 
 }
+}
+
 #endif

@@ -1,6 +1,7 @@
 import os
 Import( 'env' )
 Import( 'loudnessAnalyserLibStatic' )
+Import( 'loudnessCorrectorLibStatic' )
 Import( '*' )
 
 if 'loudnessToolsLibStatic' in locals():
@@ -17,6 +18,7 @@ if 'loudnessToolsLibStatic' in locals():
 		Glob( 'analyser/*.cpp' ),
 		LIBS = [
 			loudnessAnalyserLibStatic,
+			loudnessCorrectorLibStatic,
 			loudnessToolsLibStatic,
 			sndfileLib,
 		]
@@ -29,6 +31,7 @@ if 'loudnessToolsLibStatic' in locals():
 		Glob( 'corrector/*.cpp' ),
 		LIBS = [
 			loudnessAnalyserLibStatic,
+			loudnessCorrectorLibStatic,
 			loudnessToolsLibStatic,
 			sndfileLib,
 		]
@@ -56,6 +59,7 @@ if 'loudnessToolsLibStatic' in locals():
 
 	    loudnessValidatorLibraries = [
 	        loudnessAnalyserLibStatic,
+	        loudnessCorrectorLibStatic,
 	        loudnessToolsLibStatic,
 	        sndfileLib,
 	    ]

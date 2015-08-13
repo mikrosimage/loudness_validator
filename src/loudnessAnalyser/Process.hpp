@@ -1,7 +1,7 @@
-
 #ifndef _LOUDNESS_ANALYSER_PROCESS_HPP_
 #define _LOUDNESS_ANALYSER_PROCESS_HPP_
 
+#include <loudnessCommon/common.hpp>
 #include "Loudness.hpp"
 #include "Filter.hpp"
 #include "Histogram.hpp"
@@ -10,7 +10,8 @@
 #include <vector>
 #include <cmath>
 
-namespace Loudness{
+namespace Loudness {
+namespace analyser {
 
 struct LoudnessLevels;
 
@@ -96,6 +97,7 @@ private:
 	static float          _channelGain        [MAX_CHANNELS];
 };
 
+}
 }
 
 #endif

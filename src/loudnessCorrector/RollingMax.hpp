@@ -2,9 +2,10 @@
 #define ROLLING_MAX_HPP
 
 #include <boost/circular_buffer.hpp>
+#include <boost/accumulators/numeric/functional.hpp>
 
 namespace Loudness {
-namespace tool {
+namespace corrector {
 
 template<typename Sample>
 class RollingMax

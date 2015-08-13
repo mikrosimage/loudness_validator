@@ -1,7 +1,7 @@
 #include "LookAheadLimiter.hpp"
 
 namespace Loudness {
-namespace tool {
+namespace corrector {
 
 /**
   * lookAheadTime [ ms ]

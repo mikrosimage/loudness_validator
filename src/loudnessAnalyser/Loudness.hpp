@@ -2,18 +2,21 @@
 #ifndef _LOUDNESS_ANALYSER_LOUDNESS_HPP_
 #define _LOUDNESS_ANALYSER_LOUDNESS_HPP_
 
-#include <vector>
+#include <loudnessCommon/common.hpp>
+#include "Histogram.hpp"
+#include "LoudnessAnalyser.hpp"
+
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/rolling_mean.hpp>
 #include <boost/accumulators/statistics/rolling_mean.hpp>
 
-#include "Histogram.hpp"
-#include "LoudnessAnalyser.hpp"
+#include <vector>
 
 using namespace boost::accumulators;
 
-namespace Loudness{
+namespace Loudness {
+namespace analyser {
 
 enum ELoudnessType{
 	eCorrectionLoudness = 0,
@@ -84,6 +87,7 @@ private:
 	std::vector<float> _temporalValues;     ///< use to return ShortTerm values
 };
 
+}
 }
 
 #endif

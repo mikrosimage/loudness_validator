@@ -5,7 +5,7 @@
 #include "LookAheadLimiter.hpp"
 
 namespace Loudness {
-namespace tool {
+namespace corrector {
 
 size_t correctBuffer( float* data, const size_t samples, const size_t channelsInBuffer, const float gain )
 {

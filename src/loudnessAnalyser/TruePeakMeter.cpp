@@ -1,14 +1,14 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#include <loudnessCommon/HardwareDetection.hpp>
 #include "TruePeakMeter.hpp"
-#include "common.hpp"
-#include "utils/HardwareDetection.hpp"
 
 #include <algorithm>
 #include <emmintrin.h>
 
-namespace Loudness{
+namespace Loudness {
+namespace analyser {
 
 TruePeakMeter::TruePeakMeter()
 	: _maxValue            ( 0 )
@@ -76,7 +76,7 @@ void TruePeakMeter::initialize( const int frequencySampling )
 	}
 
 	// detect if hardware is able to launch SSE2 instructions
-	utils::HardwareDetection hardware;
+	common::HardwareDetection hardware;
 	if( ! hardware.hasSimdSSE2() )
 	{
 		_enableOptimization = false;
@@ -128,4 +128,5 @@ float TruePeakMeter::processSample( const double sample )
 	return _maxValue;
 }
 
+}
 }

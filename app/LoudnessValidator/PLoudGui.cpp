@@ -13,7 +13,7 @@
 #include "AudioFile.h"
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
-#include <tool/io/SoundFile.hpp>
+#include <loudnessTools/io/SoundFile.hpp>
 
 #define BUFFER_SIZE 4096
 
@@ -317,7 +317,7 @@ void PLoudGui::callbackProgress( void* object, int value )
 	pb->setValue( value );
 }
 
-void analyseFiles( Loudness::io::SoundFile* audioFile, size_t channels, Loudness::LoudnessAnalyser* ploudMeter, QProgressBar& progressBar, double gain = 1.0 )
+void analyseFiles( Loudness::tools::SoundFile* audioFile, size_t channels, Loudness::analyser::LoudnessAnalyser* ploudMeter, QProgressBar& progressBar, double gain = 1.0 )
 {
 	int cumulOfSamples = 0;
 	int bufferSize = audioFile[0].getSampleRate() / 5;
@@ -360,7 +360,7 @@ void PLoudGui::openSeparatedFiles( )
 	processSeparatedFiles.setIcon( QIcon( ":/icons/document-encrypt.png" ) );
 	std::cout << "Processing..." << std::endl;
 	
-	Loudness::LoudnessLevels levels (
+	Loudness::analyser::LoudnessLevels levels (
 		properties.programLoudnessLongProgramMaxValue,
 		properties.programLoudnessLongProgramMinValue,
 		properties.programLoudnessLongProgramTargetLevel,
@@ -410,7 +410,7 @@ void PLoudGui::openSeparatedFiles( )
 	}
 	
 	
-	Loudness::io::SoundFile audioInputFile [5];
+	Loudness::tools::SoundFile audioInputFile [5];
 	size_t    numberOfChannels = 0;
 
 	for(size_t i=0; i<5; i++)
@@ -517,7 +517,7 @@ void PLoudGui::openMultichannelFile( )
 		return;
 	}
 	
-	Loudness::LoudnessLevels levels (
+	Loudness::analyser::LoudnessLevels levels (
 		properties.programLoudnessLongProgramMaxValue,
 		properties.programLoudnessLongProgramMinValue,
 		properties.programLoudnessLongProgramTargetLevel,
@@ -589,36 +589,44 @@ void PLoudGui::updateInterface( )
 	momentaryLoudness     .display( QString::number( ploudProc->getMomentaryLoudness( ), 'f', 1 ) + " LUFS" );
 	truePeak              .display( QString::number( ploudProc->getTruePeakInDbTP( ), 'f', 1 ) + " dBFS" );
 
-	( ploudProc->isIntegratedLoudnessValid() == Loudness::eValidResult ) ? programLoudness.setPalette( paletteGreen ) :
-		( ploudProc->isIntegratedLoudnessValid() == Loudness::eNotValidResult ) ? programLoudness.setPalette( paletteRed ) :
-			( ploudProc->isIntegratedLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? programLoudness.setPalette( paletteOrange) : programLoudness.setPalette( paletteGray ) ;
+	( ploudProc->isIntegratedLoudnessValid() == Loudness::analyser::eValidResult ) ? programLoudness.setPalette( paletteGreen ) :
+		( ploudProc->isIntegratedLoudnessValid() == Loudness::analyser::eNotValidResult ) ? programLoudness.setPalette( paletteRed ) :
+			( ploudProc->isIntegratedLoudnessValid() == Loudness::analyser::eNotValidResultButNotIllegal ) ? programLoudness.setPalette( paletteOrange) : programLoudness.setPalette( paletteGray ) ;
 
-	( ploudProc->isIntegratedLoudnessRangeValid() == Loudness::eValidResult ) ? programRange.setPalette( paletteGreen ) :
-		( ploudProc->isIntegratedLoudnessRangeValid() == Loudness::eNotValidResult ) ? programRange.setPalette( paletteRed ) :
-			( ploudProc->isIntegratedLoudnessRangeValid() == Loudness::eNotValidResultButNotIllegal ) ? programRange.setPalette( paletteOrange ) : programRange.setPalette( paletteGray ) ;
+	( ploudProc->isIntegratedLoudnessRangeValid() == Loudness::analyser::eValidResult ) ? programRange.setPalette( paletteGreen ) :
+		( ploudProc->isIntegratedLoudnessRangeValid() == Loudness::analyser::eNotValidResult ) ? programRange.setPalette( paletteRed ) :
+			( ploudProc->isIntegratedLoudnessRangeValid() == Loudness::analyser::eNotValidResultButNotIllegal ) ? programRange.setPalette( paletteOrange ) : programRange.setPalette( paletteGray ) ;
 
-	( ploudProc->isMaxShortTermLoudnessValid() == Loudness::eValidResult ) ? maxShortTermLoudness.setPalette( paletteGreen ) :
-		( ploudProc->isMaxShortTermLoudnessValid() == Loudness::eNotValidResult ) ? maxShortTermLoudness.setPalette( paletteRed ) :
-			( ploudProc->isMaxShortTermLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? maxShortTermLoudness.setPalette( paletteOrange ) : maxShortTermLoudness.setPalette( paletteGray ) ;
+	( ploudProc->isMaxShortTermLoudnessValid() == Loudness::analyser::eValidResult ) ? maxShortTermLoudness.setPalette( paletteGreen ) :
+		( ploudProc->isMaxShortTermLoudnessValid() == Loudness::analyser::eNotValidResult ) ? maxShortTermLoudness.setPalette( paletteRed ) :
+			( ploudProc->isMaxShortTermLoudnessValid() == Loudness::analyser::eNotValidResultButNotIllegal ) ? maxShortTermLoudness.setPalette( paletteOrange ) : maxShortTermLoudness.setPalette( paletteGray ) ;
 
-	( ploudProc->isMinShortTermLoudnessValid() == Loudness::eValidResult ) ? minShortTermLoudness.setPalette( paletteGreen ) :
-		( ploudProc->isMinShortTermLoudnessValid() == Loudness::eNotValidResult ) ? minShortTermLoudness.setPalette( paletteRed ) :
-			( ploudProc->isMinShortTermLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? minShortTermLoudness.setPalette( paletteOrange ) : minShortTermLoudness.setPalette( paletteGray ) ;
+	( ploudProc->isMinShortTermLoudnessValid() == Loudness::analyser::eValidResult ) ? minShortTermLoudness.setPalette( paletteGreen ) :
+		( ploudProc->isMinShortTermLoudnessValid() == Loudness::analyser::eNotValidResult ) ? minShortTermLoudness.setPalette( paletteRed ) :
+			( ploudProc->isMinShortTermLoudnessValid() == Loudness::analyser::eNotValidResultButNotIllegal ) ? minShortTermLoudness.setPalette( paletteOrange ) : minShortTermLoudness.setPalette( paletteGray ) ;
 
-	( ploudProc->isMomentaryLoudnessValid() == Loudness::eValidResult ) ? momentaryLoudness.setPalette( paletteGreen ) :
-		( ploudProc->isMomentaryLoudnessValid() == Loudness::eNotValidResult ) ? momentaryLoudness.setPalette( paletteRed ) :
-			( ploudProc->isMomentaryLoudnessValid() == Loudness::eNotValidResultButNotIllegal ) ? momentaryLoudness.setPalette( paletteOrange ) : momentaryLoudness.setPalette( paletteGray ) ;
+	( ploudProc->isMomentaryLoudnessValid() == Loudness::analyser::eValidResult ) ? momentaryLoudness.setPalette( paletteGreen ) :
+		( ploudProc->isMomentaryLoudnessValid() == Loudness::analyser::eNotValidResult ) ? momentaryLoudness.setPalette( paletteRed ) :
+			( ploudProc->isMomentaryLoudnessValid() == Loudness::analyser::eNotValidResultButNotIllegal ) ? momentaryLoudness.setPalette( paletteOrange ) : momentaryLoudness.setPalette( paletteGray ) ;
 
-	( ploudProc->isTruePeakValid() == Loudness::eValidResult ) ? truePeak.setPalette( paletteGreen ) :
-		( ploudProc->isTruePeakValid() == Loudness::eNotValidResult ) ? truePeak.setPalette( paletteRed ) :
-			( ploudProc->isTruePeakValid() == Loudness::eNotValidResultButNotIllegal ) ? truePeak.setPalette( paletteOrange ) : truePeak.setPalette( paletteGray ) ;
+	( ploudProc->isTruePeakValid() == Loudness::analyser::eValidResult ) ? truePeak.setPalette( paletteGreen ) :
+		( ploudProc->isTruePeakValid() == Loudness::analyser::eNotValidResult ) ? truePeak.setPalette( paletteRed ) :
+			( ploudProc->isTruePeakValid() == Loudness::analyser::eNotValidResultButNotIllegal ) ? truePeak.setPalette( paletteOrange ) : truePeak.setPalette( paletteGray ) ;
 
 	switch( ploudProc->isValidProgram() )
 	{
-		case Loudness::eValidResult: labelFinalResultResponse.setText( tr( "<h1><font color='green'>Valid</font><font color='gray'> / Invalid</font></h1>" ) ); break;
-		case Loudness::eNotValidResult: labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / </font><font color='red'>Invalid</font></h1>" ) ); break;
-		case Loudness::eNotValidResultButNotIllegal: labelFinalResultResponse.setText( tr( "<h1><font color='orange'>Valid</font><font color='gray'> / Invalid</font></h1>" ) ); break;
-		case Loudness::eNoImportance	: labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / Invalid</font></h1>" ) );break;
+		case Loudness::analyser::eValidResult:
+			labelFinalResultResponse.setText( tr( "<h1><font color='green'>Valid</font><font color='gray'> / Invalid</font></h1>" ) );
+			break;
+		case Loudness::analyser::eNotValidResult:
+			labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / </font><font color='red'>Invalid</font></h1>" ) );
+			break;
+		case Loudness::analyser::eNotValidResultButNotIllegal:
+			labelFinalResultResponse.setText( tr( "<h1><font color='orange'>Valid</font><font color='gray'> / Invalid</font></h1>" ) );
+			break;
+		case Loudness::analyser::eNoImportance:
+			labelFinalResultResponse.setText( tr( "<h1><font color='gray'>Valid / Invalid</font></h1>" ) );
+			break;
 	}
 	
 	shortTermValues = ploudProc->getShortTermValues();

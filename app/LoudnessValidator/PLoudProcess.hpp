@@ -2,7 +2,8 @@
 #define PLOUD_PROCESS_H
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
-#include <tool/io/SoundFile.hpp>
+#include <loudnessTools/io/SoundFile.hpp>
+
 #include <string>
 #include <vector>
 
@@ -13,10 +14,10 @@ enum ELoudnessStandard
 	eATSCA85
 };
 
-class PLoudProcess : public Loudness::LoudnessAnalyser
+class PLoudProcess : public Loudness::analyser::LoudnessAnalyser
 {
 public:
-	PLoudProcess( Loudness::LoudnessLevels levels, float frequencyForTruePeak );
+	PLoudProcess( Loudness::analyser::LoudnessLevels levels, float frequencyForTruePeak );
 	
 	bool openAudioFiles( std::vector<std::string>& files );
 	void closeAudioFiles( );
@@ -32,7 +33,7 @@ public:
 	
 private:
 	std::vector<std::string> filenames;
-	std::vector<Loudness::io::SoundFile*>  audioFiles;
+	std::vector<Loudness::tools::SoundFile*>  audioFiles;
 };
 
 #endif

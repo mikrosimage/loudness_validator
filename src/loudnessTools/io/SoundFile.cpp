@@ -24,7 +24,7 @@
 #include "SoundFile.hpp"
 
 namespace Loudness {
-namespace io {
+namespace tools {
 
 SoundFile::SoundFile (void)
 {

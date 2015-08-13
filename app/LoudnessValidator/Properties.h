@@ -3,9 +3,10 @@
 
 #include <QtGui/QtGui>
 
-namespace Loudness
-{
+namespace Loudness {
+namespace analyser {
 	struct LoudnessLevels;
+}
 }
 
 class Properties : public QDialog
@@ -55,7 +56,7 @@ public:
 	
 private:
 	void            setEnableProperties( bool enable );
-	void            setPropertiesValues( Loudness::LoudnessLevels values );
+	void            setPropertiesValues( Loudness::analyser::LoudnessLevels values );
 	
 	float           frequencyTruePeak;
 	

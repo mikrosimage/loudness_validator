@@ -1,12 +1,12 @@
 #include "Loudness.hpp"
-#include "common.hpp"
 #include <numeric>
 #include <cmath>
 
 //#define LOUD_CONSTANT -0.6976f
 #define LOUD_CONSTANT -0.691f
 
-namespace Loudness{
+namespace Loudness {
+namespace analyser {
 
 Loudness::Loudness( ELoudnessType loudnessType, float absoluteThresholdValue, float relativeThresholdValue, float minHistrogramValue, float maxHistrogramValue, float stepHistrogramValue ) :
 	_minLoudness       (  200.f ),
@@ -168,4 +168,5 @@ float Loudness::getCorrectionGain( const LoudnessLevels& levels, const bool isSh
 	return std::pow ( 10, ( correctionGain ) / 20 );
 }
 
+}
 }
