@@ -1,5 +1,5 @@
-#ifndef ROLLING_MAX_HPP
-#define ROLLING_MAX_HPP
+#ifndef _LOUDNESS_CORRECTOR_ROLLING_MAX_HPP_
+#define _LOUDNESS_CORRECTOR_ROLLING_MAX_HPP_
 
 #include <boost/circular_buffer.hpp>
 #include <boost/accumulators/numeric/functional.hpp>

@@ -1,5 +1,5 @@
-#ifndef WRITE_XML_H
-#define WRITE_XML_H
+#ifndef LOUDNESS_TOOLS_WRITE_XML_HPP_
+#define LOUDNESS_TOOLS_WRITE_XML_HPP_
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 

@@ -36,7 +36,8 @@ if boost_root:
     boost_lib = os.path.join( boost_root, 'lib' )
 
 # Get qt4 install path
-qt4_dir = ARGUMENTS.get( 'QTDIR', '/usr/' )
+qt4_dir = ARGUMENTS.get( 'QTDIR', '/usr' )
+qt4_include = ARGUMENTS.get( 'QT_INCLUDE', '/usr/include' )
 
 # Create env
 env = Environment()
@@ -46,6 +47,7 @@ env.Append(
                 '#src',
                 sndfile_include,
                 boost_include,
+                qt4_include,
         ],
         CXXFLAGS = [
                 '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
