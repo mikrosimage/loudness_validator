@@ -1,4 +1,4 @@
-#include "AvSoudFile.hpp"
+#include "AvSoundFile.hpp"
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
@@ -78,7 +78,7 @@ int main( int argc, char** argv )
 
 	// Get list of files / streamIndex to analyse
 	std::vector<std::pair<std::string, size_t> > arrayToAnalyse = parseConfigFile(arguments.at(0));
-	AvSoudFile soudFile(arrayToAnalyse);
+	AvSoundFile soudFile(arrayToAnalyse);
 
 	// Analyse loudness according to EBU R-128
 	Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();

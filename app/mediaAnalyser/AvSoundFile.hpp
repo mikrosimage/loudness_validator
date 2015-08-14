@@ -1,5 +1,5 @@
-#ifndef AVSOUDFILE_HPP
-#define	AVSOUDFILE_HPP
+#ifndef AVSOUNDFILE_HPP
+#define AVSOUNDFILE_HPP
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
@@ -15,11 +15,11 @@
 #include <utility>
 
 
-class AvSoudFile
+class AvSoundFile
 {
 public:
-	AvSoudFile(const std::vector<std::pair<std::string, size_t> >& arrayToAnalyse);
-	~AvSoudFile();
+	AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arrayToAnalyse);
+	~AvSoundFile();
 
 	void analyse(Loudness::analyser::LoudnessAnalyser& analyser);
 

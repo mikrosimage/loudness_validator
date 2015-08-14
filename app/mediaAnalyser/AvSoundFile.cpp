@@ -1,4 +1,4 @@
-#include "AvSoudFile.hpp"
+#include "AvSoundFile.hpp"
 
 #include <AvTranscoder/mediaProperty/print.hpp>
 
@@ -12,7 +12,7 @@ void progress( int p )
 	std::cout << "[" << std::setw(3) << p << "%]\r" << std::flush;
 }
 
-AvSoudFile::AvSoudFile(const std::vector<std::pair<std::string, size_t> >& arrayToAnalyse)
+AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arrayToAnalyse)
 	: _nbChannelsToAnalyse(0)
 	, _totalNbSamples(0)
 	, _cumulOfSamples(0)
@@ -114,7 +114,7 @@ AvSoudFile::AvSoudFile(const std::vector<std::pair<std::string, size_t> >& array
 	_nbChannelsToAnalyse = std::min(totalInputNbChannels, 5); // skip LRE
 }
 
-AvSoudFile::~AvSoudFile()
+AvSoundFile::~AvSoundFile()
 {
 	for( std::vector< avtranscoder::InputFile* >::iterator it = _inputFiles.begin(); it != _inputFiles.end(); ++it )
 	{
@@ -138,7 +138,7 @@ AvSoudFile::~AvSoudFile()
 	}
 }
 
-void AvSoudFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
+void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 {
 	// init
 	analyser.initAndStart(_nbChannelsToAnalyse, _inputSampleRate.at(0));
