@@ -37,7 +37,11 @@ if boost_root:
 
 # Get qt4 install path
 qt4_dir = ARGUMENTS.get( 'QTDIR', '/usr' )
-qt4_include = ARGUMENTS.get( 'QT_INCLUDE', '/usr/include' )
+qt4_include_suffix = ARGUMENTS.get( 'QT_INCLUDE_SUFFIX', '' )
+
+qt4_include = None
+if qt4_include_suffix != '':
+        qt4_include = os.path.join(qt4_dir, 'include', qt4_include_suffix)
 
 # Create env
 env = Environment()
