@@ -91,7 +91,7 @@ else:
 	print('Warning: loudnessTools has not been built, will not build applications.')
 
 
-### loudness-analyser-complete ###
+### media-analyser ###
 
 # Get avtranscoder install path
 avtranscoder_root = ARGUMENTS.get( 'AVTRANSCODER_ROOT', '' )
@@ -130,16 +130,16 @@ avtranscoderLib = 'avtranscoder'
 if conf.CheckCXXHeader('AvTranscoder/common.hpp'):
     avtranscoderEnv = conf.Finish()
 
-    loudnessAnalyserCompleteProgram = avtranscoderEnv.Program(
-        'loudness-analyser-complete',
-        Glob( 'completeAnalyser/*.cpp' ),
+    mediaLoudnessAnalyserProgram = avtranscoderEnv.Program(
+        'media-loudness-analyser',
+        Glob( 'mediaAnalyser/*.cpp' ),
         LIBS = [
                 loudnessAnalyserLibStatic,
                 avtranscoderLib,
         ]
     )
 
-    env.Alias( 'install', env.Install( 'bin', loudnessAnalyserCompleteProgram ) )
+    env.Alias( 'install', env.Install( 'bin', mediaLoudnessAnalyserProgram ) )
 
 else:
-    print('Warning: avtranscoder not found, will not build loudness-analyser-complete application')
+    print('Warning: avtranscoder not found, will not build media-analyser application')

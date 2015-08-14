@@ -254,7 +254,7 @@ int main( int argc, char** argv )
 		{
 			std::string help;
 			help += "Usage\n";
-			help += "\tanalyser-complete CONFIG.TXT [--help]\n";
+			help += "\tmedia-analyser CONFIG.TXT [--help]\n";
 			help += "CONFIG.TXT\n";
 			help += "\tEach line will be one audio stream analysed by the loudness library.\n";
 			help += "\tPattern of each line is:\n";
