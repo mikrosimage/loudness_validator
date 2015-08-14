@@ -18,7 +18,7 @@
 
 void progress( int p )
 {
-	std::cout << "[" << p << "%]\r" << std::flush;
+	std::cout << "[" << std::setw(3) << p << "%]\r" << std::flush;
 }
 
 
