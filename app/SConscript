@@ -1,10 +1,9 @@
 import os
+
 Import( 'env' )
-Import( 'loudnessAnalyserLibStatic' )
-Import( 'loudnessCorrectorLibStatic' )
 Import( '*' )
 
-if 'loudnessToolsLibStatic' in locals():
+if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in locals() and 'loudnessToolsLibStatic' in locals():
 
     # Get sndfile lib name
     sndfileLib = 'sndfile'
@@ -88,4 +87,4 @@ if 'loudnessToolsLibStatic' in locals():
     else:
         print('Warning: did not find QtCore library, will not build loudness-validator app.')
 else:
-    print('Warning: loudnessTools has not been built, will not build applications.')
+    print('Warning: loudness libraries has not been built, will not build applications.')
