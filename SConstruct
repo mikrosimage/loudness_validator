@@ -24,8 +24,8 @@ AddOption(
     nargs=1,
     action='store',
     default='release',
-    metavar='DIR',
-    help='Select build mode (debug or release). Release is selected by default.'
+    metavar='MODE',
+    help='Select build mode: debug, release. [default: release].'
 )
 buildMode = GetOption('mode')
 if not ( buildMode in [ 'debug', 'release' ] ) :
