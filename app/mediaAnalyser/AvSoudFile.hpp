@@ -37,6 +37,7 @@ private:
 	std::vector<size_t> _inputSampleRate;
 
 	// for io
+	std::vector<std::string> _inputFilenames;
 	std::vector<avtranscoder::InputFile*> _inputFiles;
 	std::vector<avtranscoder::AudioDecoder*> _decoders;
 	std::vector<avtranscoder::AudioFrame*> _srcFrames;

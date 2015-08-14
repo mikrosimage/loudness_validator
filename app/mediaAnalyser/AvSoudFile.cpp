@@ -23,13 +23,28 @@ AvSoudFile::AvSoudFile(const std::vector<std::pair<std::string, size_t> >& array
 		const size_t streamIndex(arrayToAnalyse.at(fileIndex).second);
 
 		// Analyse input file
-		avtranscoder::InputFile* inputFile = new avtranscoder::InputFile( filename );
+		avtranscoder::InputFile* inputFile = NULL;
+		std::vector<std::string>::iterator iterFilename = std::find(_inputFilenames.begin(), _inputFilenames.end(), filename);
+		if(iterFilename != _inputFilenames.end())
+		{
+			// get existing InputFile
+			const size_t filenameIndex = std::distance( _inputFilenames.begin(), iterFilename);
+			inputFile = _inputFiles.at(filenameIndex);
+		}
+		else
+		{
+			// create new InputFile
+			inputFile = new avtranscoder::InputFile( filename );
+
+			// display file properties
+			std::cout << *inputFile;
+
+			// add to list of filename
+			_inputFilenames.push_back(filename);
+		}
 		_inputFiles.push_back(inputFile);
 		avtranscoder::NoDisplayProgress p;
 		inputFile->analyse( p, avtranscoder::eAnalyseLevelHeader );
-
-		// display file properties
-		std::cout << *inputFile;
 
 		// Set up decoder of the audio stream
 		avtranscoder::InputStream& inputStream = inputFile->getStream(streamIndex);
