@@ -11,6 +11,12 @@ env.Alias( 'install', env.Install( 'include/loudnessCommon', loudnessCommonHeade
 Export( 'env' )
 Export( 'loudnessAssessmentVersionStr' )
 
-SConscript( 'loudnessAnalyser/SConscript' )
-SConscript( 'loudnessCorrector/SConscript' )
-SConscript( 'loudnessTools/SConscript' )
+# check boost accumulators (header only library)
+conf = Configure(env)
+if conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
+    env = conf.Finish()
+    SConscript( 'loudnessAnalyser/SConscript' )
+    SConscript( 'loudnessCorrector/SConscript' )
+    SConscript( 'loudnessTools/SConscript' )
+else:
+    print 'Warning: did not find boost accumulators headers, will not build loudness libraries.'

@@ -14,31 +14,86 @@ loudnessAssessmentVersion = [
 
 loudnessAssessmentVersionStr = ".".join( loudnessAssessmentVersion )
 
+### Command line options ###
+
 # Get build mode
-buildMode = ARGUMENTS.get( 'mode', 'release' )
+AddOption(
+    '--mode',
+    dest='mode',
+    type='string',
+    nargs=1,
+    action='store',
+    default='release',
+    metavar='MODE',
+    help='Select build mode: debug, release. [default: release].'
+)
+buildMode = GetOption('mode')
 if not ( buildMode in [ 'debug', 'release' ] ) :
         raise Exception( "Can't select build mode ['debug', 'release']" )
 
 # Get libsndfile install path
-sndfile_root = ARGUMENTS.get( 'SNDFILE_ROOT', '' )
+AddOption(
+    '--sndfile',
+    dest='sndfile',
+    type='string',
+    nargs=1,
+    action='store',
+    metavar='DIR',
+    help='Path to sndfile library.'
+)
+sndfile_root = GetOption('sndfile')
 sndfile_include = ''
 sndfile_lib = ''
 if sndfile_root:
     sndfile_include = os.path.join( sndfile_root, 'include' )
     sndfile_lib = os.path.join( sndfile_root, 'lib' )
 
+
 # Get libboost install path
-boost_root = ARGUMENTS.get( 'BOOST_ROOT', '' )
+AddOption(
+    '--boost',
+    dest='boost',
+    type='string',
+    nargs=1,
+    action='store',
+    metavar='DIR',
+    help='Path to boost accumulators library.'
+)
+boost_root = GetOption('boost')
 boost_include = ''
 boost_lib = ''
 if boost_root:
     boost_include = os.path.join( boost_root, 'include' )
     boost_lib = os.path.join( boost_root, 'lib' )
 
-# Get qt4 install path
-qt4_dir = ARGUMENTS.get( 'QTDIR', '/usr/' )
+# Get qt install path
+AddOption(
+    '--qt',
+    dest='qt',
+    type='string',
+    nargs=1,
+    action='store',
+    metavar='DIR',
+    help='Path to qt library.'
+)
+AddOption(
+    '--qt-suffix',
+    dest='qtSuffix',
+    type='string',
+    nargs=1,
+    action='store',
+    metavar='DIR',
+    help='Use this option to specify the path to qt library (is case of conflict between several versions for example).'
+)
+qt_dir = GetOption('qt')
+qt_include_suffix = GetOption('qtSuffix')
 
-# Create env
+qt_include = ''
+if qt_include_suffix:
+        qt_include = os.path.join(qt_dir, 'include', qt_include_suffix)
+
+### Create env ###
+
 env = Environment()
 
 env.Append(
@@ -46,6 +101,7 @@ env.Append(
                 '#src',
                 sndfile_include,
                 boost_include,
+                qt_include,
         ],
         CXXFLAGS = [
                 '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
@@ -61,9 +117,9 @@ env.Append(
         )
 
 # Set QTDIR if specify
-if qt4_dir:
+if qt_dir:
     env.Append(
-        QTDIR = qt4_dir,
+        QTDIR = qt_dir,
     )
 
 # Set frameworks path if MacOS

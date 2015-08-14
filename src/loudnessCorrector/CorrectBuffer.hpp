@@ -1,5 +1,5 @@
-#ifndef CORRECT_BUFFER_H
-#define CORRECT_BUFFER_H
+#ifndef _LOUDNESS_CORRECTOR_CORRECT_BUFFER_HPP_
+#define _LOUDNESS_CORRECTOR_CORRECT_BUFFER_HPP_
 
 #include <vector>
 #include "LookAheadLimiter.hpp"

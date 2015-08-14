@@ -1,5 +1,5 @@
-#ifndef _LOUDNESS_ANALYSER_SYSTEM_HPP_
-#define _LOUDNESS_ANALYSER_SYSTEM_HPP_
+#ifndef _LOUDNESS_COMMON_SYSTEM_HPP_
+#define _LOUDNESS_COMMON_SYSTEM_HPP_
 
 #if defined( linux ) \
     || defined( __linux ) \
