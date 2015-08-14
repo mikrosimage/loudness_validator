@@ -1,5 +1,5 @@
-#ifndef LOOK_AHEAD_LIMITER_H
-#define LOOK_AHEAD_LIMITER_H
+#ifndef _LOUDNESS_CORRECTOR_LOOK_AHEAD_LIMITER_HPP_
+#define _LOUDNESS_CORRECTOR_LOOK_AHEAD_LIMITER_HPP_
 
 #include <loudnessCommon/common.hpp>
 
