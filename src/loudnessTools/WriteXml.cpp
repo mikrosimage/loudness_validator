@@ -37,7 +37,7 @@ void WriteXml::writeResults( const char* channelType, Loudness::analyser::Loudne
 	
 	xmlFile << "\" " 
 		<< printStandard( analyser.getStandard() ) << " " 
-		<< convertValid( analyser.isValidProgram() ) 
+		<< convertValid( analyser.isValidProgram() ) << " " 
 		<< "channelsType=\"" << channelType << "\" " 
 		<< "date=\"" << getDate() << "\">\n";
 	xmlFile << "\t<ProgramLoudness "      << convertValid( analyser.isIntegratedLoudnessValid() )      << ">" << analyser.getIntegratedLoudness()   << "</ProgramLoudness>\n";
@@ -65,9 +65,9 @@ std::string WriteXml::convertValid( Loudness::analyser::ELoudnessResult result )
 	std::string st = "";
 	switch( result )
 	{
-		case Loudness::analyser::eValidResult                 : st = "valid\" ";       break;
-		case Loudness::analyser::eNotValidResult              : st = "illegal\" ";     break;
-		case Loudness::analyser::eNotValidResultButNotIllegal : st = "not illegal\" "; break;
+		case Loudness::analyser::eValidResult                 : st = "valid";       break;
+		case Loudness::analyser::eNotValidResult              : st = "illegal";     break;
+		case Loudness::analyser::eNotValidResultButNotIllegal : st = "not illegal"; break;
 		case Loudness::analyser::eNoImportance                : break;
 	}
 	return " status=\'" + st + "'";
