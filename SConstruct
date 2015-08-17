@@ -31,24 +31,6 @@ buildMode = GetOption('mode')
 if not ( buildMode in [ 'debug', 'release' ] ) :
         raise Exception( "Can't select build mode ['debug', 'release']" )
 
-# Get libsndfile install path
-AddOption(
-    '--sndfile',
-    dest='sndfile',
-    type='string',
-    nargs=1,
-    action='store',
-    metavar='DIR',
-    help='Path to sndfile library.'
-)
-sndfile_root = GetOption('sndfile')
-sndfile_include = ''
-sndfile_lib = ''
-if sndfile_root:
-    sndfile_include = os.path.join( sndfile_root, 'include' )
-    sndfile_lib = os.path.join( sndfile_root, 'lib' )
-
-
 # Get libboost install path
 AddOption(
     '--boost',
@@ -59,12 +41,17 @@ AddOption(
     metavar='DIR',
     help='Path to boost accumulators library.'
 )
-boost_root = GetOption('boost')
-boost_include = ''
-boost_lib = ''
-if boost_root:
-    boost_include = os.path.join( boost_root, 'include' )
-    boost_lib = os.path.join( boost_root, 'lib' )
+
+# Get libsndfile install path
+AddOption(
+    '--sndfile',
+    dest='sndfile',
+    type='string',
+    nargs=1,
+    action='store',
+    metavar='DIR',
+    help='Path to sndfile library.'
+)
 
 # Get qt install path
 AddOption(
@@ -85,16 +72,53 @@ AddOption(
     metavar='DIR',
     help='Use this option to specify the path to qt library (is case of conflict between several versions for example).'
 )
+
+# Get ffmpeg install path
+AddOption(
+    '--ffmpeg',
+    dest='ffmpeg',
+    type='string',
+    nargs=1,
+    action='store',
+    metavar='DIR',
+    help='Path to ffmpeg library.'
+)
+
+# Get avtranscoder install path
+AddOption(
+    '--avtranscoder',
+    dest='avtranscoder',
+    type='string',
+    nargs=1,
+    action='store',
+    metavar='DIR',
+    help='Path to avtranscoder library.'
+)
+
+### Create env ###
+
+env = Environment()
+
+boost_root = GetOption('boost')
+boost_include = ''
+boost_lib = ''
+if boost_root:
+    boost_include = os.path.join( boost_root, 'include' )
+    boost_lib = os.path.join( boost_root, 'lib' )
+
+sndfile_root = GetOption('sndfile')
+sndfile_include = ''
+sndfile_lib = ''
+if sndfile_root:
+    sndfile_include = os.path.join( sndfile_root, 'include' )
+    sndfile_lib = os.path.join( sndfile_root, 'lib' )
+
 qt_dir = GetOption('qt')
 qt_include_suffix = GetOption('qtSuffix')
 
 qt_include = ''
 if qt_include_suffix:
-        qt_include = os.path.join(qt_dir, 'include', qt_include_suffix)
-
-### Create env ###
-
-env = Environment()
+    qt_include = os.path.join(qt_dir, 'include', qt_include_suffix)
 
 env.Append(
         CPPPATH = [

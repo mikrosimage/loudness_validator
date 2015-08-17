@@ -87,18 +87,16 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
     else:
         print('Warning: did not find QtCore library, will not build loudness-validator app.')
 
-    ### media-analyser ###
+    ### media-loudness-analyser ###
 
-    # Get avtranscoder install path
-    avtranscoder_root = ARGUMENTS.get( 'AVTRANSCODER_ROOT', '' )
+    avtranscoder_root = GetOption('avtranscoder')
     avtranscoder_include = ''
     avtranscoder_lib = ''
     if avtranscoder_root:
         avtranscoder_include = os.path.join( avtranscoder_root, 'include' )
         avtranscoder_lib = os.path.join( avtranscoder_root, 'lib' )
 
-    # Get ffmpeg install path
-    ffmpeg_root = ARGUMENTS.get( 'FFMPEG_ROOT', '' )
+    ffmpeg_root = GetOption('ffmpeg')
     ffmpeg_include = ''
     ffmpeg_lib = ''
     if ffmpeg_root:
