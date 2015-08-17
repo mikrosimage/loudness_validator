@@ -129,6 +129,7 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
             Glob( 'mediaAnalyser/*.cpp' ),
             LIBS = [
                     loudnessAnalyserLibStatic,
+                    loudnessToolsLibStatic,
                     avtranscoderLib,
             ]
         )

@@ -1,6 +1,7 @@
 #include "AvSoundFile.hpp"
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
+#include <loudnessTools/WriteXml.hpp>
 
 #include <vector>
 #include <utility>
@@ -87,4 +88,13 @@ int main( int argc, char** argv )
 
 	// Print analyse
 	analyser.printPloudValues();
+
+	// Write XML
+	std::vector<std::string> mediaFilenames;
+	for(size_t i = 0; i < arrayToAnalyse.size(); ++i)
+	{
+		mediaFilenames.push_back(arrayToAnalyse.at(i).first);
+	}
+	Loudness::tools::WriteXml writerXml("PLoud.xml", mediaFilenames);
+	writerXml.writeResults("unknown", analyser);
 }
