@@ -86,5 +86,58 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
 
     else:
         print('Warning: did not find QtCore library, will not build loudness-validator app.')
+
+    ### media-loudness-analyser ###
+
+    avtranscoder_root = GetOption('avtranscoder')
+    avtranscoder_include = ''
+    avtranscoder_lib = ''
+    if avtranscoder_root:
+        avtranscoder_include = os.path.join( avtranscoder_root, 'include' )
+        avtranscoder_lib = os.path.join( avtranscoder_root, 'lib' )
+
+    ffmpeg_root = GetOption('ffmpeg')
+    ffmpeg_include = ''
+    ffmpeg_lib = ''
+    if ffmpeg_root:
+        ffmpeg_include = os.path.join( ffmpeg_root, 'include' )
+        ffmpeg_libs = [os.path.join( ffmpeg_root, 'lib' ), os.path.join( ffmpeg_root, 'lib64' )]
+
+    # Check libavtranscoder
+    avtranscoderEnv = env.Clone()
+
+    avtranscoderEnv.Append(
+        CPPPATH = [
+            avtranscoder_include,
+            ffmpeg_include,
+        ],
+        LIBPATH = [
+            avtranscoder_lib,
+            ffmpeg_libs,
+        ],
+    )
+
+    conf = Configure(avtranscoderEnv)
+
+    avtranscoderLib = 'avtranscoder'
+
+    if conf.CheckCXXHeader('AvTranscoder/common.hpp'):
+        avtranscoderEnv = conf.Finish()
+
+        mediaLoudnessAnalyserProgram = avtranscoderEnv.Program(
+            'media-loudness-analyser',
+            Glob( 'mediaAnalyser/*.cpp' ),
+            LIBS = [
+                    loudnessAnalyserLibStatic,
+                    loudnessToolsLibStatic,
+                    avtranscoderLib,
+            ]
+        )
+
+        env.Alias( 'install', env.Install( 'bin', mediaLoudnessAnalyserProgram ) )
+
+    else:
+        print('Warning: avtranscoder not found, will not build media-analyser application')
+
 else:
     print('Warning: loudness libraries has not been built, will not build applications.')

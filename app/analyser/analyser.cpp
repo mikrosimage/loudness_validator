@@ -103,7 +103,7 @@ int main( int argc, char** argv )
 					filename.erase( filename.length() - 5, 5 );
 
 			filename.append("_PLoud.xml");
-			Loudness::tools::WriteXml writerXml ( filename.c_str(), filenames.at(i).c_str() );
+			Loudness::tools::WriteXml writerXml ( filename, filenames.at(i) );
 
 			for( size_t j=0; j < standards.size(); j++ )
 			{

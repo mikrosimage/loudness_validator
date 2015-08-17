@@ -1,17 +1,22 @@
 #include "WriteXml.hpp"
+
+#include <iostream>
+#include <sstream>
 #include <ctime>
 
 namespace Loudness {
 namespace tools {
 
-WriteXml::WriteXml( const char* filename, const char* srcAudioFilename )
-	: srcAudioFilename( srcAudioFilename )
+WriteXml::WriteXml( const std::string& xmlFilename, const std::string& srcAudioFilename )
 {
-	xmlFile.precision( 1 );
-	xmlFile.setf( std::ios::fixed, std::ios::floatfield );
-	xmlFile.open( filename );
-	xmlFile << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
-	xmlFile << "<loudness>\n";
+	srcAudioFilenames.push_back( srcAudioFilename );
+	openXMLFile( xmlFilename );
+}
+
+WriteXml::WriteXml( const std::string& xmlFilename, const std::vector<std::string>& srcAudioFilenames )
+	: srcAudioFilenames( srcAudioFilenames )
+{
+	openXMLFile( xmlFilename );
 }
 
 WriteXml::~WriteXml()
@@ -22,11 +27,19 @@ WriteXml::~WriteXml()
 
 void WriteXml::writeResults( const char* channelType, Loudness::analyser::LoudnessAnalyser& analyser )
 {
-	xmlFile << "<Program filename=\"" << srcAudioFilename << "\" " 
-			<< printStandard( analyser.getStandard() ) << " " 
-			<< convertValid( analyser.isValidProgram() ) 
-			<< "channelsType=\"" << channelType << "\" " 
-			<< "date=\"" << getDate() << "\">\n";
+	xmlFile << "<Program filename=\"";
+	size_t i;
+	for(i = 0; i < srcAudioFilenames.size() - 1; ++i)
+	{
+		xmlFile << srcAudioFilenames.at(i).c_str() <<  " - " ;
+	}
+	xmlFile << srcAudioFilenames.at(i).c_str();
+	
+	xmlFile << "\" " 
+		<< printStandard( analyser.getStandard() ) << " " 
+		<< convertValid( analyser.isValidProgram() ) << " " 
+		<< "channelsType=\"" << channelType << "\" " 
+		<< "date=\"" << getDate() << "\">\n";
 	xmlFile << "\t<ProgramLoudness "      << convertValid( analyser.isIntegratedLoudnessValid() )      << ">" << analyser.getIntegratedLoudness()   << "</ProgramLoudness>\n";
 	xmlFile << "\t<LRA "                  << convertValid( analyser.isIntegratedLoudnessRangeValid() ) << ">" << analyser.getIntegratedRange()      << "</LRA>\n";
 	xmlFile << "\t<MaxMomentaryLoudness " << convertValid( analyser.isMomentaryLoudnessValid() )       << ">" << analyser.getMomentaryLoudness()    << "</MaxMomentaryLoudness>\n";
@@ -38,14 +51,23 @@ void WriteXml::writeResults( const char* channelType, Loudness::analyser::Loudne
 	xmlFile << "</Program>\n";
 }
 
+void WriteXml::openXMLFile( const std::string& xmlFilename )
+{
+	xmlFile.precision( 1 );
+	xmlFile.setf( std::ios::fixed, std::ios::floatfield );
+	xmlFile.open( xmlFilename.c_str() );
+	xmlFile << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+	xmlFile << "<loudness>\n";
+}
+
 std::string WriteXml::convertValid( Loudness::analyser::ELoudnessResult result )
 {
 	std::string st = "";
 	switch( result )
 	{
-		case Loudness::analyser::eValidResult                 : st = "valid\" ";       break;
-		case Loudness::analyser::eNotValidResult              : st = "illegal\" ";     break;
-		case Loudness::analyser::eNotValidResultButNotIllegal : st = "not illegal\" "; break;
+		case Loudness::analyser::eValidResult                 : st = "valid";       break;
+		case Loudness::analyser::eNotValidResult              : st = "illegal";     break;
+		case Loudness::analyser::eNotValidResultButNotIllegal : st = "not illegal"; break;
 		case Loudness::analyser::eNoImportance                : break;
 	}
 	return " status=\'" + st + "'";

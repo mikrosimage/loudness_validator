@@ -3,9 +3,8 @@
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
-#include <iostream>
+#include <vector>
 #include <fstream>
-#include <sstream>
 
 namespace Loudness {
 namespace tools {
@@ -13,20 +12,22 @@ namespace tools {
 class WriteXml
 {
 public:
-	WriteXml( const char* filename, const char* srcAudioFilename );
+	WriteXml( const std::string& xmlFilename, const std::string& srcAudioFilename );
+	WriteXml( const std::string& xmlFilename, const std::vector<std::string>& srcAudioFilenames );
 
 	~WriteXml();
 
 	void writeResults( const char* channelType, Loudness::analyser::LoudnessAnalyser& analyser );
 
 private:
+	void openXMLFile( const std::string& xmlFilename );
 	std::string convertValid( Loudness::analyser::ELoudnessResult result );
 	std::string printStandard( Loudness::analyser::EStandard standard );
 	std::string writeValues( std::vector<float> datas );
 	std::string getDate();
 
 	std::ofstream xmlFile;
-	const char* srcAudioFilename;
+	std::vector<std::string> srcAudioFilenames;
 };
 
 }
