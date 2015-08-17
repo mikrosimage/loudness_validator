@@ -3,6 +3,7 @@
 #include <cstring>
 #include <vector>
 #include <cmath>
+#include <sstream>
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 #include <loudnessTools/ProcessFile.hpp>
@@ -150,7 +151,7 @@ int main( int argc, char** argv )
 				
 				std::string xmlFile = filename;
 				xmlFile.append("_measured.xml");
-				Loudness::tools::WriteXml writerXml ( xmlFile.c_str(), filenames.at(i).c_str() );
+				Loudness::tools::WriteXml writerXml ( xmlFile, filenames.at(i) );
 				writerXml.writeResults( "unknown", loudness );
 				
 				std::string outputFilename = filenames.at(i);
@@ -192,7 +193,7 @@ int main( int argc, char** argv )
 				std::string xmlFileCorrected = filename;
 				xmlFileCorrected.append("_corrected_measured.xml");
 				
-				Loudness::tools::WriteXml writerXmlCorrected ( xmlFileCorrected.c_str(), outputFilename.c_str() );
+				Loudness::tools::WriteXml writerXmlCorrected ( xmlFileCorrected, outputFilename );
 				writerXmlCorrected.writeResults( "unknown", loudnessAfterCorrection );
 				result = loudnessAfterCorrection.isValidProgram();
 			}
