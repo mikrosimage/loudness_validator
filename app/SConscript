@@ -1,145 +1,144 @@
 import os
+
 Import( 'env' )
-Import( 'loudnessAnalyserLibStatic' )
-Import( 'loudnessCorrectorLibStatic' )
 Import( '*' )
 
-if 'loudnessToolsLibStatic' in locals():
+if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in locals() and 'loudnessToolsLibStatic' in locals():
 
-	# Get sndfile lib name
-	sndfileLib = 'sndfile'
-	if env['PLATFORM'] == 'win32':
-	    sndfileLib = 'lib' + sndfileLib
+    # Get sndfile lib name
+    sndfileLib = 'sndfile'
+    if env['PLATFORM'] == 'win32':
+        sndfileLib = 'lib' + sndfileLib
 
-	### loudness-analyser ###
+    ### loudness-analyser ###
 
-	loudnessAnalyserProgram = env.Program(
-		'loudness-analyser',
-		Glob( 'analyser/*.cpp' ),
-		LIBS = [
-			loudnessAnalyserLibStatic,
-			loudnessCorrectorLibStatic,
-			loudnessToolsLibStatic,
-			sndfileLib,
-		]
-	)
-
-	### loudness-corrector ###
-
-	loudnessCorrectorProgram = env.Program(
-		'loudness-corrector',
-		Glob( 'corrector/*.cpp' ),
-		LIBS = [
-			loudnessAnalyserLibStatic,
-			loudnessCorrectorLibStatic,
-			loudnessToolsLibStatic,
-			sndfileLib,
-		]
-	)
-
-	env.Alias( 'install', env.Install( 'bin', loudnessAnalyserProgram ) )
-	env.Alias( 'install', env.Install( 'bin', loudnessCorrectorProgram ) )
-
-	### loudness-validator ###
-
-	# Get qt4 lib name
-	qt4CoreLib = 'QtCore'
-	qt4GuiLib = 'QtGui'
-	if env['PLATFORM'] == 'win32':
-		qt4CoreLib = qt4CoreLib + '4'
-		qt4GuiLib = qt4GuiLib + '4'
-
-	# check qt4 library
-	qtEnv = env.Clone()
-	conf = Configure(qtEnv)
-	if conf.CheckLib(qt4CoreLib, language='cxx'):
-	    qtEnv = conf.Finish()
-
-	    qtEnv.Tool('qt')
-
-	    loudnessValidatorLibraries = [
-	        loudnessAnalyserLibStatic,
-	        loudnessCorrectorLibStatic,
-	        loudnessToolsLibStatic,
-	        sndfileLib,
-	    ]
-
-	    loudnessValidatorFrameworks = []
-
-	    QtLibs = [
-	        qt4CoreLib,
-	        qt4GuiLib,
-	    ]
-
-	    if not qtEnv['PLATFORM'] == 'darwin':
-	        loudnessValidatorLibraries.append( QtLibs )
-	    else:
-	        loudnessValidatorFrameworks.append( QtLibs )
-
-	    loudnessValidatorProgram = qtEnv.Program(
-	        'loudness-validator',
-	        Glob( 'LoudnessValidator/*.cpp' ),
-	        LIBS = loudnessValidatorLibraries,
-	        FRAMEWORKS = loudnessValidatorFrameworks,
-	    )
-
-	    qtEnv.Alias( 'install', qtEnv.Install( 'bin', loudnessValidatorProgram ) )
-
-	else:
-	    print('Warning: did not find QtCore library, will not build loudness-validator app.')
-else:
-	print('Warning: loudnessTools has not been built, will not build applications.')
-
-
-### media-analyser ###
-
-# Get avtranscoder install path
-avtranscoder_root = ARGUMENTS.get( 'AVTRANSCODER_ROOT', '' )
-avtranscoder_include = ''
-avtranscoder_lib = ''
-if avtranscoder_root:
-    avtranscoder_include = os.path.join( avtranscoder_root, 'include' )
-    avtranscoder_lib = os.path.join( avtranscoder_root, 'lib' )
-
-# Get ffmpeg install path
-ffmpeg_root = ARGUMENTS.get( 'FFMPEG_ROOT', '' )
-ffmpeg_include = ''
-ffmpeg_lib = ''
-if ffmpeg_root:
-    ffmpeg_include = os.path.join( ffmpeg_root, 'include' )
-    ffmpeg_libs = [os.path.join( ffmpeg_root, 'lib' ), os.path.join( ffmpeg_root, 'lib64' )]
-
-# Check libavtranscoder
-avtranscoderEnv = env.Clone()
-
-avtranscoderEnv.Append(
-    CPPPATH = [
-        avtranscoder_include,
-        ffmpeg_include,
-    ],
-    LIBPATH = [
-        avtranscoder_lib,
-        ffmpeg_libs,
-    ],
-)
-
-conf = Configure(avtranscoderEnv)
-
-avtranscoderLib = 'avtranscoder'
-
-if conf.CheckCXXHeader('AvTranscoder/common.hpp'):
-    avtranscoderEnv = conf.Finish()
-
-    mediaLoudnessAnalyserProgram = avtranscoderEnv.Program(
-        'media-loudness-analyser',
-        Glob( 'mediaAnalyser/*.cpp' ),
+    loudnessAnalyserProgram = env.Program(
+        'loudness-analyser',
+        Glob( 'analyser/*.cpp' ),
         LIBS = [
-                loudnessAnalyserLibStatic,
-                avtranscoderLib,
+            loudnessAnalyserLibStatic,
+            loudnessCorrectorLibStatic,
+            loudnessToolsLibStatic,
+            sndfileLib,
         ]
     )
 
-    env.Alias( 'install', env.Install( 'bin', mediaLoudnessAnalyserProgram ) )
+    ### loudness-corrector ###
+
+    loudnessCorrectorProgram = env.Program(
+    'loudness-corrector',
+    Glob( 'corrector/*.cpp' ),
+    LIBS = [
+    loudnessAnalyserLibStatic,
+    loudnessCorrectorLibStatic,
+    loudnessToolsLibStatic,
+    sndfileLib,
+    ]
+    )
+
+    env.Alias( 'install', env.Install( 'bin', loudnessAnalyserProgram ) )
+    env.Alias( 'install', env.Install( 'bin', loudnessCorrectorProgram ) )
+
+    ### loudness-validator ###
+
+    # Get qt4 lib name
+    qt4CoreLib = 'QtCore'
+    qt4GuiLib = 'QtGui'
+    if env['PLATFORM'] == 'win32':
+        qt4CoreLib = qt4CoreLib + '4'
+        qt4GuiLib = qt4GuiLib + '4'
+
+    # check qt4 library
+    qtEnv = env.Clone()
+    conf = Configure(qtEnv)
+    if conf.CheckLib(qt4CoreLib, language='cxx'):
+        qtEnv = conf.Finish()
+
+        qtEnv.Tool('qt')
+
+        loudnessValidatorLibraries = [
+            loudnessAnalyserLibStatic,
+            loudnessCorrectorLibStatic,
+            loudnessToolsLibStatic,
+            sndfileLib,
+        ]
+
+        loudnessValidatorFrameworks = []
+
+        QtLibs = [
+            qt4CoreLib,
+            qt4GuiLib,
+        ]
+
+        if not qtEnv['PLATFORM'] == 'darwin':
+            loudnessValidatorLibraries.append( QtLibs )
+        else:
+            loudnessValidatorFrameworks.append( QtLibs )
+
+        loudnessValidatorProgram = qtEnv.Program(
+            'loudness-validator',
+            Glob( 'LoudnessValidator/*.cpp' ),
+            LIBS = loudnessValidatorLibraries,
+            FRAMEWORKS = loudnessValidatorFrameworks,
+        )
+
+        qtEnv.Alias( 'install', qtEnv.Install( 'bin', loudnessValidatorProgram ) )
+
+    else:
+        print('Warning: did not find QtCore library, will not build loudness-validator app.')
+
+    ### media-analyser ###
+
+    # Get avtranscoder install path
+    avtranscoder_root = ARGUMENTS.get( 'AVTRANSCODER_ROOT', '' )
+    avtranscoder_include = ''
+    avtranscoder_lib = ''
+    if avtranscoder_root:
+        avtranscoder_include = os.path.join( avtranscoder_root, 'include' )
+        avtranscoder_lib = os.path.join( avtranscoder_root, 'lib' )
+
+    # Get ffmpeg install path
+    ffmpeg_root = ARGUMENTS.get( 'FFMPEG_ROOT', '' )
+    ffmpeg_include = ''
+    ffmpeg_lib = ''
+    if ffmpeg_root:
+        ffmpeg_include = os.path.join( ffmpeg_root, 'include' )
+        ffmpeg_libs = [os.path.join( ffmpeg_root, 'lib' ), os.path.join( ffmpeg_root, 'lib64' )]
+
+    # Check libavtranscoder
+    avtranscoderEnv = env.Clone()
+
+    avtranscoderEnv.Append(
+        CPPPATH = [
+            avtranscoder_include,
+            ffmpeg_include,
+        ],
+        LIBPATH = [
+            avtranscoder_lib,
+            ffmpeg_libs,
+        ],
+    )
+
+    conf = Configure(avtranscoderEnv)
+
+    avtranscoderLib = 'avtranscoder'
+
+    if conf.CheckCXXHeader('AvTranscoder/common.hpp'):
+        avtranscoderEnv = conf.Finish()
+
+        mediaLoudnessAnalyserProgram = avtranscoderEnv.Program(
+            'media-loudness-analyser',
+            Glob( 'mediaAnalyser/*.cpp' ),
+            LIBS = [
+                    loudnessAnalyserLibStatic,
+                    avtranscoderLib,
+            ]
+        )
+
+        env.Alias( 'install', env.Install( 'bin', mediaLoudnessAnalyserProgram ) )
+
+    else:
+        print('Warning: avtranscoder not found, will not build media-analyser application')
 
 else:
-    print('Warning: avtranscoder not found, will not build media-analyser application')
+    print('Warning: loudness libraries has not been built, will not build applications.')

@@ -19,8 +19,8 @@
 // -------------------------------------------------------------------------
 
 
-#ifndef __SOUNDFILE_H
-#define __SOUNDFILE_H
+#ifndef _LOUDNESS_TOOLS_IO_SOUND_FILE_HPP_
+#define _LOUDNESS_TOOLS_IO_SOUND_FILE_HPP_
 
 
 #include <stdio.h>
