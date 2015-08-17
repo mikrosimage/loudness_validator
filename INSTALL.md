@@ -15,19 +15,9 @@ cd loudness_validator
 scons
 ```
 
-#### Build in debug mode
+#### More build info ('Local Options' section)
 ```
-scons mode=debug
-```
-
-#### Build with a specific path to libraries
-```
-scons BOOST_ROOT=/path/to/boost SNDFILE_ROOT=/path/to/sndfile QTDIR=/path/to/qt4
-```
-
-#### Build and deploy in a specific location
-```
-scons --install-sandbox=/path/to/install
+scons --help
 ```
 
 
