@@ -2,6 +2,7 @@
 
 #include <AvTranscoder/mediaProperty/print.hpp>
 
+#include <iomanip>
 #include <iostream>
 #include <algorithm>
 #include <stdexcept>
