@@ -3,13 +3,7 @@
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
-#include <AvTranscoder/file/InputFile.hpp>
-#include <AvTranscoder/mediaProperty/AudioProperties.hpp>
-#include <AvTranscoder/progress/NoDisplayProgress.hpp>
-#include <AvTranscoder/decoder/AudioDecoder.hpp>
-#include <AvTranscoder/stream/InputStream.hpp>
-#include <AvTranscoder/frame/AudioFrame.hpp>
-#include <AvTranscoder/transform/AudioTransform.hpp>
+#include <AvTranscoder/reader/AudioReader.hpp>
 
 #include <vector>
 #include <utility>
@@ -39,10 +33,7 @@ private:
 	// for io
 	std::vector<std::string> _inputFilenames;
 	std::vector<avtranscoder::InputFile*> _inputFiles;
-	std::vector<avtranscoder::AudioDecoder*> _decoders;
-	std::vector<avtranscoder::AudioFrame*> _srcFrames;
-	std::vector<avtranscoder::AudioFrame*> _dstFrames;
-	std::vector<avtranscoder::AudioTransform*> _transforms;
+	std::vector<avtranscoder::AudioReader*> _audioReader;
 };
 
 #endif
