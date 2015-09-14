@@ -98,7 +98,7 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
 
     ffmpeg_root = GetOption('ffmpeg')
     ffmpeg_include = ''
-    ffmpeg_lib = ''
+    ffmpeg_libs = ''
     if ffmpeg_root:
         ffmpeg_include = os.path.join( ffmpeg_root, 'include' )
         ffmpeg_libs = [os.path.join( ffmpeg_root, 'lib' ), os.path.join( ffmpeg_root, 'lib64' )]
