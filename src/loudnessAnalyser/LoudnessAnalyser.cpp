@@ -120,15 +120,39 @@ ELoudnessResult LoudnessAnalyser::isValidProgram( )
 {
 	size_t invalidState = 0; // if a not valid result is present
 	size_t notIllegalState = 0; // if a not valid but not illegal result is present
-	
+
+	// integrated loudness
 	switch( isIntegratedLoudnessValid() )
 	{
-		case eValidResult: break;
 		case eNotValidResult: invalidState++; break;
 		case eNotValidResultButNotIllegal: notIllegalState++; break;
-		case eNoImportance: break;
+		default: break;
 	}
-	
+
+	// LRA
+	switch( isIntegratedLoudnessRangeValid() )
+	{
+		case eNotValidResult: invalidState++; break;
+		case eNotValidResultButNotIllegal: notIllegalState++; break;
+		default: break;
+	}
+
+	// max short-term
+	switch( isMaxShortTermLoudnessValid() )
+	{
+		case eNotValidResult: invalidState++; break;
+		case eNotValidResultButNotIllegal: notIllegalState++; break;
+		default: break;
+	}
+
+	// True Peak
+	switch( isTruePeakValid() )
+	{
+		case eNotValidResult: invalidState++; break;
+		case eNotValidResultButNotIllegal: notIllegalState++; break;
+		default: break;
+	}
+
 	if( invalidState == 0 && notIllegalState == 0 )
 		return eValidResult;
 	
