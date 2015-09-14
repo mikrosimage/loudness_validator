@@ -120,15 +120,39 @@ ELoudnessResult LoudnessAnalyser::isValidProgram( )
 {
 	size_t invalidState = 0; // if a not valid result is present
 	size_t notIllegalState = 0; // if a not valid but not illegal result is present
-	
+
+	// integrated loudness
 	switch( isIntegratedLoudnessValid() )
 	{
-		case eValidResult: break;
 		case eNotValidResult: invalidState++; break;
 		case eNotValidResultButNotIllegal: notIllegalState++; break;
-		case eNoImportance: break;
+		default: break;
 	}
-	
+
+	// LRA
+	switch( isIntegratedLoudnessRangeValid() )
+	{
+		case eNotValidResult: invalidState++; break;
+		case eNotValidResultButNotIllegal: notIllegalState++; break;
+		default: break;
+	}
+
+	// max short-term
+	switch( isMaxShortTermLoudnessValid() )
+	{
+		case eNotValidResult: invalidState++; break;
+		case eNotValidResultButNotIllegal: notIllegalState++; break;
+		default: break;
+	}
+
+	// True Peak
+	switch( isTruePeakValid() )
+	{
+		case eNotValidResult: invalidState++; break;
+		case eNotValidResultButNotIllegal: notIllegalState++; break;
+		default: break;
+	}
+
 	if( invalidState == 0 && notIllegalState == 0 )
 		return eValidResult;
 	
@@ -140,7 +164,7 @@ ELoudnessResult LoudnessAnalyser::isValidProgram( )
 
 ELoudnessResult LoudnessAnalyser::isIntegratedLoudnessValid ( )
 {
-	float roundedValue = std::floor( p_process->getIntegrated() * 10.0 ) / 10.0 ;
+	const float roundedValue = std::floor( p_process->getIntegrated() * 10.0 ) / 10.0 ;
 	if( isShortProgram() ) // short program
 	{
 		if( roundedValue > s_levels.programLoudnessShortProgramMaxValue || roundedValue < s_levels.programLoudnessShortProgramMinValue )
@@ -188,7 +212,7 @@ ELoudnessResult LoudnessAnalyser::isMaxShortTermLoudnessValid ( )
 	{
 		if( std::isnan( s_levels.shortTermLoudnessShortProgramMaxValue ) )
 			return eNoImportance;
-		if( ( p_process->getMaxLoudnessShortTerm() - s_levels.programLoudnessLongProgramMaxValue ) > s_levels.shortTermLoudnessShortProgramMaxValue )
+		if( ( p_process->getMaxLoudnessShortTerm() - s_levels.programLoudnessShortProgramMaxValue ) > s_levels.shortTermLoudnessShortProgramMaxValue )
 			return eNotValidResult;
 		else
 			return eValidResult;
