@@ -164,7 +164,7 @@ ELoudnessResult LoudnessAnalyser::isValidProgram( )
 
 ELoudnessResult LoudnessAnalyser::isIntegratedLoudnessValid ( )
 {
-	float roundedValue = std::floor( p_process->getIntegrated() * 10.0 ) / 10.0 ;
+	const float roundedValue = std::floor( p_process->getIntegrated() * 10.0 ) / 10.0 ;
 	if( isShortProgram() ) // short program
 	{
 		if( roundedValue > s_levels.programLoudnessShortProgramMaxValue || roundedValue < s_levels.programLoudnessShortProgramMinValue )
