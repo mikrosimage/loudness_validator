@@ -86,6 +86,7 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
 
     else:
         print('Warning: did not find QtCore library, will not build loudness-validator app.')
+        conf.Finish()
 
     ### media-loudness-analyser ###
 
@@ -138,6 +139,7 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
 
     else:
         print('Warning: avtranscoder not found, will not build media-analyser application')
+        conf.Finish()
 
 else:
     print('Warning: loudness libraries has not been built, will not build applications.')

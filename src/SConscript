@@ -19,4 +19,5 @@ if conf.CheckCXXHeader('boost/accumulators/accumulators.hpp'):
     SConscript( 'loudnessCorrector/SConscript' )
     SConscript( 'loudnessTools/SConscript' )
 else:
-    print 'Warning: did not find boost accumulators headers, will not build loudness libraries.'
+    print('Warning: did not find boost accumulators headers, will not build loudness libraries.')
+    conf.Finish()
