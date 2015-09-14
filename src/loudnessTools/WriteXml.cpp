@@ -89,6 +89,9 @@ std::string WriteXml::printStandard( Loudness::analyser::EStandard standard )
 std::string WriteXml::writeValues( std::vector<float> datas )
 {
 	std::ostringstream ss;
+	if(datas.size() == 0)
+		return ss.str();
+
 	std::vector<float>::iterator it;
 	for ( it = datas.begin() ; it < datas.end() - 1; it++ )
 		ss << *it << ", ";
