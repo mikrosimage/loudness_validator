@@ -188,7 +188,7 @@ ELoudnessResult LoudnessAnalyser::isMaxShortTermLoudnessValid ( )
 	{
 		if( std::isnan( s_levels.shortTermLoudnessShortProgramMaxValue ) )
 			return eNoImportance;
-		if( ( p_process->getMaxLoudnessShortTerm() - s_levels.programLoudnessLongProgramMaxValue ) > s_levels.shortTermLoudnessShortProgramMaxValue )
+		if( ( p_process->getMaxLoudnessShortTerm() - s_levels.programLoudnessShortProgramMaxValue ) > s_levels.shortTermLoudnessShortProgramMaxValue )
 			return eNotValidResult;
 		else
 			return eValidResult;
