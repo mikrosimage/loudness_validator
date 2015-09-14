@@ -1,0 +1,41 @@
+language: cpp
+
+# Use container-based infrastructure
+sudo: false
+
+os:
+  - linux
+
+compiler:
+  - gcc
+  - clang
+
+env:
+  global:
+    - PLOUD_INSTALL=${TRAVIS_BUILD_DIR}/install-ploud
+    - CI_NODE_TOTAL=2
+
+# This results in a 2×2 build matrix.
+# Where the variables are: os / compiler
+
+addons:
+  apt:
+    sources: ['boost-latest']
+    packages:
+    - scons
+    - libboost1.55-all-dev
+    - libsndfile1-dev
+    - libqt4-dev
+
+cache:
+  # Caching Ubuntu packages
+  apt: true
+
+before_script:
+  - env | sort  
+  - date -u
+  - uname -a
+  - lsb_release -a
+
+script:
+  - scons -j${CI_NODE_TOTAL} --mode=release --install-sandbox=${PLOUD_INSTALL}
