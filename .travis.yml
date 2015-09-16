@@ -40,4 +40,5 @@ before_script:
   - lsb_release -a
 
 script:
+  - export QTDIR=/usr/share/qt4
   - scons -j${CI_NODE_TOTAL} --mode=release --install-sandbox=${PLOUD_INSTALL}
