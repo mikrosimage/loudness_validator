@@ -1,5 +1,7 @@
 # PLoud Validator
 
+[![Build Status](https://travis-ci.org/mikrosimage/loudness_validator.svg?branch=develop)](https://travis-ci.org/mikrosimage/loudness_validator)  
+
 PLoudValidator is a software to validate audio files with correct loudness.
 It can validate various specifications:
 
