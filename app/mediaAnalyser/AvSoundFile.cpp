@@ -26,11 +26,12 @@ AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arr
 		// Analyse input file
 		avtranscoder::InputFile* inputFile = NULL;
 		std::vector<std::string>::iterator iterFilename = std::find(_inputFilenames.begin(), _inputFilenames.end(), filename);
-		if(iterFilename != _inputFilenames.end())
+		const bool isAlreadyAllocated = (iterFilename != _inputFilenames.end());
+		if(isAlreadyAllocated)
 		{
 			// get existing InputFile
 			const size_t filenameIndex = std::distance( _inputFilenames.begin(), iterFilename);
-			inputFile = _inputFiles.at(filenameIndex);
+			inputFile = _inputFiles.at(filenameIndex).first;
 		}
 		else
 		{
@@ -43,7 +44,7 @@ AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arr
 			// add to list of filename
 			_inputFilenames.push_back(filename);
 		}
-		_inputFiles.push_back(inputFile);
+		_inputFiles.push_back(std::make_pair(inputFile, ! isAlreadyAllocated));
 
 		// Create reader to convert to float planar
 		avtranscoder::AudioReader* reader = new avtranscoder::AudioReader( *inputFile, streamIndex, 0, 0, "fltp" );
@@ -101,9 +102,11 @@ AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arr
 
 AvSoundFile::~AvSoundFile()
 {
-	for( std::vector< avtranscoder::InputFile* >::iterator it = _inputFiles.begin(); it != _inputFiles.end(); ++it )
+	for( std::vector< std::pair<avtranscoder::InputFile*, bool> >::iterator it = _inputFiles.begin(); it != _inputFiles.end(); ++it )
 	{
-		delete (*it);
+		// if the input file was allocated
+		if( it->second )
+			delete it->first;
 	}
 	for( std::vector< avtranscoder::AudioReader* >::iterator it = _audioReader.begin(); it != _audioReader.end(); ++it )
 	{
