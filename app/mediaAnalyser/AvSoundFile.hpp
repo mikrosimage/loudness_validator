@@ -32,7 +32,8 @@ private:
 
 	// for io
 	std::vector<std::string> _inputFilenames;
-	std::vector<avtranscoder::InputFile*> _inputFiles;
+	std::vector<avtranscoder::InputFile*> _inputFiles;  //< All input files
+	std::vector<avtranscoder::InputFile*> _inputFilesAllocated;  //< All input files allocated by the class (has ownership))
 	std::vector<avtranscoder::AudioReader*> _audioReader;
 };
 

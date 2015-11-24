@@ -36,6 +36,7 @@ AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arr
 		{
 			// create new InputFile
 			inputFile = new avtranscoder::InputFile( filename );
+			_inputFilesAllocated.push_back(inputFile);
 
 			// display file properties
 			std::cout << *inputFile;
@@ -101,7 +102,7 @@ AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arr
 
 AvSoundFile::~AvSoundFile()
 {
-	for( std::vector< avtranscoder::InputFile* >::iterator it = _inputFiles.begin(); it != _inputFiles.end(); ++it )
+	for( std::vector< avtranscoder::InputFile* >::iterator it = _inputFilesAllocated.begin(); it != _inputFilesAllocated.end(); ++it )
 	{
 		delete (*it);
 	}
