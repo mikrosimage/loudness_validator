@@ -40,8 +40,25 @@ std::vector<std::pair<std::string, size_t> > parseConfigFile( const std::string&
 	return result;
 }
 
+void printHelp()
+{
+	std::string help;
+	help += "Usage\n";
+	help += "\tmedia-analyser CONFIG.TXT [--output XMLReportName][--help]\n";
+	help += "CONFIG.TXT\n";
+	help += "\tEach line will be one audio stream analysed by the loudness library.\n";
+	help += "\tPattern of each line is:\n";
+	help += "\t[inputFile]=STREAM_ID\n";
+	help += "Command line options\n";
+	help += "\t--help: display this help\n";
+	help += "\t--output: filename of the XML report\n";
+	std::cout << help << std::endl;
+}
+
 int main( int argc, char** argv )
 {
+	std::string outputXMLReportName("PLoud.xml");
+
 	std::vector< std::string > arguments;
 	for( int argument = 1; argument < argc; ++argument )
 	{
@@ -52,17 +69,20 @@ int main( int argc, char** argv )
 	{
 		if( arguments.at( argument ) == "--help" )
 		{
-			std::string help;
-			help += "Usage\n";
-			help += "\tmedia-analyser CONFIG.TXT [--help]\n";
-			help += "CONFIG.TXT\n";
-			help += "\tEach line will be one audio stream analysed by the loudness library.\n";
-			help += "\tPattern of each line is:\n";
-			help += "\t[inputFile]=STREAM_ID\n";
-			help += "Command line options\n";
-			help += "\t--help: display this help\n";
-			std::cout << help << std::endl;
+			printHelp();
 			return 0;
+		}
+		else if( arguments.at( argument ) == "--output" )
+		{
+			try
+			{
+				outputXMLReportName = arguments.at( ++argument );
+			}
+			catch(...)
+			{
+				printHelp();
+				return 1;
+			}
 		}
 	}
 
@@ -95,6 +115,6 @@ int main( int argc, char** argv )
 	{
 		mediaFilenames.push_back(arrayToAnalyse.at(i).first);
 	}
-	Loudness::tools::WriteXml writerXml("PLoud.xml", mediaFilenames);
+	Loudness::tools::WriteXml writerXml(outputXMLReportName, mediaFilenames);
 	writerXml.writeResults("unknown", analyser);
 }
