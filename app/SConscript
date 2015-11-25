@@ -3,7 +3,10 @@ import os
 Import( 'env' )
 Import( '*' )
 
-if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in locals() and 'loudnessToolsLibStatic' in locals():
+if 'loudnessAnalyserLibStatic' in locals() and \
+    'loudnessCorrectorLibStatic' in locals() and \
+    'loudnessToolsLibStatic' in locals() and \
+    'loudnessIOLibStatic' in locals():
 
     # Get sndfile lib name
     sndfileLib = 'sndfile'
@@ -19,6 +22,7 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
             loudnessAnalyserLibStatic,
             loudnessCorrectorLibStatic,
             loudnessToolsLibStatic,
+            loudnessIOLibStatic,
             sndfileLib,
         ]
     )
@@ -29,10 +33,11 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
     'loudness-corrector',
     Glob( 'corrector/*.cpp' ),
     LIBS = [
-    loudnessAnalyserLibStatic,
-    loudnessCorrectorLibStatic,
-    loudnessToolsLibStatic,
-    sndfileLib,
+        loudnessAnalyserLibStatic,
+        loudnessCorrectorLibStatic,
+        loudnessToolsLibStatic,
+        loudnessIOLibStatic,
+        sndfileLib,
     ]
     )
 
@@ -60,6 +65,7 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
             loudnessAnalyserLibStatic,
             loudnessCorrectorLibStatic,
             loudnessToolsLibStatic,
+            loudnessIOLibStatic,
             sndfileLib,
         ]
 
@@ -87,6 +93,12 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
     else:
         print('Warning: did not find QtCore library, will not build loudness-validator app.')
         conf.Finish()
+
+else:
+    print('Warning: will not build loudness analyser/corrector/validator applications.')
+
+if 'loudnessAnalyserLibStatic' in locals() and \
+    'loudnessToolsLibStatic' in locals():
 
     ### media-loudness-analyser ###
 
@@ -142,4 +154,4 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
         conf.Finish()
 
 else:
-    print('Warning: loudness libraries has not been built, will not build applications.')
+    print('Warning: will not build media loudness analyser applications.')
