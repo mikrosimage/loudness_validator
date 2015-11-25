@@ -94,6 +94,14 @@ AddOption(
     metavar='DIR',
     help='Path to avtranscoder library.'
 )
+AddOption(
+    '--avtranscoder-version',
+    dest='avtranscoderVersion',
+    type='string',
+    nargs=1,
+    action='store',
+    help='Version of avtranscoder library to link (needed only if compile on Windows).'
+)
 
 # Get target arch
 AddOption(

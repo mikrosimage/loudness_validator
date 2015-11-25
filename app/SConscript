@@ -137,7 +137,8 @@ if 'loudnessAnalyserLibStatic' in locals() and \
 
     avtranscoderLib = 'avtranscoder'
     if env['PLATFORM'] == 'win32':
-        avtranscoderLib += '-0.6.0'
+        avtranscoder_version = GetOption('avtranscoderVersion')
+        avtranscoderLib += '-' + avtranscoder_version
 
     if conf.CheckCXXHeader('AvTranscoder/common.hpp'):
         avtranscoderEnv = conf.Finish()
