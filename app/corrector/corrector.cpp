@@ -6,8 +6,8 @@
 #include <sstream>
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
-#include <loudnessTools/ProcessFile.hpp>
-#include <loudnessTools/io/SoundFile.hpp>
+#include <loudnessIO/ProcessFile.hpp>
+#include <loudnessIO/SoundFile.hpp>
 #include <loudnessTools/WriteXml.hpp>
 
 bool showProgress = false;
@@ -131,7 +131,7 @@ int main( int argc, char** argv )
 					filename.erase( filename.length() - 5, 5 );
 			
 			
-			Loudness::tools::SoundFile audioFile;
+			Loudness::io::SoundFile audioFile;
 			Loudness::analyser::LoudnessLevels levels =	standard == 0 ? Loudness::analyser::LoudnessLevels::Loudness_CST_R017() : 
 												standard == 1 ? Loudness::analyser::LoudnessLevels::Loudness_EBU_R128() : 
 																Loudness::analyser::LoudnessLevels::Loudness_ATSC_A85() ;
@@ -142,7 +142,7 @@ int main( int argc, char** argv )
 				if( printLength )
 					std::cout << "\t length = " << (float) audioFile.getNbSamples() / audioFile.getSampleRate() << "\t" << std::flush;
 
-				Loudness::tools::AnalyseFile analyser( loudness, audioFile );
+				Loudness::io::AnalyseFile analyser( loudness, audioFile );
 				analyser.enableOptimization( enableOptimization );
 				analyser( progress );
 
@@ -160,7 +160,7 @@ int main( int argc, char** argv )
 					insertPoint = 5;
 				outputFilename.insert( outputFilename.length() - insertPoint, "_corrected" );
 				
-				Loudness::tools::SoundFile outputAudioFile;
+				Loudness::io::SoundFile outputAudioFile;
 				Loudness::analyser::LoudnessAnalyser loudnessAfterCorrection( levels );
 				
 				if( ! outputAudioFile.open_write( outputFilename.c_str(), audioFile.getAudioCodec(), audioFile.getBitDepth(), audioFile.getSampleRate(), audioFile.getNbChannels() ) )
@@ -171,12 +171,12 @@ int main( int argc, char** argv )
 					
 					if( enableLimiter )
 					{
-						Loudness::tools::CorrectFileWithCompressor corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain, lookaheadTime, threshold );
+						Loudness::io::CorrectFileWithCompressor corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain, lookaheadTime, threshold );
 						corrector( progress );
 					}
 					else
 					{
-						Loudness::tools::CorrectFile corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain );
+						Loudness::io::CorrectFile corrector( loudnessAfterCorrection, audioFile, outputAudioFile, gain );
 						corrector( progress );
 					}
 					outputAudioFile.close();

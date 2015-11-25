@@ -19,8 +19,8 @@
 // -------------------------------------------------------------------------
 
 
-#ifndef _LOUDNESS_TOOLS_IO_SOUND_FILE_HPP_
-#define _LOUDNESS_TOOLS_IO_SOUND_FILE_HPP_
+#ifndef _LOUDNESS_IO_SOUND_FILE_HPP_
+#define _LOUDNESS_IO_SOUND_FILE_HPP_
 
 
 #include <stdio.h>
@@ -28,7 +28,7 @@
 #include <sndfile.h>
 
 namespace Loudness {
-namespace tools {
+namespace io {
 
 class SoundFile
 {

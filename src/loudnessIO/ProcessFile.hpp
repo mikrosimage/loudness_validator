@@ -5,19 +5,19 @@
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
-#include <loudnessTools/io/SoundFile.hpp>
+#include <loudnessIO/SoundFile.hpp>
 
 #include <loudnessCorrector/CorrectBuffer.hpp>
 #include <loudnessCorrector/LookAheadLimiter.hpp>
 
 namespace Loudness {
-namespace tools {
+namespace io {
 
 // Based class for functor which process audio file and fill LoudnessAnalyser
 class LoudnessExport Processor
 {
 public:
-	Processor( Loudness::analyser::LoudnessAnalyser& analyser, Loudness::tools::SoundFile& audioFile )
+	Processor( Loudness::analyser::LoudnessAnalyser& analyser, SoundFile& audioFile )
 		: _inputAudioFile( audioFile )
 		, _cumulOfSamples( 0 )
 		, _totalNbSamples( _inputAudioFile.getNbSamples() )
@@ -69,7 +69,7 @@ public:
 	}
 
 protected:
-	Loudness::tools::SoundFile& _inputAudioFile;
+	SoundFile& _inputAudioFile;
 
 	size_t _cumulOfSamples;
 	const size_t _totalNbSamples;
@@ -89,7 +89,7 @@ private:
 class AnalyseFile : public Processor
 {
 public:
-	AnalyseFile( Loudness::analyser::LoudnessAnalyser& analyser, Loudness::tools::SoundFile& audioFile )
+	AnalyseFile( Loudness::analyser::LoudnessAnalyser& analyser, SoundFile& audioFile )
 		: Processor( analyser, audioFile )
 	{}
 
@@ -115,7 +115,7 @@ public:
 class CorrectFile : public Processor
 {
 public:
-	CorrectFile( Loudness::analyser::LoudnessAnalyser& analyser, Loudness::tools::SoundFile& inputAudioFile, Loudness::tools::SoundFile& outputAudioFile, const float gain )
+	CorrectFile( Loudness::analyser::LoudnessAnalyser& analyser, SoundFile& inputAudioFile, SoundFile& outputAudioFile, const float gain )
 		: Processor( analyser, inputAudioFile )
 		, _outputAudioFile( outputAudioFile )
 		, _gain( gain )
@@ -145,7 +145,7 @@ public:
 	}
 
 protected:
-	Loudness::tools::SoundFile& _outputAudioFile;
+	SoundFile& _outputAudioFile;
 
 	const float _gain;
 };
@@ -155,7 +155,7 @@ protected:
 class CorrectFileWithCompressor : public CorrectFile
 {
 public:
-	CorrectFileWithCompressor( Loudness::analyser::LoudnessAnalyser& analyser, Loudness::tools::SoundFile& inputAudioFile, Loudness::tools::SoundFile& outputAudioFile, const float gain, const float lookAhead, const float threshold )
+	CorrectFileWithCompressor( Loudness::analyser::LoudnessAnalyser& analyser, SoundFile& inputAudioFile, SoundFile& outputAudioFile, const float gain, const float lookAhead, const float threshold )
 		: CorrectFile( analyser, inputAudioFile, outputAudioFile, gain )
 		, _lookAhead( lookAhead )
 		, _threshold( threshold )
