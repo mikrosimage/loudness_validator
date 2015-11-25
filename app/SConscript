@@ -8,7 +8,7 @@ if 'loudnessAnalyserLibStatic' in locals() and 'loudnessCorrectorLibStatic' in l
     # Get sndfile lib name
     sndfileLib = 'sndfile'
     if env['PLATFORM'] == 'win32':
-        sndfileLib = 'lib' + sndfileLib
+        sndfileLib = 'lib' + sndfileLib + '-1'
 
     ### loudness-analyser ###
 
