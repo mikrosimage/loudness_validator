@@ -10,7 +10,8 @@ conf = Configure(sndfileEnv)
 
 sndfileLib = 'sndfile'
 if env['PLATFORM'] == 'win32':
-    sndfileLib = 'lib' + sndfileLib
+    # the windows library name has the version
+    sndfileLib = 'lib' + sndfileLib + '-1'
 
 if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
     sndfileEnv = conf.Finish()
