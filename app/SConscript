@@ -114,7 +114,10 @@ if 'loudnessAnalyserLibStatic' in locals() and \
     ffmpeg_libs = ''
     if ffmpeg_root:
         ffmpeg_include = os.path.join( ffmpeg_root, 'include' )
-        ffmpeg_libs = [os.path.join( ffmpeg_root, 'lib' ), os.path.join( ffmpeg_root, 'lib64' )]
+        if env['PLATFORM'] == 'win32':
+            ffmpeg_libs = os.path.join( ffmpeg_root, 'bin' )
+        else:
+            ffmpeg_libs = [os.path.join( ffmpeg_root, 'lib' ), os.path.join( ffmpeg_root, 'lib64' )]
 
     # Check libavtranscoder
     avtranscoderEnv = env.Clone()
