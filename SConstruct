@@ -3,9 +3,9 @@ import os
 EnsureSConsVersion( 2, 3, 0 )
 
 # Versions
-loudnessAssessmentVersionMajor = "0"
+loudnessAssessmentVersionMajor = "1"
 loudnessAssessmentVersionMinor = "0"
-loudnessAssessmentVersionMicro = "1"
+loudnessAssessmentVersionMicro = "0"
 
 loudnessAssessmentVersion = [
     loudnessAssessmentVersionMajor,
