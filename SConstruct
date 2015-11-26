@@ -94,10 +94,29 @@ AddOption(
     metavar='DIR',
     help='Path to avtranscoder library.'
 )
+AddOption(
+    '--avtranscoder-version',
+    dest='avtranscoderVersion',
+    type='string',
+    nargs=1,
+    action='store',
+    help='Version of avtranscoder library to link (needed only if compile on Windows).'
+)
+
+# Get target arch
+AddOption(
+	'--target-arch',
+	dest='targetArch',
+	type='string',
+	nargs=1,
+	action='store',
+	default='',
+	help='Use this option to specify the target arch (x86, x64...). By default the arch is choosen depending on the compiler plateform.'
+)
 
 ### Create env ###
 
-env = Environment()
+env = Environment(TARGET_ARCH=GetOption('targetArch'))
 
 boost_root = GetOption('boost')
 boost_include = ''

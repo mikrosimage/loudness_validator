@@ -2,7 +2,7 @@
 #define PLOUD_PROCESS_H
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
-#include <loudnessTools/io/SoundFile.hpp>
+#include <loudnessIO/SoundFile.hpp>
 
 #include <string>
 #include <vector>
@@ -33,7 +33,7 @@ public:
 	
 private:
 	std::vector<std::string> filenames;
-	std::vector<Loudness::tools::SoundFile*>  audioFiles;
+	std::vector<Loudness::io::SoundFile*>  audioFiles;
 };
 
 #endif

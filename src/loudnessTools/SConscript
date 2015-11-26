@@ -4,45 +4,31 @@ Import( 'loudnessAnalyserLibStatic' )
 
 ### loudness Tools ###
 
-# check libsndfile
-sndfileEnv = env.Clone()
-conf = Configure(sndfileEnv)
-
-sndfileLib = 'sndfile'
+loudnessToolsLibName = 'loudnessTools'
+# add version number to the name of the shared library if Windows platform
 if env['PLATFORM'] == 'win32':
-    sndfileLib = 'lib' + sndfileLib
+    loudnessToolsLibName += '-' + loudnessAssessmentVersionStr
 
-if conf.CheckLibWithHeader(sndfileLib, 'sndfile.h', 'c'):
-    sndfileEnv = conf.Finish()
+loudnessToolsSrc = Glob( '*.cpp' )
 
-    loudnessToolsLibName = 'loudnessTools'
-    # add version number to the name of the shared library if Windows platform
-    if env['PLATFORM'] == 'win32':
-        loudnessToolsLibName += '-' + loudnessAssessmentVersionStr
+loudnessToolsDeps = [
+    loudnessAnalyserLibStatic,
+]
 
-    loudnessToolsSrc = Glob( '*.cpp' ) + Glob( 'io/*.cpp' )
+loudnessToolsLib = env.SharedLibrary(
+    target = loudnessToolsLibName,
+    source = loudnessToolsSrc,
+    LIBS = loudnessToolsDeps,
+)
 
-    loudnessToolsDeps = [
-        loudnessAnalyserLibStatic,
-        sndfileLib,
-    ]
+loudnessToolsLibStatic = env.StaticLibrary(
+    target = 'loudnessTools',
+    source = loudnessToolsSrc,
+    LIBS = loudnessToolsDeps,
+)
 
-    loudnessToolsLib = sndfileEnv.SharedLibrary(
-        target = loudnessToolsLibName,
-        source = loudnessToolsSrc,
-        LIBS = loudnessToolsDeps,
-    )
+# Install
+env.Alias( 'install', env.InstallVersionedLib( 'lib', loudnessToolsLib ) )
+env.Alias( 'install', env.Install( 'lib', loudnessToolsLibStatic ) )
 
-    loudnessToolsLibStatic = sndfileEnv.StaticLibrary(
-        target = 'loudnessTools',
-        source = loudnessToolsSrc,
-        LIBS = loudnessToolsDeps,
-    )
-
-    # Install
-    sndfileEnv.Alias( 'install', sndfileEnv.InstallVersionedLib( 'lib', loudnessToolsLib ) )
-    sndfileEnv.Alias( 'install', sndfileEnv.Install( 'lib', loudnessToolsLibStatic ) )
-
-    Export( 'loudnessToolsLibStatic' )
-else:
-    print('Warning: sndfile library not found, will not build loudnessTools.')
+Export( 'loudnessToolsLibStatic' )

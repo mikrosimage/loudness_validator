@@ -1,4 +1,4 @@
-
+#include <string>
 #include <iostream>
 #include <cstring>
 #include <vector>
@@ -6,8 +6,8 @@
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
-#include <loudnessTools/ProcessFile.hpp>
-#include <loudnessTools/io/SoundFile.hpp>
+#include <loudnessIO/ProcessFile.hpp>
+#include <loudnessIO/SoundFile.hpp>
 #include <loudnessTools/WriteXml.hpp>
 
 bool showProgress = false;
@@ -107,7 +107,7 @@ int main( int argc, char** argv )
 
 			for( size_t j=0; j < standards.size(); j++ )
 			{
-				Loudness::tools::SoundFile audioFile;
+				Loudness::io::SoundFile audioFile;
 				Loudness::analyser::LoudnessLevels levels =	standards.at(j) == 0 ? Loudness::analyser::LoudnessLevels::Loudness_CST_R017() : 
 													standards.at(j) == 1 ? Loudness::analyser::LoudnessLevels::Loudness_EBU_R128() : 
 																		   Loudness::analyser::LoudnessLevels::Loudness_ATSC_A85() ;
@@ -116,7 +116,7 @@ int main( int argc, char** argv )
 				if( ! audioFile.open_read ( filenames.at( i ).c_str() ) )
 				{
 					time( &start );
-					Loudness::tools::AnalyseFile analyser( loudness, audioFile );
+					Loudness::io::AnalyseFile analyser( loudness, audioFile );
 					analyser.enableOptimization( enableOptimization );
 					analyser( progress );
 					time( &end );
