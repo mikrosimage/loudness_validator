@@ -11,7 +11,10 @@ void AvSoundFile::printProgress( const int p )
 {
 	// print progression to file
 	if( ! _progressionFileName.empty() )
-		_progressionFile << p << std::endl;
+	{
+		_progressionFile.seekp(0);
+		_progressionFile << p;
+	}
 	// print progression to console
 	else
 		std::cout << "[" << std::setw(3) << p << "%]\r" << std::flush;
