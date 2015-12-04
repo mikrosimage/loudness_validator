@@ -20,18 +20,14 @@ std::vector<std::pair<std::string, size_t> > parseConfigFile( const std::string&
 		std::string filename;
 		if( std::getline( is_line, filename, '=' ) )
 		{
-			std::string streamId;
-			if( std::getline( is_line, streamId, ':' ) )
-			{
-				std::string transcodeProfile;
-				std::getline( is_line, transcodeProfile );
+			std::string stream;
+			std::getline( is_line, stream );
 
-				std::stringstream ss( streamId );
-				size_t streamIndex = 0;
-				ss >> streamIndex;
+			std::stringstream ss( stream );
+			size_t streamIndex = 0;
+			ss >> streamIndex;
 
-				result.push_back(std::make_pair(filename, streamIndex));
-			}
+			result.push_back(std::make_pair(filename, streamIndex));
 		}
 	}
 
