@@ -39,7 +39,7 @@ AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arr
 			inputFile = new avtranscoder::InputFile( filename );
 
 			// display file properties
-			std::cout << *inputFile;
+			//std::cout << *inputFile;
 
 			// add to list of filename
 			_inputFilenames.push_back(filename);
