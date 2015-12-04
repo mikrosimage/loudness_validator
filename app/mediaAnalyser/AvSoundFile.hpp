@@ -8,7 +8,6 @@
 #include <vector>
 #include <utility>
 #include <iostream>
-#include <fstream>
 
 
 class AvSoundFile
@@ -54,8 +53,8 @@ private:
 	std::vector< std::pair<avtranscoder::InputFile*, bool> > _inputFiles;
 	std::vector<avtranscoder::AudioReader*> _audioReader;
 
-	// To print the progession in a file
-	std::ofstream _progressionFile;
+	// To print the progession to a stream
+	std::ostream* _outputStream;
 	std::string _progressionFileName;
 };
 
