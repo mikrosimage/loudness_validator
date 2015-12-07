@@ -4,7 +4,7 @@ EnsureSConsVersion( 2, 3, 0 )
 
 # Versions
 loudnessAssessmentVersionMajor = "1"
-loudnessAssessmentVersionMinor = "0"
+loudnessAssessmentVersionMinor = "1"
 loudnessAssessmentVersionMicro = "0"
 
 loudnessAssessmentVersion = [
@@ -184,8 +184,9 @@ elif env['CC'] == 'cl':  # msvc
     # Exception handling used by the compiler
     env.Append( CXXFLAGS = ['/EHsc'] )
     if buildMode == 'release':
-        # Use the multithread, static version of the run-time library
-        env.Append( CXXFLAGS = ['/MT'] )
+        # /MT: Use the multithread, static version of the run-time library
+        # /Ox: maximal optimization
+        env.Append( CXXFLAGS = ['/MT', '/Ox'] )
     else:
         # Plus DEBUG option
         env.Append( CXXFLAGS = ['/MTd'] )

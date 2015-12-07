@@ -3,20 +3,30 @@
 #include <AvTranscoder/mediaProperty/print.hpp>
 
 #include <iomanip>
-#include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <stdexcept>
 
 
-void progress( int p )
+void AvSoundFile::printProgress( const int p )
 {
-	std::cout << "[" << std::setw(3) << p << "%]\r" << std::flush;
+	// print progression to file
+	if( ! _progressionFileName.empty() )
+	{
+		_outputStream->seekp(0);
+		*_outputStream << p;
+	}
+	// print progression to console
+	else
+		*_outputStream << "[" << std::setw(3) << p << "%]\r" << std::flush;
 }
 
 AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arrayToAnalyse)
 	: _nbChannelsToAnalyse(0)
 	, _totalNbSamples(0)
 	, _cumulOfSamples(0)
+	, _outputStream(&std::cout)
+	, _progressionFileName()
 {
 	for(size_t fileIndex = 0; fileIndex < arrayToAnalyse.size(); ++fileIndex)
 	{
@@ -39,7 +49,7 @@ AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arr
 			inputFile = new avtranscoder::InputFile( filename );
 
 			// display file properties
-			std::cout << *inputFile;
+			//std::cout << *inputFile;
 
 			// add to list of filename
 			_inputFilenames.push_back(filename);
@@ -116,6 +126,14 @@ AvSoundFile::~AvSoundFile()
 
 void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 {
+	// open file to print duration
+	std::ofstream outputFile;
+	if( ! _progressionFileName.empty() )
+	{
+		outputFile.open(_progressionFileName.c_str());
+		_outputStream = &outputFile;
+	}
+
 	// init
 	analyser.initAndStart(_nbChannelsToAnalyse, _inputSampleRate.at(0));
 
@@ -149,8 +167,11 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 
 		// Progress
 		_cumulOfSamples += nbSamplesRead;
-		progress( (float)_cumulOfSamples / _totalNbSamples * 100 );
+		printProgress( (float)_cumulOfSamples / _totalNbSamples * 100 );
 	}
+
+	// Close progression file
+	outputFile.close();
 
 	// free audio buffer
 	delete audioBuffer;

@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <utility>
+#include <iostream>
 
 
 class AvSoundFile
@@ -16,6 +17,20 @@ public:
 	~AvSoundFile();
 
 	void analyse(Loudness::analyser::LoudnessAnalyser& analyser);
+
+	/**
+	 * @brief Set the output filename of the progress file.
+	 * If empty, no file is created and the progress is printed to the console.
+	 */
+	void setProgressionFile( const std::string& progressionFileName ) { _progressionFileName = progressionFileName; }
+
+private:
+	/**
+	 * @brief Print progress of analysis
+	 * If _progressionFileName si not empty, print to file _progressionFile
+	 * Else print to console
+	 */
+	void printProgress( const int p );
 
 private:
 	// for loudness analyser
@@ -37,6 +52,10 @@ private:
 	 */
 	std::vector< std::pair<avtranscoder::InputFile*, bool> > _inputFiles;
 	std::vector<avtranscoder::AudioReader*> _audioReader;
+
+	// To print the progession to a stream
+	std::ostream* _outputStream;
+	std::string _progressionFileName;
 };
 
 #endif
