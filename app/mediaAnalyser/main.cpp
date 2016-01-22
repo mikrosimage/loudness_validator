@@ -7,9 +7,9 @@
 #include <utility>
 #include <fstream>
 
-std::vector<std::pair<std::string, size_t> > parseConfigFile( const std::string& configFilename )
+std::vector<AudioElement> parseConfigFile( const std::string& configFilename )
 {
-	std::vector<std::pair<std::string, size_t> > result;
+	std::vector<AudioElement> result;
 
 	std::ifstream configFile( configFilename.c_str(), std::ifstream::in );
 
@@ -25,9 +25,14 @@ std::vector<std::pair<std::string, size_t> > parseConfigFile( const std::string&
 
 			std::stringstream ss( stream );
 			size_t streamIndex = 0;
+			char separator;
+			int channelIndex = -1;
 			ss >> streamIndex;
+			ss >> separator;
+			if(separator == '.')
+				ss >> channelIndex;
 
-			result.push_back(std::make_pair(filename, streamIndex));
+			result.push_back(AudioElement(filename, streamIndex, channelIndex));
 		}
 	}
 
@@ -108,7 +113,7 @@ int main( int argc, char** argv )
 	avtranscoder::Logger::setLogLevel(AV_LOG_QUIET);
 
 	// Get list of files / streamIndex to analyse
-	std::vector<std::pair<std::string, size_t> > arrayToAnalyse = parseConfigFile(arguments.at(0));
+	std::vector<AudioElement> arrayToAnalyse = parseConfigFile(arguments.at(0));
 	AvSoundFile soudFile(arrayToAnalyse);
 	soudFile.setProgressionFile(outputProgressionName);
 
@@ -124,7 +129,7 @@ int main( int argc, char** argv )
 	std::vector<std::string> mediaFilenames;
 	for(size_t i = 0; i < arrayToAnalyse.size(); ++i)
 	{
-		mediaFilenames.push_back(arrayToAnalyse.at(i).first);
+		mediaFilenames.push_back(arrayToAnalyse.at(i)._inputFile);
 	}
 	Loudness::tools::WriteXml writerXml(outputXMLReportName, mediaFilenames);
 	writerXml.writeResults("unknown", analyser);
