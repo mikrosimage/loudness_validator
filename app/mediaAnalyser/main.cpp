@@ -25,9 +25,14 @@ std::vector<AudioElement> parseConfigFile( const std::string& configFilename )
 
 			std::stringstream ss( stream );
 			size_t streamIndex = 0;
+			char separator;
+			int channelIndex = -1;
 			ss >> streamIndex;
+			ss >> separator;
+			if(separator == '.')
+				ss >> channelIndex;
 
-			result.push_back(AudioElement(filename, streamIndex));
+			result.push_back(AudioElement(filename, streamIndex, channelIndex));
 		}
 	}
 

@@ -29,7 +29,8 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 	for(size_t fileIndex = 0; fileIndex < arrayToAnalyse.size(); ++fileIndex)
 	{
 		const std::string filename(arrayToAnalyse.at(fileIndex)._inputFile);
-		const size_t streamIndex(arrayToAnalyse.at(fileIndex)._streamIndex);
+		const size_t streamIndex = arrayToAnalyse.at(fileIndex)._streamIndex;
+		const size_t channelIndex = arrayToAnalyse.at(fileIndex)._channelIndex;
 
 		// Analyse input file
 		avtranscoder::InputFile* inputFile = NULL;
@@ -55,7 +56,7 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 		_inputFiles.push_back(std::make_pair(inputFile, ! isAlreadyAllocated));
 
 		// Create reader to convert to float planar
-		avtranscoder::AudioReader* reader = new avtranscoder::AudioReader( *inputFile, streamIndex );
+		avtranscoder::AudioReader* reader = new avtranscoder::AudioReader( *inputFile, streamIndex, channelIndex );
 		_audioReader.push_back(reader);
 
 		// Get data from audio stream
