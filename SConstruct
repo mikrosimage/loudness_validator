@@ -116,7 +116,7 @@ AddOption(
 
 ### Create env ###
 
-env = Environment(TARGET_ARCH=GetOption('targetArch'))
+env = Environment(ENV = {'PATH' : os.environ['PATH'], 'TARGET_ARCH' : GetOption('targetArch')})
 
 boost_root = GetOption('boost')
 boost_include = ''
