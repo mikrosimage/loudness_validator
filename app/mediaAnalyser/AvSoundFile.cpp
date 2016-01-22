@@ -160,7 +160,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 		}
 
 		// Analyse loudness
-		const size_t nbSamplesInOneFrame = nbSamplesRead / _audioReader.size();
+		const size_t nbSamplesInOneFrame = nbSamplesRead / nbInputChannelAdded;
 		analyser.processSamples(audioBuffer, nbSamplesInOneFrame);
 
 		// Progress
