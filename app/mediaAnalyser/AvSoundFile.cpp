@@ -1,7 +1,5 @@
 #include "AvSoundFile.hpp"
 
-#include <AvTranscoder/mediaProperty/print.hpp>
-
 #include <iomanip>
 #include <fstream>
 #include <algorithm>
@@ -57,18 +55,21 @@ AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arr
 		_inputFiles.push_back(std::make_pair(inputFile, ! isAlreadyAllocated));
 
 		// Create reader to convert to float planar
-		avtranscoder::AudioReader* reader = new avtranscoder::AudioReader( *inputFile, streamIndex, 0, 0, "fltp" );
+		avtranscoder::AudioReader* reader = new avtranscoder::AudioReader( *inputFile, streamIndex );
 		_audioReader.push_back(reader);
 
 		// Get data from audio stream
-		const avtranscoder::AudioProperties* audioProperties = reader->getAudioProperties();
+		const avtranscoder::AudioProperties* audioProperties = reader->getSourceAudioProperties();
 		const size_t nbSamples = audioProperties->getNbSamples();
 		_inputNbSamples.push_back(nbSamples);
 		_totalNbSamples += nbSamples;
-		const int nbChannels = audioProperties->getChannels();
+		const int nbChannels = audioProperties->getNbChannels();
 		_inputNbChannels.push_back(nbChannels);
 		const size_t sampleRate = audioProperties->getSampleRate();
 		_inputSampleRate.push_back(sampleRate);
+
+		// Update output of reader
+		reader->updateOutput(sampleRate, nbChannels, "fltp");
 	}
 
 	// Check the given configuration
@@ -148,16 +149,13 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 		for(size_t fileIndex = 0; fileIndex < _audioReader.size(); ++fileIndex)
 		{
 			avtranscoder::AudioFrame* dstFrame = static_cast<avtranscoder::AudioFrame*>(_audioReader.at(fileIndex)->readNextFrame());
-
-			// Convert buffer to a float array[channel][samples]
-			const size_t sizePerChannel = dstFrame->getSize() / _inputNbChannels.at(fileIndex);
 			size_t inputChannel = 0;
 			for(size_t channelToAdd = nbInputChannelAdded; channelToAdd < nbInputChannelAdded + _inputNbChannels.at(fileIndex); ++channelToAdd)
 			{
-				audioBuffer[channelToAdd] = (float*)(dstFrame->getData() + (sizePerChannel * inputChannel));
+				audioBuffer[channelToAdd] = (float*)(dstFrame->getData()[inputChannel]);
 				++inputChannel;
+				nbSamplesRead += dstFrame->getNbSamplesPerChannel();
 			}
-			nbSamplesRead += dstFrame->getNbSamples();
 			nbInputChannelAdded += _inputNbChannels.at(fileIndex);
 		}
 
