@@ -9,11 +9,31 @@
 #include <utility>
 #include <iostream>
 
+/**
+ * @brief Struct to describe an audio element to read and analyse.
+ */
+struct AudioElement
+{
+public:
+    AudioElement(const std::string& inputFile, const size_t streamIndex, const int channelIndex = -1)
+        : _inputFile(inputFile)
+        , _streamIndex(streamIndex)
+        , _channelIndex(channelIndex)
+    {}
 
+public:
+    std::string _inputFile;
+    size_t _streamIndex;
+    int _channelIndex; //< -1 if all channels
+};
+
+/**
+ * @brief Read and analyse the given audio elements.
+ */
 class AvSoundFile
 {
 public:
-	AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arrayToAnalyse);
+	AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse);
 	~AvSoundFile();
 
 	void analyse(Loudness::analyser::LoudnessAnalyser& analyser);

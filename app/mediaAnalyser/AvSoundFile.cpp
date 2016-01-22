@@ -19,7 +19,7 @@ void AvSoundFile::printProgress( const int p )
 		*_outputStream << "[" << std::setw(3) << p << "%]\r" << std::flush;
 }
 
-AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arrayToAnalyse)
+AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 	: _nbChannelsToAnalyse(0)
 	, _totalNbSamples(0)
 	, _cumulOfSamples(0)
@@ -28,8 +28,8 @@ AvSoundFile::AvSoundFile(const std::vector<std::pair<std::string, size_t> >& arr
 {
 	for(size_t fileIndex = 0; fileIndex < arrayToAnalyse.size(); ++fileIndex)
 	{
-		const std::string filename(arrayToAnalyse.at(fileIndex).first);
-		const size_t streamIndex(arrayToAnalyse.at(fileIndex).second);
+		const std::string filename(arrayToAnalyse.at(fileIndex)._inputFile);
+		const size_t streamIndex(arrayToAnalyse.at(fileIndex)._streamIndex);
 
 		// Analyse input file
 		avtranscoder::InputFile* inputFile = NULL;
