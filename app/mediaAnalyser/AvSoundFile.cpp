@@ -136,10 +136,15 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
     // update number of samples to analyse
     if(_forceDurationToAnalyse)
     {
-        _totalNbSamplesToAnalyse = 0;
+        size_t newTotalNbSamplesToAnalyse = 0;
         for(size_t i = 0; i < _inputSampleRate.size(); i++)
         {
-            _totalNbSamplesToAnalyse += _forceDurationToAnalyse * _inputSampleRate.at(i) * _inputNbChannels.at(i);
+            newTotalNbSamplesToAnalyse += _forceDurationToAnalyse * _inputSampleRate.at(i) * _inputNbChannels.at(i);
+        }
+        // the forced number of samples cannot be superior to the existing number of samples!
+        if(newTotalNbSamplesToAnalyse < _totalNbSamplesToAnalyse)
+        {
+            _totalNbSamplesToAnalyse = newTotalNbSamplesToAnalyse;
         }
     }
 
