@@ -52,6 +52,11 @@ private:
 	 */
 	void printProgress( const int p );
 
+	/**
+	 * @return If it is the end of the loudness analysis.
+	 */
+	bool isEndOfAnalysis();
+
 private:
 	// for loudness analyser
 	size_t _nbChannelsToAnalyse;

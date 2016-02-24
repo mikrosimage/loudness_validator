@@ -19,6 +19,11 @@ void AvSoundFile::printProgress( const int p )
 		*_outputStream << "[" << std::setw(3) << p << "%]\r" << std::flush;
 }
 
+bool AvSoundFile::isEndOfAnalysis()
+{
+    return _cumulOfSamples >= _totalNbSamples;
+}
+
 AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 	: _nbChannelsToAnalyse(0)
 	, _totalNbSamples(0)
@@ -143,7 +148,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 	float** audioBuffer = new float* [ _nbChannelsToAnalyse ];
 
 	// Decode audio streams
-	while(_cumulOfSamples < _totalNbSamples)
+	while(! isEndOfAnalysis())
 	{
 		size_t nbSamplesRead = 0;
 		size_t nbInputChannelAdded = 0;
