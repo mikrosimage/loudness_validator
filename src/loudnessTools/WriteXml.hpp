@@ -6,30 +6,31 @@
 #include <vector>
 #include <fstream>
 
-namespace Loudness {
-namespace tools {
+namespace Loudness
+{
+namespace tools
+{
 
 class WriteXml
 {
 public:
-	WriteXml( const std::string& xmlFilename, const std::string& srcAudioFilename );
-	WriteXml( const std::string& xmlFilename, const std::vector<std::string>& srcAudioFilenames );
+    WriteXml(const std::string& xmlFilename, const std::string& srcAudioFilename);
+    WriteXml(const std::string& xmlFilename, const std::vector<std::string>& srcAudioFilenames);
 
-	~WriteXml();
+    ~WriteXml();
 
-	void writeResults( const char* channelType, Loudness::analyser::LoudnessAnalyser& analyser );
+    void writeResults(const char* channelType, Loudness::analyser::LoudnessAnalyser& analyser);
 
 private:
-	void openXMLFile( const std::string& xmlFilename );
-	std::string convertValid( Loudness::analyser::ELoudnessResult result );
-	std::string printStandard( Loudness::analyser::EStandard standard );
-	std::string writeValues( std::vector<float> datas );
-	std::string getDate();
+    void openXMLFile(const std::string& xmlFilename);
+    std::string convertValid(Loudness::analyser::ELoudnessResult result);
+    std::string printStandard(Loudness::analyser::EStandard standard);
+    std::string writeValues(std::vector<float> datas);
+    std::string getDate();
 
-	std::ofstream xmlFile;
-	std::vector<std::string> srcAudioFilenames;
+    std::ofstream xmlFile;
+    std::vector<std::string> srcAudioFilenames;
 };
-
 }
 }
 

@@ -15,34 +15,35 @@
 
 using namespace boost::accumulators;
 
-namespace Loudness {
-namespace corrector {
+namespace Loudness
+{
+namespace corrector
+{
 
 class LoudnessExport LookAheadLimiter
 {
 public:
-	LookAheadLimiter( const float lookAheadTime, const float sampleRate, const float threshold );
-	~LookAheadLimiter();
+    LookAheadLimiter(const float lookAheadTime, const float sampleRate, const float threshold);
+    ~LookAheadLimiter();
 
-	bool process( float &value );
-	bool getLastSamples( float &value );
+    bool process(float& value);
+    bool getLastSamples(float& value);
 
 private:
-	size_t signalCircularBufferSize;
-	size_t maxCircularBufferSize;
+    size_t signalCircularBufferSize;
+    size_t maxCircularBufferSize;
 
-	boost::circular_buffer<float> signal;
+    boost::circular_buffer<float> signal;
 
-	RollingMax<float> accMax;
+    RollingMax<float> accMax;
 
-	accumulator_set<float, stats<tag::rolling_sum> > accShortTimeSum;
-	accumulator_set<float, stats<tag::rolling_sum> > accShortTimeSum2;
+    accumulator_set<float, stats<tag::rolling_sum> > accShortTimeSum;
+    accumulator_set<float, stats<tag::rolling_sum> > accShortTimeSum2;
 
-	float threshold;
-	size_t processTime;
-	size_t lastSamples;
+    float threshold;
+    size_t processTime;
+    size_t lastSamples;
 };
-
 }
 }
 

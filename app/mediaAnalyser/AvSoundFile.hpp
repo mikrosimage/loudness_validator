@@ -19,7 +19,8 @@ public:
         : _inputFile(inputFile)
         , _streamIndex(streamIndex)
         , _channelIndex(channelIndex)
-    {}
+    {
+    }
 
 public:
     std::string _inputFile;
@@ -33,63 +34,63 @@ public:
 class AvSoundFile
 {
 public:
-	AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse);
-	~AvSoundFile();
+    AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse);
+    ~AvSoundFile();
 
-	void analyse(Loudness::analyser::LoudnessAnalyser& analyser);
+    void analyse(Loudness::analyser::LoudnessAnalyser& analyser);
 
-	/**
-	 * @brief Set the output filename of the progress file.
-	 * If empty, no file is created and the progress is printed to the console.
-	 */
-	void setProgressionFile( const std::string& progressionFileName ) { _progressionFileName = progressionFileName; }
+    /**
+     * @brief Set the output filename of the progress file.
+     * If empty, no file is created and the progress is printed to the console.
+     */
+    void setProgressionFile(const std::string& progressionFileName) { _progressionFileName = progressionFileName; }
 
-	/**
-	 * @brief Force the analysis to be on a specific duration (in seconds)
-	 * @note By default we use the duration of the input.
-	 */
-	void setDurationToAnalyse( const float durationToAnalyse );
-
-private:
-	/**
-	 * @brief Print progress of analysis
-	 * If _progressionFileName si not empty, print to file _progressionFile
-	 * Else print to console
-	 */
-	void printProgress();
-
-	/**
-	 * @return If it is the end of the loudness analysis.
-	 */
-	bool isEndOfAnalysis();
+    /**
+     * @brief Force the analysis to be on a specific duration (in seconds)
+     * @note By default we use the duration of the input.
+     */
+    void setDurationToAnalyse(const float durationToAnalyse);
 
 private:
-	// for loudness analyser
-	size_t _nbChannelsToAnalyse;
+    /**
+     * @brief Print progress of analysis
+     * If _progressionFileName si not empty, print to file _progressionFile
+     * Else print to console
+     */
+    void printProgress();
 
-	// for progress
-	size_t _totalNbSamplesToAnalyse;
-	size_t _cumulOfSamplesAnalysed;
+    /**
+     * @return If it is the end of the loudness analysis.
+     */
+    bool isEndOfAnalysis();
 
-	// to check audio before analyse
-	std::vector<size_t> _inputNbChannels;
-	std::vector<size_t> _inputNbSamples;
-	std::vector<size_t> _inputSampleRate;
+private:
+    // for loudness analyser
+    size_t _nbChannelsToAnalyse;
 
-	// for io
-	std::vector<std::string> _inputFilenames;
-	/**
-	 * The boolean indicates if the InputFile is allocated by the class (has ownership)
-	 */
-	std::vector< std::pair<avtranscoder::InputFile*, bool> > _inputFiles;
-	std::vector<avtranscoder::AudioReader*> _audioReader;
+    // for progress
+    size_t _totalNbSamplesToAnalyse;
+    size_t _cumulOfSamplesAnalysed;
 
-	// To print the progession to a stream
-	std::ostream* _outputStream;
-	std::string _progressionFileName;
+    // to check audio before analyse
+    std::vector<size_t> _inputNbChannels;
+    std::vector<size_t> _inputNbSamples;
+    std::vector<size_t> _inputSampleRate;
 
-	// To force the duration to analyse
-	float _forceDurationToAnalyse;
+    // for io
+    std::vector<std::string> _inputFilenames;
+    /**
+     * The boolean indicates if the InputFile is allocated by the class (has ownership)
+     */
+    std::vector<std::pair<avtranscoder::InputFile*, bool> > _inputFiles;
+    std::vector<avtranscoder::AudioReader*> _audioReader;
+
+    // To print the progession to a stream
+    std::ostream* _outputStream;
+    std::string _progressionFileName;
+
+    // To force the duration to analyse
+    float _forceDurationToAnalyse;
 };
 
 #endif
