@@ -70,7 +70,7 @@ int main( int argc, char** argv )
 		arguments.push_back( argv[argument] );
 	}
 
-	for( size_t argument = 0; argument < arguments.size(); ++argument )
+	for( size_t argument = 1; argument < arguments.size(); ++argument )
 	{
 		if( arguments.at( argument ) == "--help" )
 		{
@@ -113,6 +113,12 @@ int main( int argc, char** argv )
 				return 1;
 			}
 		}
+        // unknown argument
+        else
+        {
+            printHelp();
+            return 1;
+        }
 	}
 
 	// Check required arguments
