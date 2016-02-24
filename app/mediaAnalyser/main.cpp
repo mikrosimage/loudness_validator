@@ -134,26 +134,35 @@ int main(int argc, char** argv)
     avtranscoder::preloadCodecsAndFormats();
     avtranscoder::Logger::setLogLevel(AV_LOG_QUIET);
 
-    // Get list of files / streamIndex to analyse
-    std::vector<AudioElement> arrayToAnalyse = parseConfigFile(arguments.at(0));
-    AvSoundFile soudFile(arrayToAnalyse);
-    soudFile.setProgressionFile(outputProgressionName);
-    soudFile.setDurationToAnalyse(durationToAnalyse);
-
-    // Analyse loudness according to EBU R-128
-    Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
-    Loudness::analyser::LoudnessAnalyser analyser(level);
-    soudFile.analyse(analyser);
-
-    // Print analyse
-    analyser.printPloudValues();
-
-    // Write XML
-    std::vector<std::string> mediaFilenames;
-    for(size_t i = 0; i < arrayToAnalyse.size(); ++i)
+    try
     {
-        mediaFilenames.push_back(arrayToAnalyse.at(i)._inputFile);
+        // Get list of files / streamIndex to analyse
+        std::vector<AudioElement> arrayToAnalyse = parseConfigFile(arguments.at(0));
+        AvSoundFile soudFile(arrayToAnalyse);
+        soudFile.setProgressionFile(outputProgressionName);
+        soudFile.setDurationToAnalyse(durationToAnalyse);
+
+        // Analyse loudness according to EBU R-128
+        Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
+        Loudness::analyser::LoudnessAnalyser analyser(level);
+        soudFile.analyse(analyser);
+
+        // Print analyse
+        analyser.printPloudValues();
+
+        // Write XML
+        std::vector<std::string> mediaFilenames;
+        for(size_t i = 0; i < arrayToAnalyse.size(); ++i)
+        {
+            mediaFilenames.push_back(arrayToAnalyse.at(i)._inputFile);
+        }
+        Loudness::tools::WriteXml writerXml(outputXMLReportName, mediaFilenames);
+        writerXml.writeResults("unknown", analyser);
     }
-    Loudness::tools::WriteXml writerXml(outputXMLReportName, mediaFilenames);
-    writerXml.writeResults("unknown", analyser);
+    catch(const std::exception& e)
+    {
+        std::cout << "Error during the loudness analysis:" << std::endl;
+        std::cout << e.what() << std::endl;
+        return 1;
+    }
 }
