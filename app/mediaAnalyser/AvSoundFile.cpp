@@ -9,6 +9,7 @@
 void AvSoundFile::printProgress()
 {
     const int p = (float)_cumulOfSamplesAnalysed / _totalNbSamplesToAnalyse * 100;
+
 	// print progression to file
 	if( ! _progressionFileName.empty() )
 	{
@@ -22,13 +23,6 @@ void AvSoundFile::printProgress()
 
 bool AvSoundFile::isEndOfAnalysis()
 {
-    if(_forceDurationToAnalyse)
-    {
-        const size_t sampleRate = _inputSampleRate.at(0);
-        const float currentDuration = _cumulOfSamplesAnalysed / sampleRate;
-        if(currentDuration >= _forceDurationToAnalyse)
-            return true;
-    }
     return _cumulOfSamplesAnalysed >= _totalNbSamplesToAnalyse;
 }
 
@@ -142,6 +136,12 @@ AvSoundFile::~AvSoundFile()
 
 void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 {
+    // update number of samples to analyse
+    if(_forceDurationToAnalyse)
+    {
+        _totalNbSamplesToAnalyse = _forceDurationToAnalyse * _inputSampleRate.at(0);
+    }
+
 	// open file to print duration
 	std::ofstream outputFile;
 	if( ! _progressionFileName.empty() )
