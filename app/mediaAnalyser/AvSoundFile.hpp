@@ -44,6 +44,12 @@ public:
 	 */
 	void setProgressionFile( const std::string& progressionFileName ) { _progressionFileName = progressionFileName; }
 
+	/**
+	 * @brief Force the analysis to be on a specific duration (in seconds)
+	 * @note By default we use the duration of the input.
+	 */
+	void setDurationToAnalyse( const float durationToAnalyse );
+
 private:
 	/**
 	 * @brief Print progress of analysis
@@ -81,6 +87,9 @@ private:
 	// To print the progession to a stream
 	std::ostream* _outputStream;
 	std::string _progressionFileName;
+
+	// To force the duration to analyse
+	float _forceDurationToAnalyse;
 };
 
 #endif

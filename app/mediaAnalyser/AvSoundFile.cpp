@@ -21,6 +21,13 @@ void AvSoundFile::printProgress( const int p )
 
 bool AvSoundFile::isEndOfAnalysis()
 {
+    if(_forceDurationToAnalyse)
+    {
+        const size_t sampleRate = _inputSampleRate.at(0);
+        const float currentDuration = _cumulOfSamplesAnalysed / sampleRate;
+        if(currentDuration >= _forceDurationToAnalyse)
+            return true;
+    }
     return _cumulOfSamplesAnalysed >= _totalNbSamplesToAnalyse;
 }
 
@@ -30,6 +37,7 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 	, _cumulOfSamplesAnalysed(0)
 	, _outputStream(&std::cout)
 	, _progressionFileName()
+    , _forceDurationToAnalyse(0)
 {
 	for(size_t fileIndex = 0; fileIndex < arrayToAnalyse.size(); ++fileIndex)
 	{
@@ -179,4 +187,10 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 
 	// free audio buffer
 	delete audioBuffer;
+}
+
+void AvSoundFile::setDurationToAnalyse(const float durationToAnalyse)
+{
+    if(durationToAnalyse > 0)
+        _forceDurationToAnalyse = durationToAnalyse;
 }

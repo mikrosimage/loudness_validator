@@ -45,7 +45,7 @@ void printHelp()
 {
 	std::string help;
 	help += "Usage\n";
-	help += "\tmedia-analyser CONFIG.TXT [--output XMLReportName][--progressionInFile progressionName][--help]\n";
+	help += "\tmedia-analyser CONFIG.TXT [--output XMLReportName][--progressionInFile progressionName][--forceDurationToAnalyse durationToAnalyse][--help]\n";
 	help += "CONFIG.TXT\n";
 	help += "\tEach line will be one audio stream analysed by the loudness library.\n";
 	help += "\tPattern of each line is:\n";
@@ -54,6 +54,7 @@ void printHelp()
 	help += "\t--help: display this help\n";
 	help += "\t--output: filename of the XML report\n";
 	help += "\t--progressionInFile: to print the progression in a file instead of in console\n";
+	help += "\t--forceDurationToAnalyse: to force loudness analysis on a specific duration (in seconds). By default this is the duration of the input.\n";
 	std::cout << help << std::endl;
 }
 
@@ -61,6 +62,7 @@ int main( int argc, char** argv )
 {
 	std::string outputXMLReportName("PLoud.xml");
 	std::string outputProgressionName;
+	float durationToAnalyse = 0;
 
 	std::vector< std::string > arguments;
 	for( int argument = 1; argument < argc; ++argument )
@@ -99,6 +101,18 @@ int main( int argc, char** argv )
 				return 1;
 			}
 		}
+        else if( arguments.at( argument ) == "--forceDurationToAnalyse" )
+		{
+			try
+			{
+				durationToAnalyse = atof(arguments.at( ++argument ).c_str());
+			}
+			catch(...)
+			{
+				printHelp();
+				return 1;
+			}
+		}
 	}
 
 	// Check required arguments
@@ -116,6 +130,7 @@ int main( int argc, char** argv )
 	std::vector<AudioElement> arrayToAnalyse = parseConfigFile(arguments.at(0));
 	AvSoundFile soudFile(arrayToAnalyse);
 	soudFile.setProgressionFile(outputProgressionName);
+	soudFile.setDurationToAnalyse(durationToAnalyse);
 
 	// Analyse loudness according to EBU R-128
 	Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
