@@ -6,8 +6,9 @@
 #include <stdexcept>
 
 
-void AvSoundFile::printProgress( const int p )
+void AvSoundFile::printProgress()
 {
+    const int p = (float)_cumulOfSamplesAnalysed / _totalNbSamplesToAnalyse * 100;
 	// print progression to file
 	if( ! _progressionFileName.empty() )
 	{
@@ -179,7 +180,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 
 		// Progress
 		_cumulOfSamplesAnalysed += nbSamplesRead;
-		printProgress( (float)_cumulOfSamplesAnalysed / _totalNbSamplesToAnalyse * 100 );
+		printProgress();
 	}
 
 	// Close progression file
