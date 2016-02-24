@@ -37,7 +37,7 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
     {
         const std::string filename(arrayToAnalyse.at(fileIndex)._inputFile);
         const size_t streamIndex = arrayToAnalyse.at(fileIndex)._streamIndex;
-        const size_t channelIndex = arrayToAnalyse.at(fileIndex)._channelIndex;
+        const int channelIndex = arrayToAnalyse.at(fileIndex)._channelIndex;
 
         // Analyse input file
         avtranscoder::InputFile* inputFile = NULL;
@@ -69,7 +69,7 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 
         // Get data from audio stream
         const avtranscoder::AudioProperties* audioProperties = reader->getSourceAudioProperties();
-        const int nbChannels = audioProperties->getNbChannels();
+        const int nbChannels = channelIndex == -1 ? audioProperties->getNbChannels() : 1;
         _inputNbChannels.push_back(nbChannels);
         const size_t sampleRate = audioProperties->getSampleRate();
         _inputSampleRate.push_back(sampleRate);
