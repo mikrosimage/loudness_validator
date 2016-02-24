@@ -56,7 +56,7 @@ private:
 	 * If _progressionFileName si not empty, print to file _progressionFile
 	 * Else print to console
 	 */
-	void printProgress( const int p );
+	void printProgress();
 
 	/**
 	 * @return If it is the end of the loudness analysis.
