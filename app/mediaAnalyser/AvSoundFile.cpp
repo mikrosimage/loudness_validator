@@ -69,13 +69,13 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 
         // Get data from audio stream
         const avtranscoder::AudioProperties* audioProperties = reader->getSourceAudioProperties();
-        const size_t nbSamples = audioProperties->getNbSamples();
-        _inputNbSamples.push_back(nbSamples);
-        _totalNbSamplesToAnalyse += nbSamples;
         const int nbChannels = audioProperties->getNbChannels();
         _inputNbChannels.push_back(nbChannels);
         const size_t sampleRate = audioProperties->getSampleRate();
         _inputSampleRate.push_back(sampleRate);
+        const size_t nbSamples = audioProperties->getNbSamples();
+        _inputNbSamples.push_back(nbSamples);
+        _totalNbSamplesToAnalyse += nbSamples * nbChannels;
 
         // Update output of reader
         reader->updateOutput(sampleRate, nbChannels, "fltp");
