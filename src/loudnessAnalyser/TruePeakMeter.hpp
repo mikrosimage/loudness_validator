@@ -6,65 +6,58 @@
 #include <cstdlib>
 #include <vector>
 
-namespace Loudness {
-namespace analyser {
+namespace Loudness
+{
+namespace analyser
+{
 
 class TruePeakMeter
 {
 public:
-	TruePeakMeter();
+    TruePeakMeter();
 
-	void initialize( const int frequencySampling );
+    void initialize(const int frequencySampling);
 
-	void enableOptimization( bool enableOptimization = true )
-	{
-		_enableOptimization = enableOptimization;
-	}
+    void enableOptimization(bool enableOptimization = true) { _enableOptimization = enableOptimization; }
 
-	void reset()
-	{
-		_maxValue            = 0;
-		_frequencySampling   = 0;
-		_upsamplingFrequency = 192000.0;
-	}
+    void reset()
+    {
+        _maxValue = 0;
+        _frequencySampling = 0;
+        _upsamplingFrequency = 192000.0;
+    }
 
-	void resetMaxValue()
-	{
-		_maxValue            = 0;
-	}
+    void resetMaxValue() { _maxValue = 0; }
 
-	float processSample( const double sample );
+    float processSample(const double sample);
 
-	float getTruePeakValue()
-	{
-		//std::cout << "max signal = " <<  _maxSignal << " = " << 20.0 * std::log10( _maxSignal )  << "dB\t max true peak " << _maxValue << " = " << 20.0 * std::log10( _maxValue ) << "dB" << std::endl;
-		return _maxValue;
-	}
+    float getTruePeakValue()
+    {
+        // std::cout << "max signal = " <<  _maxSignal << " = " << 20.0 * std::log10( _maxSignal )  << "dB\t max true peak "
+        // << _maxValue << " = " << 20.0 * std::log10( _maxValue ) << "dB" << std::endl;
+        return _maxValue;
+    }
 
-	void setUpsamplingFrequencyInHz ( const size_t frequency )
-	{
-		_upsamplingFrequency = frequency;
-	}
+    void setUpsamplingFrequencyInHz(const size_t frequency) { _upsamplingFrequency = frequency; }
 
 private:
-	static const int FILTER_SIZE = 125;
+    static const int FILTER_SIZE = 125;
 
 private:
-	std::vector<float>  _historySamples;
-	std::vector<float>  _coefficients;
-	
-	std::vector<float>  _orderedCoefficientsScale4[4];
-	std::vector<float>  _orderedCoefficientsScale8[8];
+    std::vector<float> _historySamples;
+    std::vector<float> _coefficients;
 
-	double              _maxValue;            /// maximum value of the upsampled signal
-	double              _maxSignal;           /// maximum value of the signal
-	double              _frequencySampling;   /// input frequency sampling
-	double              _upsamplingFrequency; /// output frequency sampling
-	double              _factor;              /// upsampling scale factor
+    std::vector<float> _orderedCoefficientsScale4[4];
+    std::vector<float> _orderedCoefficientsScale8[8];
 
-	bool                _enableOptimization;
+    double _maxValue;            /// maximum value of the upsampled signal
+    double _maxSignal;           /// maximum value of the signal
+    double _frequencySampling;   /// input frequency sampling
+    double _upsamplingFrequency; /// output frequency sampling
+    double _factor;              /// upsampling scale factor
+
+    bool _enableOptimization;
 };
-
 }
 }
 

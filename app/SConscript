@@ -149,6 +149,7 @@ if 'loudnessAnalyserLibStatic' in locals() and \
             LIBS = [
                     loudnessAnalyserLibStatic,
                     loudnessToolsLibStatic,
+                    'avutil', 'swresample', 'swscale', 'avcodec', 'avformat', 'avfilter',
                     avtranscoderLib,
             ]
         )
