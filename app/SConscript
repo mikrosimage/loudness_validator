@@ -160,4 +160,4 @@ if 'loudnessAnalyserLibStatic' in locals() and \
         conf.Finish()
 
 else:
-    print('Warning: will not build media loudness analyser applications.')
+    print('Warning: will not build media loudness analyser application.')
