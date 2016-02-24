@@ -83,33 +83,26 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 
     // Check the given configuration
     bool nbChannelsAreEqual = true;
-    bool nbSamplesAreEqual = true;
     bool sampleRateAreEqual = true;
     const size_t nbChannels = _inputNbChannels.at(0);
-    const size_t nbSamples = _inputNbSamples.at(0);
     const size_t sampleRate = _inputSampleRate.at(0);
     for(size_t i = 1; i < _inputNbChannels.size(); i++)
     {
         // check number of channels
         if(_inputNbChannels.at(i) != nbChannels)
             nbChannelsAreEqual = false;
-        //  check number of samples
-        if(_inputNbSamples.at(i) != nbSamples)
-            nbSamplesAreEqual = false;
         // check sample rate
         if(_inputSampleRate.at(i) != sampleRate)
             sampleRateAreEqual = false;
     }
 
-    if(!nbChannelsAreEqual || !nbSamplesAreEqual || !sampleRateAreEqual)
+    if(!nbChannelsAreEqual || !sampleRateAreEqual)
     {
         std::string msg = "The given audio configuration isn't supported by the application.\n";
-        msg += "Only audio stream with same sample rate, same number of samples, and same duration are supported.\n";
+        msg += "Only audio stream with same sample rate and same number of channels are supported.\n";
         msg += "Error:\n";
         if(nbChannelsAreEqual == false)
             msg += "- Number of channels are not equals\n";
-        if(nbSamplesAreEqual == false)
-            msg += "- Number of samples are not equal\n";
         if(sampleRateAreEqual == false)
             msg += "- Sampling rate are not equals\n";
 
