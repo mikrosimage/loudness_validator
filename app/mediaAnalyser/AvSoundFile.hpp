@@ -62,8 +62,8 @@ private:
 	size_t _nbChannelsToAnalyse;
 
 	// for progress
-	size_t _totalNbSamples;
-	size_t _cumulOfSamples;
+	size_t _totalNbSamplesToAnalyse;
+	size_t _cumulOfSamplesAnalysed;
 
 	// to check audio before analyse
 	std::vector<size_t> _inputNbChannels;

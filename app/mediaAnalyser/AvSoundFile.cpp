@@ -21,13 +21,13 @@ void AvSoundFile::printProgress( const int p )
 
 bool AvSoundFile::isEndOfAnalysis()
 {
-    return _cumulOfSamples >= _totalNbSamples;
+    return _cumulOfSamplesAnalysed >= _totalNbSamplesToAnalyse;
 }
 
 AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 	: _nbChannelsToAnalyse(0)
-	, _totalNbSamples(0)
-	, _cumulOfSamples(0)
+	, _totalNbSamplesToAnalyse(0)
+	, _cumulOfSamplesAnalysed(0)
 	, _outputStream(&std::cout)
 	, _progressionFileName()
 {
@@ -68,7 +68,7 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 		const avtranscoder::AudioProperties* audioProperties = reader->getSourceAudioProperties();
 		const size_t nbSamples = audioProperties->getNbSamples();
 		_inputNbSamples.push_back(nbSamples);
-		_totalNbSamples += nbSamples;
+		_totalNbSamplesToAnalyse += nbSamples;
 		const int nbChannels = audioProperties->getNbChannels();
 		_inputNbChannels.push_back(nbChannels);
 		const size_t sampleRate = audioProperties->getSampleRate();
@@ -170,8 +170,8 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 		analyser.processSamples(audioBuffer, nbSamplesInOneFrame);
 
 		// Progress
-		_cumulOfSamples += nbSamplesRead;
-		printProgress( (float)_cumulOfSamples / _totalNbSamples * 100 );
+		_cumulOfSamplesAnalysed += nbSamplesRead;
+		printProgress( (float)_cumulOfSamplesAnalysed / _totalNbSamplesToAnalyse * 100 );
 	}
 
 	// Close progression file
