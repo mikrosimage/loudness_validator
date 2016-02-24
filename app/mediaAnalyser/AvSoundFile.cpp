@@ -143,7 +143,11 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
     // update number of samples to analyse
     if(_forceDurationToAnalyse)
     {
-        _totalNbSamplesToAnalyse = _forceDurationToAnalyse * _inputSampleRate.at(0);
+        _totalNbSamplesToAnalyse = 0;
+        for(size_t i = 0; i < _inputSampleRate.size(); i++)
+        {
+            _totalNbSamplesToAnalyse += _forceDurationToAnalyse * _inputSampleRate.at(i) * _inputNbChannels.at(i);
+        }
     }
 
     // open file to print duration
