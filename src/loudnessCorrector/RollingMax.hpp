@@ -4,33 +4,34 @@
 #include <boost/circular_buffer.hpp>
 #include <boost/accumulators/numeric/functional.hpp>
 
-namespace Loudness {
-namespace corrector {
+namespace Loudness
+{
+namespace corrector
+{
 
-template<typename Sample>
+template <typename Sample>
 class RollingMax
 {
 public:
-	RollingMax( size_t windowSize );
-	
-	void operator()(Sample sample);
+    RollingMax(size_t windowSize);
 
-	Sample getMax();
-	
+    void operator()(Sample sample);
+
+    Sample getMax();
+
 private:
-	boost::circular_buffer<Sample> cb;
-	Sample max;
+    boost::circular_buffer<Sample> cb;
+    Sample max;
 };
 
-template<typename Sample>
-RollingMax<Sample>::RollingMax( size_t windowSize ) :
-	cb( windowSize ),
-	max( -1.0 )
+template <typename Sample>
+RollingMax<Sample>::RollingMax(size_t windowSize)
+    : cb(windowSize)
+    , max(-1.0)
 {
 }
 
 #include "RollingMax.tcc"
-
 }
 }
 

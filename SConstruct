@@ -4,7 +4,7 @@ EnsureSConsVersion( 2, 3, 0 )
 
 # Versions
 loudnessAssessmentVersionMajor = "1"
-loudnessAssessmentVersionMinor = "1"
+loudnessAssessmentVersionMinor = "3"
 loudnessAssessmentVersionMicro = "0"
 
 loudnessAssessmentVersion = [
@@ -116,7 +116,7 @@ AddOption(
 
 ### Create env ###
 
-env = Environment(TARGET_ARCH=GetOption('targetArch'))
+env = Environment(ENV = {'PATH' : os.environ['PATH'], 'TARGET_ARCH' : GetOption('targetArch')})
 
 boost_root = GetOption('boost')
 boost_include = ''

@@ -1,9 +1,9 @@
 #include "LoudnessHistory.h"
 
-LoudnessHistory::LoudnessHistory( QWidget* parent ) :
-  QLabel ( parent )
+LoudnessHistory::LoudnessHistory(QWidget* parent)
+    : QLabel(parent)
 {
-  this->setMinimumSize( 500, 500 );
+    this->setMinimumSize(500, 500);
 }
 /*
 void LoudnessHistory::paintEvent( QPaintEvent * )
