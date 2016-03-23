@@ -1,0 +1,64 @@
+import os
+
+Import( 'env' )
+Import( '*' )
+
+if 'loudnessAnalyserLibStatic' in locals() and \
+    'loudnessCorrectorLibStatic' in locals() and \
+    'loudnessToolsLibStatic' in locals() and \
+    'loudnessIOLibStatic' in locals():
+
+    # Get gtest path
+    gtest_root = GetOption('gtest')
+    gtest_include = ''
+    gtest_lib = ''
+    if gtest_root:
+        gtest_include = os.path.join( gtest_root, 'include' )
+        gtest_lib = os.path.join( gtest_root, 'lib' )
+
+    # Check libavtranscoder
+    gtestEnv = env.Clone()
+
+    gtestEnv.Append(
+        CPPPATH = [
+            gtest_include,
+        ],
+        LIBPATH = [
+            gtest_lib,
+        ],
+    )
+
+    # Check gtest
+    conf = Configure(gtestEnv)
+    if conf.CheckCXXHeader('gtest/gtest.h'):
+        gtestEnv = conf.Finish()
+
+        # Get sndfile lib name
+        sndfileLib = 'sndfile'
+        if gtestEnv['PLATFORM'] == 'win32':
+            sndfileLib = 'lib' + sndfileLib + '-1'
+
+        # Get gtest framework
+        gtestLib = ['pthread', 'gtest']
+
+        ### test ###
+
+        testProgram = gtestEnv.Program(
+            'test',
+            'test.cpp',
+            LIBS = [
+                loudnessAnalyserLibStatic,
+                loudnessCorrectorLibStatic,
+                loudnessToolsLibStatic,
+                loudnessIOLibStatic,
+                sndfileLib,
+                gtestLib
+            ]
+        )
+
+        Alias('test', [testProgram], testProgram[0].path)
+    else:
+        print('Warning: did not find gtest framework, will not build tests.')
+        conf.Finish()
+else:
+    print('Warning: will not build loudness tests.')

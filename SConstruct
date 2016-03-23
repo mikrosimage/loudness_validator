@@ -103,6 +103,17 @@ AddOption(
     help='Version of avtranscoder library to link (needed only if compile on Windows).'
 )
 
+# Get gtest install path
+AddOption(
+    '--gtest',
+    dest='gtest',
+    type='string',
+    nargs=1,
+    action='store',
+    metavar='DIR',
+    help='Path to gtest library (used for the tests).'
+)
+
 # Get target arch
 AddOption(
 	'--target-arch',
@@ -201,3 +212,4 @@ VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
 
 SConscript( 'src/SConscript', variant_dir = 'build/' + buildMode + '/src' )
 SConscript( 'app/SConscript', variant_dir = 'build/' + buildMode + '/app' )
+SConscript( 'test/SConscript', variant_dir = 'build/' + buildMode + '/test' )
