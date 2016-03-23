@@ -37,4 +37,5 @@ See [**INSTALL.md**](INSTALL.md)
 [download pdf](http://www.arpp-pub.org/IMG/pdf/140911_-_Pub_TV_et_intensite_sonore_v-def-2.pdf)
 
 #### EBU test material  
-[download zip archive](http://tech.ebu.ch/webdav/site/tech/shared/testmaterial/ebu-loudness-test-setv03.zip)
+[download zip archive](https://tech.ebu.ch/files/live/sites/tech/files/shared/testmaterial/ebu-loudness-test-setv04.zip)
+
