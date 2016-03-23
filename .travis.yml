@@ -28,6 +28,7 @@ addons:
     - libboost1.55-all-dev
     - libsndfile1-dev
     - libqt4-dev
+    - libgtest-dev
 
 cache:
   # Caching Ubuntu packages
@@ -41,4 +42,9 @@ before_script:
 
 script:
   - export QTDIR=/usr/share/qt4
-  - scons -j${CI_NODE_TOTAL} --mode=release --install-sandbox=${PLOUD_INSTALL}
+  # Get test ressources
+  - wget https://tech.ebu.ch/files/live/sites/tech/files/shared/testmaterial/ebu-loudness-test-setv04.zip
+  - unzip ebu-loudness-test-setv04.zip
+  - export EBU_LOUDNESS_TEST_SET_PATH=`pwd`
+  # Build and run tests
+  - scons -j${CI_NODE_TOTAL} --mode=release --install-sandbox=${PLOUD_INSTALL} test
