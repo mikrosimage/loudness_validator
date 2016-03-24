@@ -127,7 +127,11 @@ AddOption(
 
 ### Create env ###
 
-env = Environment(ENV = {'PATH' : os.environ['PATH'], 'TARGET_ARCH' : GetOption('targetArch')})
+env = Environment(ENV = {
+    'PATH' : os.environ['PATH'],
+    'TARGET_ARCH' : GetOption('targetArch'),
+    }
+)
 
 boost_root = GetOption('boost')
 boost_include = ''
@@ -151,24 +155,24 @@ if qt_include_suffix:
     qt_include = os.path.join(qt_dir, 'include', qt_include_suffix)
 
 env.Append(
-        CPPPATH = [
-                '#src',
-                sndfile_include,
-                boost_include,
-                qt_include,
-        ],
-        CXXFLAGS = [
-                '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
-                '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
-                '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
-        ],
-        LIBPATH = [
-                '#src',
-                sndfile_lib,
-                boost_lib,
-        ],
-        SHLIBVERSION = loudnessAssessmentVersionStr,
-        )
+    CPPPATH = [
+        '#src',
+        sndfile_include,
+        boost_include,
+        qt_include,
+    ],
+    CXXFLAGS = [
+        '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
+        '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
+        '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
+    ],
+    LIBPATH = [
+        '#src',
+        sndfile_lib,
+        boost_lib,
+    ],
+    SHLIBVERSION = loudnessAssessmentVersionStr,
+)
 
 # Set QTDIR if specify
 if qt_dir:
