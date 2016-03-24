@@ -7,17 +7,16 @@
 #include <string>
 #include <cmath>
 #include <stdlib.h>
-#include <iostream>
 
 // Value of EBU_LOUDNESS_TEST_SET_PATH environment variable
 std::string ebuLoudnessTestSetPath;
 
 /**
- * @brief Callback used while processing, to print progression of the loudness analysis.
+ * @brief Callback used while processing, to check progression value of the loudness analysis.
  */
-void progress(const int p)
+void checkProgress(const int p)
 {
-    std::cout << "[" << p << "%]\r" << std::flush;
+    EXPECT_LE(p, 100);
 }
 
 /**
@@ -48,7 +47,7 @@ void checkEBUR128Analysis(const std::string filename, const double expectedInteg
     if(!audioFile.open_read(absoluteFilename.c_str()))
     {
         Loudness::io::AnalyseFile analyser(loudness, audioFile);
-        analyser(progress);
+        analyser(checkProgress);
         audioFile.close();
     }
     checkDoubleValue(loudness.getIntegratedLoudness(), expectedIntegratedLoudnessValue);
