@@ -34,19 +34,16 @@ cache:
   # Caching Ubuntu packages
   apt: true
 
-before_script:
-  - env | sort  
-  - date -u
-  - uname -a
-  - lsb_release -a
+install:
+  - ./tools/travis/install_dependencies.sh
 
-script:
-  - export QTDIR=/usr/share/qt4
+after_install:
   # Get test ressources
   - wget https://tech.ebu.ch/files/live/sites/tech/files/shared/testmaterial/ebu-loudness-test-setv04.zip --no-check-certificate
   - unzip ebu-loudness-test-setv04.zip
   - export EBU_LOUDNESS_TEST_SET_PATH=`pwd`
-  # Install dependencies
-  - ./tools/travis/install_dependencies.sh
+
+script:
+  - export QTDIR=/usr/share/qt4
   # Build and run tests
   - scons -j${CI_NODE_TOTAL} --mode=release --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} test
