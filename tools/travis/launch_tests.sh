@@ -6,4 +6,4 @@ set -e
 set -x
 
 # Run tests
-./build/release/test/test
+./build/release/test/loudness-analyser

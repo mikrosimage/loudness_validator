@@ -41,11 +41,11 @@ if 'loudnessAnalyserLibStatic' in locals() and \
         # Get gtest framework
         gtestLib = ['pthread', 'gtest']
 
-        ### test ###
+        ### loudness-analyser ###
 
         testProgram = gtestEnv.Program(
-            'test',
-            'test.cpp',
+            'loudness-analyser',
+            'loudness-analyser.cpp',
             LIBS = [
                 loudnessAnalyserLibStatic,
                 loudnessCorrectorLibStatic,
