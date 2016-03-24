@@ -14,6 +14,7 @@ compiler:
 
 env:
   global:
+    - GTEST_INSTALL=${TRAVIS_BUILD_DIR}/install-gtest
     - PLOUD_INSTALL=${TRAVIS_BUILD_DIR}/install-ploud
     - CI_NODE_TOTAL=2
 
@@ -28,7 +29,6 @@ addons:
     - libboost1.55-all-dev
     - libsndfile1-dev
     - libqt4-dev
-    - libgtest-dev
 
 cache:
   # Caching Ubuntu packages
@@ -46,5 +46,7 @@ script:
   - wget https://tech.ebu.ch/files/live/sites/tech/files/shared/testmaterial/ebu-loudness-test-setv04.zip --no-check-certificate
   - unzip ebu-loudness-test-setv04.zip
   - export EBU_LOUDNESS_TEST_SET_PATH=`pwd`
+  # Install dependencies
+  - ./tools/travis/install_dependencies.sh
   # Build and run tests
-  - scons -j${CI_NODE_TOTAL} --mode=release --install-sandbox=${PLOUD_INSTALL} test
+  - scons -j${CI_NODE_TOTAL} --mode=release --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} test
