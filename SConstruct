@@ -39,7 +39,7 @@ AddOption(
     nargs=1,
     action='store',
     metavar='DIR',
-    help='Path to boost accumulators library.'
+    help='Path to root of boost library (only need accumulators headers).'
 )
 
 # Get libsndfile install path
@@ -50,7 +50,7 @@ AddOption(
     nargs=1,
     action='store',
     metavar='DIR',
-    help='Path to sndfile library.'
+    help='Path to root of sndfile library.'
 )
 
 # Get qt install path
@@ -61,7 +61,7 @@ AddOption(
     nargs=1,
     action='store',
     metavar='DIR',
-    help='Path to qt library.'
+    help='Path to root of qt library.'
 )
 AddOption(
     '--qt-suffix',
@@ -81,7 +81,7 @@ AddOption(
     nargs=1,
     action='store',
     metavar='DIR',
-    help='Path to ffmpeg library.'
+    help='Path to root of ffmpeg library.'
 )
 
 # Get avtranscoder install path
@@ -92,7 +92,7 @@ AddOption(
     nargs=1,
     action='store',
     metavar='DIR',
-    help='Path to avtranscoder library.'
+    help='Path to root of avtranscoder library.'
 )
 AddOption(
     '--avtranscoder-version',
@@ -111,7 +111,7 @@ AddOption(
     nargs=1,
     action='store',
     metavar='DIR',
-    help='Path to gtest library (used for the tests).'
+    help='Path to root of gtest framework (used for the tests).'
 )
 
 # Get target arch
@@ -206,7 +206,7 @@ elif env['CC'] == 'cl':  # msvc
         # Plus DEBUG option
         env.Append( CXXFLAGS = ['/MTd'] )
 
-# Build src and app
+# Build src, apps and tests
 
 Export( 'env' )
 Export( 'loudnessAssessmentVersionStr' )
