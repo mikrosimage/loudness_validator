@@ -62,7 +62,7 @@ AddOption(
     action='store',
     default='/usr',
     metavar='DIR',
-    help='Path to qt library.'
+    help='Path to qt library, can be overwrited with QTDIR environement variable.'
 )
 AddOption(
     '--qt-suffix',
@@ -117,7 +117,10 @@ AddOption(
 
 ### Create env ###
 
-env = Environment(ENV = {'PATH' : os.environ['PATH'], 'TARGET_ARCH' : GetOption('targetArch')})
+env = Environment(ENV = {
+    'PATH': os.environ['PATH'],
+    'TARGET_ARCH': GetOption('targetArch')
+})
 
 boost_root = GetOption('boost')
 boost_include = ''
@@ -134,6 +137,9 @@ if sndfile_root:
     sndfile_lib = os.path.join( sndfile_root, 'lib' )
 
 qt_dir = GetOption('qt')
+if 'QTDIR' in os.environ:
+    qt_dir = os.environ['QTDIR']
+
 qt_include_suffix = GetOption('qtSuffix')
 
 qt_include = ''
