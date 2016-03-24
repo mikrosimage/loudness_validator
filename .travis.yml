@@ -14,6 +14,8 @@ compiler:
 
 env:
   global:
+    - GTEST_INSTALL=${TRAVIS_BUILD_DIR}/install-gtest
+    - EBU_LOUDNESS_TEST_SET_PATH=${TRAVIS_BUILD_DIR}/install-ressources
     - PLOUD_INSTALL=${TRAVIS_BUILD_DIR}/install-ploud
     - CI_NODE_TOTAL=2
 
@@ -33,12 +35,16 @@ cache:
   # Caching Ubuntu packages
   apt: true
 
+install:
+  - ./tools/travis/install_dependencies.sh
+
 before_script:
-  - env | sort  
-  - date -u
-  - uname -a
-  - lsb_release -a
+  - ./tools/travis/install_ressources.sh
 
 script:
   - export QTDIR=/usr/share/qt4
-  - scons -j${CI_NODE_TOTAL} --mode=release --install-sandbox=${PLOUD_INSTALL}
+  # Build and run tests
+  - scons -j${CI_NODE_TOTAL} --mode=release --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL}
+
+after_script:
+  - ./tools/travis/launch_tests.sh
