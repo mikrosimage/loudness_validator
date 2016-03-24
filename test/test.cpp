@@ -37,7 +37,11 @@ void checkDoubleValue(const double expected, const double actual, const double d
  * @brief Check the integrated Loudness value of the given input file.
  * @warn The file should be in a folder specified by EBU_LOUDNESS_TEST_SET_PATH environment variable.
  */
-void checkEBUR128Analysis(const std::string filename, const double expectedIntegratedLoudnessValue)
+void checkEBUR128Analysis(
+        const std::string filename,
+        const double expectedIntegratedLoudnessValue,
+        const double expectedMaxShortTerm,
+        const double expectedMaxMomentary)
 {
     const std::string absoluteFilename = ebuLoudnessTestSetPath + "/" + filename;
     Loudness::io::SoundFile audioFile;
@@ -51,21 +55,23 @@ void checkEBUR128Analysis(const std::string filename, const double expectedInteg
         audioFile.close();
     }
     checkDoubleValue(loudness.getIntegratedLoudness(), expectedIntegratedLoudnessValue);
+    checkDoubleValue(loudness.getMaxShortTermLoudness(), expectedMaxShortTerm);
+    checkDoubleValue(loudness.getMomentaryLoudness(), expectedMaxMomentary);
 }
 
 TEST(Case1kHzSine, Test20LUFS)
 {
-    checkEBUR128Analysis("1kHz Sine -20 LUFS-16bit.wav", -20);
+    checkEBUR128Analysis("1kHz Sine -20 LUFS-16bit.wav", -20, -20, -20);
 }
 
 TEST(Case1kHzSine, Test26LUFS)
 {
-    checkEBUR128Analysis("1kHz Sine -26 LUFS-16bit.wav", -26);
+    checkEBUR128Analysis("1kHz Sine -26 LUFS-16bit.wav", -26, -26, -26);
 }
 
 TEST(Case1kHzSine, Test40LUFS)
 {
-    checkEBUR128Analysis("1kHz Sine -40 LUFS-16bit.wav", -40);
+    checkEBUR128Analysis("1kHz Sine -40 LUFS-16bit.wav", -40, -40, -40);
 }
 
 int main(int argc, char** argv)
