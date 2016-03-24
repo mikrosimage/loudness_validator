@@ -38,7 +38,7 @@ cache:
 install:
   - ./tools/travis/install_dependencies.sh
 
-after_install:
+before_script:
   - ./tools/travis/install_ressources.sh
 
 script:
