@@ -60,6 +60,7 @@ AddOption(
     type='string',
     nargs=1,
     action='store',
+    default='/usr',
     metavar='DIR',
     help='Path to qt library.'
 )
