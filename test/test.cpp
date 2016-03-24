@@ -78,8 +78,8 @@ int main(int argc, char** argv)
     char* path = getenv("EBU_LOUDNESS_TEST_SET_PATH");
     if(path == NULL)
     {
-        std::cout << "Please set EBU_LOUDNESS_TEST_SET_PATH environment variable to launch unit tests." << std::endl;
-        return 1;
+        std::cerr << "Please set EBU_LOUDNESS_TEST_SET_PATH environment variable to launch unit tests." << std::endl;
+        return EXIT_FAILURE;
     }
     ebuLoudnessTestSetPath = path;
 
