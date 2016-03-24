@@ -55,8 +55,6 @@ if 'loudnessAnalyserLibStatic' in locals() and \
                 gtestLib
             ]
         )
-
-        Alias('test', [testProgram], testProgram[0].path)
     else:
         print('Warning: did not find gtest framework, will not build tests.')
         conf.Finish()
