@@ -29,8 +29,8 @@ void checkDoubleValue(const double expected, const double actual, const double d
 {
     // Currently, the gtest floating point comparison is too accurate for our results.
     // http://googletesting.blogspot.fr/2008/10/tott-floating-point-comparison.html
-    // EXPECT_DOUBLE_EQ(expected, actual);
-    ASSERT_TRUE(fabs(actual - expected) < delta);
+    // EXPECT_DOUBLE_EQ(actual, expected);
+    EXPECT_TRUE(fabs(actual - expected) < delta);
 }
 
 /**
