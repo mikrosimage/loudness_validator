@@ -43,7 +43,7 @@ before_script:
 script:
   - export QTDIR=/usr/share/qt4
   # Get test ressources
-  - wget https://tech.ebu.ch/files/live/sites/tech/files/shared/testmaterial/ebu-loudness-test-setv04.zip
+  - wget https://tech.ebu.ch/files/live/sites/tech/files/shared/testmaterial/ebu-loudness-test-setv04.zip --no-check-certificate
   - unzip ebu-loudness-test-setv04.zip
   - export EBU_LOUDNESS_TEST_SET_PATH=`pwd`
   # Build and run tests
