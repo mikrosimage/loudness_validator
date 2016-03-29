@@ -8,85 +8,181 @@
 #include <cmath>
 #include <stdlib.h>
 
-// Value of EBU_LOUDNESS_TEST_SET_PATH environment variable
-std::string ebuLoudnessTestSetPath;
+#define STR(X) #X
+#define STRINGIFY(X) STR(X)
 
 /**
  * @brief Callback used while processing, to check progression value of the loudness analysis.
  */
 void checkProgress(const int p)
 {
+    EXPECT_GE(p, 0);
     EXPECT_LE(p, 100);
 }
 
-/**
- * @brief Verifies that two specified doubles are equal, or within the specified accuracy of each other.
- * @param expected The first double to compare. This is the double the unit test expects.
- * @param actual The second double to compare. This is the double the unit test produced.
- * @param delta The required accuracy. The assertion will fail only if expected is different from actual by more than delta.
- */
-void checkDoubleValue(const double expected, const double actual, const double delta = 0.05)
+class FileConfiguration
 {
-    // Currently, the gtest floating point comparison is too accurate for our results.
-    // http://googletesting.blogspot.fr/2008/10/tott-floating-point-comparison.html
-    // EXPECT_DOUBLE_EQ(actual, expected);
-    EXPECT_TRUE(fabs(actual - expected) < delta);
-}
+public:
+    FileConfiguration()
+    {}
 
-/**
- * @brief Check the integrated Loudness value of the given input file.
- * @warn The file should be in a folder specified by EBU_LOUDNESS_TEST_SET_PATH environment variable.
- */
-void checkEBUR128Analysis(
-        const std::string filename,
-        const double expectedIntegratedLoudnessValue,
-        const double expectedMaxShortTerm,
-        const double expectedMaxMomentary)
-{
-    const std::string absoluteFilename = ebuLoudnessTestSetPath + "/" + filename;
-    Loudness::io::SoundFile audioFile;
+    FileConfiguration( const std::string& filename )
+        : _filename( filename )
+        , _integratedLoudness( LOUDNESS_NAN )
+        , _integratedRange( LOUDNESS_NAN )
+    {}
 
-    Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
-    Loudness::analyser::LoudnessAnalyser loudness(level);
-    if(!audioFile.open_read(absoluteFilename.c_str()))
+    void setIntegratedLoudness( const double integratedLoudness )
     {
-        Loudness::io::AnalyseFile analyser(loudness, audioFile);
-        analyser(checkProgress);
-        audioFile.close();
+        _integratedLoudness = integratedLoudness;
     }
-    checkDoubleValue(loudness.getIntegratedLoudness(), expectedIntegratedLoudnessValue);
-    checkDoubleValue(loudness.getMaxShortTermLoudness(), expectedMaxShortTerm);
-    checkDoubleValue(loudness.getMomentaryLoudness(), expectedMaxMomentary);
+
+    void setIntegratedRange( const double integratedRange )
+    {
+        _integratedRange = integratedRange;
+    }
+
+    const double getIntegratedLoudness()
+    {
+        return _integratedLoudness;
+    }
+
+    const double getIntegratedRange()
+    {
+        return _integratedRange;
+    }
+
+    const char* getFilename()
+    {
+        return _filename.c_str();
+    }
+
+private:
+    std::string _filename;
+    double _integratedLoudness;
+    double _integratedRange;
+};
+
+class CaseLoudnessAnalysis
+    : public ::testing::TestWithParam<FileConfiguration>
+{
+public:
+    CaseLoudnessAnalysis()
+        : _level( Loudness::analyser::LoudnessLevels::Loudness_EBU_R128() )
+        , _loudness( _level )
+    {}
+
+    void SetUp( )
+    {
+        _cfg = GetParam();
+        processAnalysis();
+    }
+
+    void TearDown( )
+    {
+    }
+
+    void processAnalysis()
+    {
+        std::string absoluteFilename = STRINGIFY( EBU_TEST_ESSENCES );
+        absoluteFilename += "/";
+        absoluteFilename += _cfg.getFilename();
+        Loudness::io::SoundFile audioFile;
+
+        std::cout << absoluteFilename << std::endl;
+        if(!audioFile.open_read(absoluteFilename.c_str()))
+        {
+            Loudness::io::AnalyseFile analyser(_loudness, audioFile);
+            analyser(checkProgress);
+            audioFile.close();
+        }
+    }
+
+    Loudness::analyser::LoudnessLevels _level;
+    Loudness::analyser::LoudnessAnalyser _loudness;
+    FileConfiguration _cfg;
+};
+
+
+std::vector<FileConfiguration> getEbuEssences()
+{
+    std::vector<FileConfiguration> essences;
+
+    FileConfiguration source_1kHz_20LUFS( "1kHz Sine -20 LUFS-16bit.wav" );
+    source_1kHz_20LUFS.setIntegratedLoudness( -20.0f );
+    FileConfiguration source_1kHz_26LUFS( "1kHz Sine -26 LUFS-16bit.wav" );
+    source_1kHz_26LUFS.setIntegratedLoudness( -26.0f );
+    FileConfiguration source_1kHz_40LUFS( "1kHz Sine -40 LUFS-16bit.wav" );
+    source_1kHz_40LUFS.setIntegratedLoudness( -40.0f );
+
+    FileConfiguration source_3341_1( "seq-3341-1-16bit.wav" );
+    source_3341_1.setIntegratedLoudness( -23.0f );
+
+    FileConfiguration source_3341_2( "seq-3341-2-16bit.wav" );
+    source_3341_2.setIntegratedLoudness( -33.0f );
+
+
+    FileConfiguration source_3341_3( "seq-3341-3-16bit-v02.wav" );
+    source_3341_3.setIntegratedLoudness( -23.0f );
+    FileConfiguration source_3341_4( "seq-3341-4-16bit-v02.wav" );
+    source_3341_4.setIntegratedLoudness( -23.0f );
+    FileConfiguration source_3341_5( "seq-3341-5-16bit-v02.wav" );
+    source_3341_5.setIntegratedLoudness( -23.0f );
+
+
+    FileConfiguration source_3341_6_1( "seq-3341-6-5channels-16bit.wav" );
+    source_3341_6_1.setIntegratedLoudness( -23.0f );
+    FileConfiguration source_3341_6_2( "seq-3341-6-6channels-WAVEEX-16bit.wav" );
+    // source_3341_6_2.setIntegratedLoudness( -23.0f );
+    FileConfiguration source_3341_7( "seq-3341-7_seq-3342-5-24bit.wav" );
+    source_3341_7.setIntegratedLoudness( -23.0f );
+
+    FileConfiguration source_3341_9( "seq-3341-9-24bit.wav" );
+    source_3341_9.setIntegratedLoudness( -23.0f );
+
+
+    essences.push_back( source_1kHz_20LUFS );
+    essences.push_back( source_1kHz_26LUFS );
+    essences.push_back( source_1kHz_40LUFS );
+    essences.push_back( source_3341_1 );
+    essences.push_back( source_3341_2 );
+    essences.push_back( source_3341_3 );
+    essences.push_back( source_3341_4 );
+    essences.push_back( source_3341_5 );
+    essences.push_back( source_3341_6_1 );
+    essences.push_back( source_3341_6_2 );
+    essences.push_back( source_3341_7 );
+    essences.push_back( source_3341_9 );
+    return essences;
 }
 
-TEST(Case1kHzSine, Test20LUFS)
-{
-    checkEBUR128Analysis("1kHz Sine -20 LUFS-16bit.wav", -20, -20, -20);
-}
+INSTANTIATE_TEST_CASE_P(EbuTestEssences,
+                        CaseLoudnessAnalysis,
+                        ::testing::ValuesIn(getEbuEssences()));
 
-TEST(Case1kHzSine, Test26LUFS)
+TEST_P(CaseLoudnessAnalysis, Test)
 {
-    checkEBUR128Analysis("1kHz Sine -26 LUFS-16bit.wav", -26, -26, -26);
-}
+    if( ! isnan( _cfg.getIntegratedLoudness() ) )
+    {
+        ASSERT_NEAR( _loudness.getIntegratedLoudness(), _cfg.getIntegratedLoudness(), 0.1 );
+    }
+    if( ! isnan( _cfg.getIntegratedRange() ) )
+    {
+        ASSERT_NEAR( _loudness.getIntegratedRange(), _cfg.getIntegratedRange(), 0.1 );
+    }
 
-TEST(Case1kHzSine, Test40LUFS)
-{
-    checkEBUR128Analysis("1kHz Sine -40 LUFS-16bit.wav", -40, -40, -40);
+
+    // double getMaxShortTermLoudness();
+    // double getMinShortTermLoudness();
+    // double getMomentaryLoudness();
+    // double getTruePeakValue();
+    // double getTruePeakInDbTP();
 }
 
 int main(int argc, char** argv)
 {
     // Initialize GTest system
     ::testing::InitGoogleTest(&argc, argv);
-
-    // Get EBU_LOUDNESS_TEST_SET_PATH environment variable
-    char* path = getenv("EBU_LOUDNESS_TEST_SET_PATH");
-    if(path == NULL)
-    {
-        std::cerr << "Please set EBU_LOUDNESS_TEST_SET_PATH environment variable to launch unit tests." << std::endl;
-        return EXIT_FAILURE;
-    }
-    ebuLoudnessTestSetPath = path;
 
     // Run GTests
     return RUN_ALL_TESTS();
