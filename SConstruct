@@ -117,13 +117,13 @@ AddOption(
 
 # Get target arch
 AddOption(
-	'--target-arch',
-	dest='targetArch',
-	type='string',
-	nargs=1,
-	action='store',
-	default='',
-	help='Use this option to specify the target arch (x86, x64...). By default the arch is choosen depending on the compiler plateform.'
+    '--target-arch',
+    dest='targetArch',
+    type='string',
+    nargs=1,
+    action='store',
+    default='',
+    help='Use this option to specify the target arch (x86, x64...). By default the arch is choosen depending on the compiler plateform.'
 )
 
 ### Create env ###
