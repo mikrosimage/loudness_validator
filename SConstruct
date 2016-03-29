@@ -10,7 +10,8 @@ loudnessAssessmentVersionMicro = "0"
 loudnessAssessmentVersion = [
     loudnessAssessmentVersionMajor,
     loudnessAssessmentVersionMinor,
-    loudnessAssessmentVersionMicro ]
+    loudnessAssessmentVersionMicro
+]
 
 loudnessAssessmentVersionStr = ".".join( loudnessAssessmentVersion )
 
@@ -29,7 +30,7 @@ AddOption(
 )
 buildMode = GetOption('mode')
 if not ( buildMode in [ 'debug', 'release' ] ) :
-        raise Exception( "Can't select build mode ['debug', 'release']" )
+    raise Exception( "Can't select build mode ['debug', 'release']" )
 
 # Get libboost install path
 AddOption(
@@ -58,6 +59,7 @@ AddOption(
     '--qt',
     dest='qt',
     type='string',
+    default='/usr',
     nargs=1,
     action='store',
     default='/usr',
@@ -117,13 +119,13 @@ AddOption(
 
 # Get target arch
 AddOption(
-	'--target-arch',
-	dest='targetArch',
-	type='string',
-	nargs=1,
-	action='store',
-	default='',
-	help='Use this option to specify the target arch (x86, x64...). By default the arch is choosen depending on the compiler plateform.'
+    '--target-arch',
+    dest='targetArch',
+    type='string',
+    nargs=1,
+    action='store',
+    default='',
+    help='Use this option to specify the target arch (x86, x64...). By default the arch is choosen depending on the compiler plateform.'
 )
 
 ### Create env ###
