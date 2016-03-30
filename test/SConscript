@@ -63,7 +63,7 @@ if 'test' in COMMAND_LINE_TARGETS and \
         testLoudnessAnalyser = gtestEnv.Command(
             'running-loudness-analyser',
             None,
-            'build/release/test/test-loudness-analyser'
+            'build/' + GetOption('mode') + '/test/test-loudness-analyser'
         )
 
         Depends( testLoudnessAnalyser, testLoudnessAnalyserBin )
