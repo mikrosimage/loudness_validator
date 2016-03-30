@@ -60,8 +60,9 @@ AddOption(
     type='string',
     nargs=1,
     action='store',
+    default='/usr',
     metavar='DIR',
-    help='Path to root of qt library.'
+    help='Path to root of qt library, can be overwrited with QTDIR environement variable.'
 )
 AddOption(
     '--qt-suffix',
@@ -116,22 +117,21 @@ AddOption(
 
 # Get target arch
 AddOption(
-	'--target-arch',
-	dest='targetArch',
-	type='string',
-	nargs=1,
-	action='store',
-	default='',
-	help='Use this option to specify the target arch (x86, x64...). By default the arch is choosen depending on the compiler plateform.'
+    '--target-arch',
+    dest='targetArch',
+    type='string',
+    nargs=1,
+    action='store',
+    default='',
+    help='Use this option to specify the target arch (x86, x64...). By default the arch is choosen depending on the compiler plateform.'
 )
 
 ### Create env ###
 
 env = Environment(ENV = {
-    'PATH' : os.environ['PATH'],
-    'TARGET_ARCH' : GetOption('targetArch'),
-    }
-)
+    'PATH': os.environ['PATH'],
+    'TARGET_ARCH': GetOption('targetArch'),
+})
 
 boost_root = GetOption('boost')
 boost_include = ''
@@ -148,6 +148,9 @@ if sndfile_root:
     sndfile_lib = os.path.join( sndfile_root, 'lib' )
 
 qt_dir = GetOption('qt')
+if 'QTDIR' in os.environ:
+    qt_dir = os.environ['QTDIR']
+
 qt_include_suffix = GetOption('qtSuffix')
 
 qt_include = ''

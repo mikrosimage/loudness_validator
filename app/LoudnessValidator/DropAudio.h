@@ -27,4 +27,4 @@ private:
     QStatusBar* statusBar;
 };
 
-#endif // DROPAUDIO_H
+#endif

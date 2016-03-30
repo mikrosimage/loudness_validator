@@ -174,14 +174,14 @@ private:
 #else // unknown platform. try inline assembly with masm/intel syntax
         unsigned long output[4];
         __asm {
-			mov eax, functionnumber
-			xor ecx, ecx
-			cpuid;
-			mov esi, output
-			mov [esi],    eax
-			mov [esi+4],  ebx
-			mov [esi+8],  ecx
-			mov [esi+12], edx
+            mov eax, functionnumber
+            xor ecx, ecx
+            cpuid;
+            mov esi, output
+            mov [esi],    eax
+            mov [esi+4],  ebx
+            mov [esi+8],  ecx
+            mov [esi+12], edx
         }
         a = output[0];
         b = output[1];

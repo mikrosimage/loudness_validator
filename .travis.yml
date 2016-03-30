@@ -42,9 +42,8 @@ before_script:
   - ./tools/travis/install_ressources.sh
 
 script:
-  - export QTDIR=/usr/share/qt4
   # Build and run tests
-  - scons -j${CI_NODE_TOTAL} --mode=release --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL}
+  - scons -j${CI_NODE_TOTAL} --mode=release --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} --qt-suffix=qt4
 
 after_script:
   - ./tools/travis/launch_tests.sh
