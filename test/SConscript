@@ -3,7 +3,8 @@ import os
 Import( 'env' )
 Import( '*' )
 
-if 'loudnessAnalyserLibStatic' in locals() and \
+if 'test' in COMMAND_LINE_TARGETS and \
+    'loudnessAnalyserLibStatic' in locals() and \
     'loudnessCorrectorLibStatic' in locals() and \
     'loudnessToolsLibStatic' in locals() and \
     'loudnessIOLibStatic' in locals():
@@ -26,6 +27,9 @@ if 'loudnessAnalyserLibStatic' in locals() and \
         LIBPATH = [
             gtest_lib,
         ],
+        CXXFLAGS = [
+            '-DEBU_TEST_ESSENCES=' + GetOption('ebuTestEssences'),
+        ],
     )
 
     # Check gtest
@@ -43,8 +47,8 @@ if 'loudnessAnalyserLibStatic' in locals() and \
 
         ### loudness-analyser ###
 
-        testProgram = gtestEnv.Program(
-            'loudness-analyser',
+        testLoudnessAnalyserBin = gtestEnv.Program(
+            'test-loudness-analyser',
             'loudness-analyser.cpp',
             LIBS = [
                 loudnessAnalyserLibStatic,
@@ -55,6 +59,16 @@ if 'loudnessAnalyserLibStatic' in locals() and \
                 gtestLib
             ]
         )
+
+        testLoudnessAnalyser = gtestEnv.Command(
+            'running-loudness-analyser',
+            None,
+            'build/' + GetOption('mode') + '/test/test-loudness-analyser'
+        )
+
+        Depends( testLoudnessAnalyser, testLoudnessAnalyserBin )
+        AlwaysBuild( testLoudnessAnalyser )
+
     else:
         print('Warning: did not find gtest framework, will not build tests.')
         conf.Finish()

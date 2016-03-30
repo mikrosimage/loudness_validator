@@ -115,6 +115,18 @@ AddOption(
     help='Path to root of gtest framework (used for the tests).'
 )
 
+# Get gtest install path
+AddOption(
+    '--ebu-test-essences',
+    dest='ebuTestEssences',
+    type='string',
+    nargs=1,
+    action='store',
+    default='.',
+    metavar='DIR',
+    help='Path to essences used during tests based on EBU samples.'
+)
+
 # Get target arch
 AddOption(
     '--target-arch',
