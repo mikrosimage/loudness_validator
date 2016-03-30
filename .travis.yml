@@ -42,4 +42,4 @@ before_script:
 
 script:
   # Build and run tests
-  - scons -j${CI_NODE_TOTAL} --mode=release --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} --qt-suffix=qt4 --ebu-test-essences=ebu_test_essences
+  - scons -j${CI_NODE_TOTAL} --mode=release --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} --qt-suffix=qt4 --ebu-test-essences=ebu_test_essences test
