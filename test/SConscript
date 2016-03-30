@@ -2,6 +2,7 @@ import os
 
 Import( 'env' )
 Import( '*' )
+
 if 'test' in COMMAND_LINE_TARGETS and \
     'loudnessAnalyserLibStatic' in locals() and \
     'loudnessCorrectorLibStatic' in locals() and \
@@ -26,9 +27,8 @@ if 'test' in COMMAND_LINE_TARGETS and \
         LIBPATH = [
             gtest_lib,
         ],
-        
         CXXFLAGS = [
-            '-D \"EBU_TEST_ESSENCES=' + GetOption('ebuTestEssences') + '\"',
+            '-DEBU_TEST_ESSENCES=' + GetOption('ebuTestEssences'),
         ],
     )
 
