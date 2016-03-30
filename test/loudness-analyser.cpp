@@ -297,6 +297,25 @@ std::vector<FileConfiguration> getEbuEssences()
     essences.push_back( source_3341_22 );
     essences.push_back( source_3341_23 );
 
+
+    FileConfiguration source_3342_1( "seq-3342-1-16bit.wav" );
+    source_3342_1.setIntegratedRange( 10.0f );
+    FileConfiguration source_3342_2( "seq-3342-2-16bit.wav" );
+    source_3342_2.setIntegratedRange( 5.0f );
+    FileConfiguration source_3342_3( "seq-3342-3-16bit.wav" );
+    source_3342_3.setIntegratedRange( 20.0f );
+    FileConfiguration source_3342_4( "seq-3342-4-16bit.wav" );
+    source_3342_4.setIntegratedRange( 15.0f );
+
+    FileConfiguration source_3342_5( "seq-3341-7_seq-3342-5-24bit.wav" );
+    source_3342_5.setIntegratedRange( 5.0f );
+
+    essences.push_back( source_3342_1 );
+    essences.push_back( source_3342_2 );
+    essences.push_back( source_3342_3 );
+    essences.push_back( source_3342_4 );
+    essences.push_back( source_3342_5 );
+
     return essences;
 }
 
@@ -312,7 +331,7 @@ TEST_P(CaseLoudnessAnalysis, Test)
     }
     if( ! isnan( _cfg.getIntegratedRange() ) )
     {
-        ASSERT_NEAR( _loudness.getIntegratedRange(), _cfg.getIntegratedRange(), 0.1 );
+        ASSERT_NEAR( _loudness.getIntegratedRange(), _cfg.getIntegratedRange(), 1.0 );
     }
     if( ! isnan( _cfg.getMaxShortTermLoudness() ) )
     {
