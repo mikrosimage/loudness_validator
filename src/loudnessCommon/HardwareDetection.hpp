@@ -171,7 +171,7 @@ private:
         d = output[3];
 #elif defined(__GNUC__) // use inline assembly, Gnu/AT&T syntax
         __asm("cpuid" : "=a"(a), "=b"(b), "=c"(c), "=d"(d) : "a"(functionnumber), "c"(0) :);
-#else // unknown platform. try inline assembly with masm/intel syntax
+#else                   // unknown platform. try inline assembly with masm/intel syntax
         unsigned long output[4];
         __asm {
             mov eax, functionnumber
