@@ -2,8 +2,8 @@ import os
 
 Import( 'env' )
 Import( '*' )
-
-if 'loudnessAnalyserLibStatic' in locals() and \
+if 'test' in COMMAND_LINE_TARGETS and \
+    'loudnessAnalyserLibStatic' in locals() and \
     'loudnessCorrectorLibStatic' in locals() and \
     'loudnessToolsLibStatic' in locals() and \
     'loudnessIOLibStatic' in locals():
