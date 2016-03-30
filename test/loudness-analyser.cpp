@@ -21,6 +21,9 @@ void checkProgress(const int p)
     EXPECT_LE(p, 100);
 }
 
+/**
+ * @brief The file to analyse, with its expected loudness values.
+ */
 class FileConfiguration
 {
 public:
@@ -66,6 +69,10 @@ private:
     double _truePeakInDbTP;
 };
 
+
+/**
+ * @brief Fixture to manage parameterized tests based on FileConfiguration class.
+ */
 class CaseLoudnessAnalysis : public ::testing::TestWithParam<FileConfiguration>
 {
 public:
@@ -100,15 +107,20 @@ public:
         _loudness.printPloudValues();
     }
 
-    Loudness::analyser::LoudnessLevels _level;
-    Loudness::analyser::LoudnessAnalyser _loudness;
-    FileConfiguration _cfg;
+public:
+    Loudness::analyser::LoudnessLevels _level; //< The loudness specification used.
+    Loudness::analyser::LoudnessAnalyser _loudness; //< The actual loudness values.
+    FileConfiguration _cfg; //< The expected loudness values.
 };
 
+/**
+ * @return The list of file to analyse and check.
+ */
 std::vector<FileConfiguration> getEbuEssences()
 {
     std::vector<FileConfiguration> essences;
 
+    // 1kHz Sine cases
     FileConfiguration source_1kHz_20LUFS("1kHz Sine -20 LUFS-16bit.wav");
     source_1kHz_20LUFS.setIntegratedLoudness(-20.0f);
     source_1kHz_20LUFS.setMomentaryLoudness(-20.0f);
@@ -122,6 +134,7 @@ std::vector<FileConfiguration> getEbuEssences()
     source_1kHz_40LUFS.setMomentaryLoudness(-40.0f);
     source_1kHz_40LUFS.setMaxShortTermLoudness(-40.0f);
 
+    // seq-3341 cases
     FileConfiguration source_3341_1("seq-3341-1-16bit.wav");
     source_3341_1.setIntegratedLoudness(-23.0f);
     source_3341_1.setMomentaryLoudness(-23.0f);
@@ -235,6 +248,7 @@ std::vector<FileConfiguration> getEbuEssences()
     essences.push_back(source_3341_22);
     essences.push_back(source_3341_23);
 
+    // seq-3342 cases
     FileConfiguration source_3342_1("seq-3342-1-16bit.wav");
     source_3342_1.setIntegratedRange(10.0f);
     FileConfiguration source_3342_2("seq-3342-2-16bit.wav");
@@ -256,8 +270,15 @@ std::vector<FileConfiguration> getEbuEssences()
     return essences;
 }
 
+/**
+ * @brief Creating the tests from the given list of EBU essences.
+ */
 INSTANTIATE_TEST_CASE_P(EbuTestEssences, CaseLoudnessAnalysis, ::testing::ValuesIn(getEbuEssences()));
 
+
+/**
+ * @brief For each test generated, do those checks.
+ */
 TEST_P(CaseLoudnessAnalysis, Test)
 {
     if(!isnan(_cfg.getIntegratedLoudness()))
