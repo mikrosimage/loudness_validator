@@ -88,8 +88,6 @@ public:
         processAnalysis();
     }
 
-    void TearDown() {}
-
     void processAnalysis()
     {
         std::string absoluteFilename = STRINGIFY(EBU_TEST_ESSENCES);
