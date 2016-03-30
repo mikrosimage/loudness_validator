@@ -84,7 +84,7 @@ public:
 
     void SetUp()
     {
-        _cfg = GetParam();
+        _file = GetParam();
         processAnalysis();
     }
 
@@ -94,7 +94,7 @@ public:
     {
         std::string absoluteFilename = STRINGIFY(EBU_TEST_ESSENCES);
         absoluteFilename += "/";
-        absoluteFilename += _cfg.getFilename();
+        absoluteFilename += _file.getFilename();
         Loudness::io::SoundFile audioFile;
 
         if(!audioFile.open_read(absoluteFilename.c_str()))
@@ -110,7 +110,7 @@ public:
 public:
     Loudness::analyser::LoudnessLevels _level; //< The loudness specification used.
     Loudness::analyser::LoudnessAnalyser _loudness; //< The actual loudness values.
-    FileConfiguration _cfg; //< The expected loudness values.
+    FileConfiguration _file; //< The expected loudness values.
 };
 
 /**
@@ -281,34 +281,34 @@ INSTANTIATE_TEST_CASE_P(EbuTestEssences, CaseLoudnessAnalysis, ::testing::Values
  */
 TEST_P(CaseLoudnessAnalysis, Test)
 {
-    if(!isnan(_cfg.getIntegratedLoudness()))
+    if(!isnan(_file.getIntegratedLoudness()))
     {
-        ASSERT_NEAR(_loudness.getIntegratedLoudness(), _cfg.getIntegratedLoudness(), 0.1);
+        ASSERT_NEAR(_loudness.getIntegratedLoudness(), _file.getIntegratedLoudness(), 0.1);
     }
-    if(!isnan(_cfg.getIntegratedRange()))
+    if(!isnan(_file.getIntegratedRange()))
     {
-        ASSERT_NEAR(_loudness.getIntegratedRange(), _cfg.getIntegratedRange(), 1.0);
+        ASSERT_NEAR(_loudness.getIntegratedRange(), _file.getIntegratedRange(), 1.0);
     }
-    if(!isnan(_cfg.getMaxShortTermLoudness()))
+    if(!isnan(_file.getMaxShortTermLoudness()))
     {
-        ASSERT_NEAR(_loudness.getMaxShortTermLoudness(), _cfg.getMaxShortTermLoudness(), 0.1);
+        ASSERT_NEAR(_loudness.getMaxShortTermLoudness(), _file.getMaxShortTermLoudness(), 0.1);
     }
-    if(!isnan(_cfg.getMinShortTermLoudness()))
+    if(!isnan(_file.getMinShortTermLoudness()))
     {
-        ASSERT_NEAR(_loudness.getMinShortTermLoudness(), _cfg.getMinShortTermLoudness(), 0.1);
+        ASSERT_NEAR(_loudness.getMinShortTermLoudness(), _file.getMinShortTermLoudness(), 0.1);
     }
-    if(!isnan(_cfg.getMomentaryLoudness()))
+    if(!isnan(_file.getMomentaryLoudness()))
     {
-        ASSERT_NEAR(_loudness.getMomentaryLoudness(), _cfg.getMomentaryLoudness(), 0.1);
+        ASSERT_NEAR(_loudness.getMomentaryLoudness(), _file.getMomentaryLoudness(), 0.1);
     }
-    if(!isnan(_cfg.getTruePeakValue()))
+    if(!isnan(_file.getTruePeakValue()))
     {
-        ASSERT_NEAR(_loudness.getTruePeakValue(), _cfg.getTruePeakValue(), 0.1);
+        ASSERT_NEAR(_loudness.getTruePeakValue(), _file.getTruePeakValue(), 0.1);
     }
-    if(!isnan(_cfg.getTruePeakInDbTP()))
+    if(!isnan(_file.getTruePeakInDbTP()))
     {
-        ASSERT_GT(_loudness.getTruePeakInDbTP(), _cfg.getTruePeakInDbTP() - 0.4);
-        ASSERT_LT(_loudness.getTruePeakInDbTP(), _cfg.getTruePeakInDbTP() + 0.2);
+        ASSERT_GT(_loudness.getTruePeakInDbTP(), _file.getTruePeakInDbTP() - 0.4);
+        ASSERT_LT(_loudness.getTruePeakInDbTP(), _file.getTruePeakInDbTP() + 0.2);
     }
 }
 
