@@ -21,6 +21,16 @@ scons --help
 ```
 
 
+## Test
+
+C++ tests, based on [GTest](https://github.com/google/googletest) framework, are used to check the loudness analysis with the EBU test material.
+
+#### Run tests
+```
+scons test
+```
+
+
 ## Dependencies
 
 #### Libraries
