@@ -14,4 +14,4 @@ private:
     void paintEvent( QPaintEvent *event );*/
 };
 
-#endif // LOUDNESSHISTORY_H
+#endif

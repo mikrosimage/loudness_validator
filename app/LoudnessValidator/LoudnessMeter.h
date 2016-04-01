@@ -16,4 +16,4 @@ public slots:
 
 };
 
-#endif // LOUDNESSMETER_H
+#endif
