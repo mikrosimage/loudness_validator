@@ -54,7 +54,7 @@ To analyse and correct given audio files.
 Simple GUI to analyse and correct given audio files.
 
 * __loudness-media-analyser__  
-*External dependencies to [avtranscoder](https://github.com/avTranscoder/avTranscoder).*  
+*External dependencies to [avtranscoder](https://github.com/avTranscoder/avTranscoder) v0.9.2 or upper.*  
 To analyse audio in given files of any types.
 
 ## Tested compilers
