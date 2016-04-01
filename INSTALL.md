@@ -21,6 +21,16 @@ scons --help
 ```
 
 
+## Test
+
+C++ tests, based on [GTest](https://github.com/google/googletest) framework, are used to check the loudness analysis with the EBU test material.
+
+#### Run tests
+```
+scons test
+```
+
+
 ## Dependencies
 
 #### Libraries
@@ -54,7 +64,7 @@ To analyse and correct given audio files.
 Simple GUI to analyse and correct given audio files.
 
 * __loudness-media-analyser__  
-*External dependencies to [avtranscoder](https://github.com/avTranscoder/avTranscoder).*  
+*External dependencies to [avtranscoder](https://github.com/avTranscoder/avTranscoder) v0.9.2 or upper.*  
 To analyse audio in given files of any types.
 
 ## Tested compilers
