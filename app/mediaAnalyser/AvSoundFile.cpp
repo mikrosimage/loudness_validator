@@ -172,7 +172,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
                 static_cast<avtranscoder::AudioFrame*>(_audioReader.at(fileIndex)->readNextFrame());
 
             // empty frame: go to the end of process
-            if(dstFrame->getSize() == 0)
+            if(dstFrame == NULL)
             {
                 emptyFrameDecoded = true;
                 break;
