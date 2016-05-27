@@ -35,11 +35,19 @@ cache:
   apt: true
 
 install:
+  # Get install test ressources
   - ./tools/travis/install_dependencies.sh
+
+  # Install coverage tools
+  - ./tools/travis/gcc.install.coverage.sh
 
 before_script:
   - ./tools/travis/install_ressources.sh
 
 script:
   # Build and run tests
-  - scons -j${CI_NODE_TOTAL} --mode=release --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} --qt-suffix=qt4 --ebu-test-essences=ebu_test_essences test
+  - scons -j${CI_NODE_TOTAL} --mode=release --coverage --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} --qt-suffix=qt4 --ebu-test-essences=ebu_test_essences test
+
+after_success:
+  # Generate and upload coverage to coveralls
+  - ./tools/travis/gcc.generate.coverage.sh

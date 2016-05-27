@@ -138,6 +138,15 @@ AddOption(
     help='Use this option to specify the target arch (x86, x64...). By default the arch is choosen depending on the compiler plateform.'
 )
 
+# Option to generate code coverage
+AddOption(
+    '--coverage',
+    dest='coverage',
+    action='append_const',
+    const='--coverage',
+    help='To run the tests and get a code coverage report.'
+)
+
 ### Create env ###
 
 env = Environment(ENV = {
@@ -206,6 +215,9 @@ if env['PLATFORM'] == "darwin":
 # Add compile flags
 if env['CC'] == 'gcc':
     env.Append( CXXFLAGS = ['-Wall', '-fPIC'] )
+    if GetOption('coverage'):
+        env['CXXFLAGS'].extend( ['-fprofile-arcs', '-ftest-coverage'] )
+        env.Append( LINKFLAGS = ['-fprofile-arcs'] )
     if buildMode == 'release':
         env.Append( CXXFLAGS = ['-O3'] )
     else:
