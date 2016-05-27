@@ -216,7 +216,8 @@ if env['PLATFORM'] == "darwin":
 if env['CC'] == 'gcc':
     env.Append( CXXFLAGS = ['-Wall', '-fPIC'] )
     if GetOption('coverage'):
-        env['CXXFLAGS'].extend( GetOption('coverage') )
+        env['CXXFLAGS'].extend( ['-fprofile-arcs', '-ftest-coverage'] )
+        env.Append( LINKFLAGS = ['-fprofile-arcs'] )
     if buildMode == 'release':
         env.Append( CXXFLAGS = ['-O3'] )
     else:
