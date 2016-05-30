@@ -1,7 +1,7 @@
 # PLoud Validator
 
 [![Build Status](https://travis-ci.org/mikrosimage/loudness_validator.svg?branch=develop)](https://travis-ci.org/mikrosimage/loudness_validator)
-[![Coverage Status](https://coveralls.io/repos/mikrosimage/loudness_validator/badge.svg)](https://coveralls.io/r/mikrosimage/loudness_validator)
+[![Coverage Status](https://coveralls.io/repos/github/mikrosimage/loudness_validator/badge.svg?branch=develop)](https://coveralls.io/github/mikrosimage/loudness_validator?branch=develop)
 [![Stories in Progress](https://badge.waffle.io/mikrosimage/loudness_validator.svg?label=2 - Working&title=In Progress)](http://waffle.io/mikrosimage/loudness_validator)  
 
 PLoudValidator is a software to validate audio files with correct loudness.
