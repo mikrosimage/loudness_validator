@@ -5,7 +5,7 @@ EnsureSConsVersion( 2, 3, 0 )
 # Versions
 loudnessAssessmentVersionMajor = "1"
 loudnessAssessmentVersionMinor = "3"
-loudnessAssessmentVersionMicro = "0"
+loudnessAssessmentVersionMicro = "2"
 
 loudnessAssessmentVersion = [
     loudnessAssessmentVersionMajor,
@@ -39,7 +39,7 @@ AddOption(
     nargs=1,
     action='store',
     metavar='DIR',
-    help='Path to boost accumulators library.'
+    help='Path to root of boost library (only need accumulators headers).'
 )
 
 # Get libsndfile install path
@@ -50,7 +50,7 @@ AddOption(
     nargs=1,
     action='store',
     metavar='DIR',
-    help='Path to sndfile library.'
+    help='Path to root of sndfile library.'
 )
 
 # Get qt install path
@@ -60,8 +60,9 @@ AddOption(
     type='string',
     nargs=1,
     action='store',
+    default='/usr',
     metavar='DIR',
-    help='Path to qt library.'
+    help='Path to root of qt library, can be overwrited with QTDIR environement variable.'
 )
 AddOption(
     '--qt-suffix',
@@ -81,7 +82,7 @@ AddOption(
     nargs=1,
     action='store',
     metavar='DIR',
-    help='Path to ffmpeg library.'
+    help='Path to root of ffmpeg library.'
 )
 
 # Get avtranscoder install path
@@ -92,7 +93,7 @@ AddOption(
     nargs=1,
     action='store',
     metavar='DIR',
-    help='Path to avtranscoder library.'
+    help='Path to root of avtranscoder library.'
 )
 AddOption(
     '--avtranscoder-version',
@@ -103,20 +104,55 @@ AddOption(
     help='Version of avtranscoder library to link (needed only if compile on Windows).'
 )
 
+# Get gtest install path
+AddOption(
+    '--gtest',
+    dest='gtest',
+    type='string',
+    nargs=1,
+    action='store',
+    metavar='DIR',
+    help='Path to root of gtest framework (used for the tests).'
+)
+
+# Get gtest install path
+AddOption(
+    '--ebu-test-essences',
+    dest='ebuTestEssences',
+    type='string',
+    nargs=1,
+    action='store',
+    default='.',
+    metavar='DIR',
+    help='Path to essences used during tests based on EBU samples.'
+)
+
 # Get target arch
 AddOption(
-	'--target-arch',
-	dest='targetArch',
-	type='string',
-	nargs=1,
-	action='store',
-	default='',
-	help='Use this option to specify the target arch (x86, x64...). By default the arch is choosen depending on the compiler plateform.'
+    '--target-arch',
+    dest='targetArch',
+    type='string',
+    nargs=1,
+    action='store',
+    default='',
+    help='Use this option to specify the target arch (x86, x64...). By default the arch is choosen depending on the compiler plateform.'
+)
+
+# Option to generate code coverage
+AddOption(
+    '--coverage',
+    dest='coverage',
+    action='append_const',
+    const='--coverage',
+    help='To run the tests and get a code coverage report.'
 )
 
 ### Create env ###
 
-env = Environment(ENV = {'PATH' : os.environ['PATH'], 'TARGET_ARCH' : GetOption('targetArch')})
+env = Environment(ENV = {
+    'PATH': os.environ['PATH'],
+    'TARGET_ARCH': GetOption('targetArch'),
+})
 
 boost_root = GetOption('boost')
 boost_include = ''
@@ -133,6 +169,9 @@ if sndfile_root:
     sndfile_lib = os.path.join( sndfile_root, 'lib' )
 
 qt_dir = GetOption('qt')
+if 'QTDIR' in os.environ:
+    qt_dir = os.environ['QTDIR']
+
 qt_include_suffix = GetOption('qtSuffix')
 
 qt_include = ''
@@ -140,24 +179,24 @@ if qt_include_suffix:
     qt_include = os.path.join(qt_dir, 'include', qt_include_suffix)
 
 env.Append(
-        CPPPATH = [
-                '#src',
-                sndfile_include,
-                boost_include,
-                qt_include,
-        ],
-        CXXFLAGS = [
-                '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
-                '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
-                '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
-        ],
-        LIBPATH = [
-                '#src',
-                sndfile_lib,
-                boost_lib,
-        ],
-        SHLIBVERSION = loudnessAssessmentVersionStr,
-        )
+    CPPPATH = [
+        '#src',
+        sndfile_include,
+        boost_include,
+        qt_include,
+    ],
+    CXXFLAGS = [
+        '-DLOUDNESS_ASSESSMENT_VERSION_MAJOR=' + loudnessAssessmentVersionMajor,
+        '-DLOUDNESS_ASSESSMENT_VERSION_MINOR=' + loudnessAssessmentVersionMinor,
+        '-DLOUDNESS_ASSESSMENT_VERSION_MICRO=' + loudnessAssessmentVersionMicro,
+    ],
+    LIBPATH = [
+        '#src',
+        sndfile_lib,
+        boost_lib,
+    ],
+    SHLIBVERSION = loudnessAssessmentVersionStr,
+)
 
 # Set QTDIR if specify
 if qt_dir:
@@ -176,6 +215,9 @@ if env['PLATFORM'] == "darwin":
 # Add compile flags
 if env['CC'] == 'gcc':
     env.Append( CXXFLAGS = ['-Wall', '-fPIC'] )
+    if GetOption('coverage'):
+        env['CXXFLAGS'].extend( ['-fprofile-arcs', '-ftest-coverage'] )
+        env.Append( LINKFLAGS = ['-fprofile-arcs'] )
     if buildMode == 'release':
         env.Append( CXXFLAGS = ['-O3'] )
     else:
@@ -191,7 +233,7 @@ elif env['CC'] == 'cl':  # msvc
         # Plus DEBUG option
         env.Append( CXXFLAGS = ['/MTd'] )
 
-# Build src and app
+# Build src, apps and tests
 
 Export( 'env' )
 Export( 'loudnessAssessmentVersionStr' )
@@ -201,3 +243,4 @@ VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
 
 SConscript( 'src/SConscript', variant_dir = 'build/' + buildMode + '/src' )
 SConscript( 'app/SConscript', variant_dir = 'build/' + buildMode + '/app' )
+SConscript( 'test/SConscript', variant_dir = 'build/' + buildMode + '/test' )

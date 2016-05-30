@@ -65,6 +65,7 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 
         // Create reader to convert to float planar
         avtranscoder::AudioReader* reader = new avtranscoder::AudioReader(*inputFile, streamIndex, channelIndex);
+        reader->continueWithGenerator();
         _audioReader.push_back(reader);
 
         // Get data from audio stream
@@ -141,11 +142,8 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
         {
             newTotalNbSamplesToAnalyse += _forceDurationToAnalyse * _inputSampleRate.at(i) * _inputNbChannels.at(i);
         }
-        // the forced number of samples cannot be superior to the existing number of samples!
-        if(newTotalNbSamplesToAnalyse < _totalNbSamplesToAnalyse)
-        {
-            _totalNbSamplesToAnalyse = newTotalNbSamplesToAnalyse;
-        }
+        // set total number of samples to analyse
+        _totalNbSamplesToAnalyse = newTotalNbSamplesToAnalyse;
     }
 
     // open file to print duration
@@ -174,7 +172,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
                 static_cast<avtranscoder::AudioFrame*>(_audioReader.at(fileIndex)->readNextFrame());
 
             // empty frame: go to the end of process
-            if(dstFrame->getSize() == 0)
+            if(dstFrame == NULL)
             {
                 emptyFrameDecoded = true;
                 break;
