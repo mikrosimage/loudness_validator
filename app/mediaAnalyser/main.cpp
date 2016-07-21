@@ -66,13 +66,21 @@ int main(int argc, char** argv)
     std::string outputProgressionName;
     float durationToAnalyse = 0;
 
+    // Check required arguments
+    if(argc < 2)
+    {
+        std::cout << "completeAnalyser requires a media filename" << std::endl;
+        std::cout << "Use option --help to display help" << std::endl;
+        return (-1);
+    }
+
     std::vector<std::string> arguments;
     for(int argument = 1; argument < argc; ++argument)
     {
         arguments.push_back(argv[argument]);
     }
 
-    for(size_t argument = 1; argument < arguments.size(); ++argument)
+    for(size_t argument = 0; argument < arguments.size(); ++argument)
     {
         if(arguments.at(argument) == "--help")
         {
@@ -115,20 +123,8 @@ int main(int argc, char** argv)
                 return 1;
             }
         }
-        // unknown argument
-        else
-        {
-            printHelp();
-            return 1;
-        }
-    }
-
-    // Check required arguments
-    if(argc < 2)
-    {
-        std::cout << "completeAnalyser requires a media filename" << std::endl;
-        std::cout << "Use option --help to display help" << std::endl;
-        return (-1);
+        // unknown option
+        continue;
     }
 
     avtranscoder::preloadCodecsAndFormats();
