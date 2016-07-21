@@ -50,7 +50,7 @@ void printHelp()
     help += "CONFIG.TXT\n";
     help += "\tEach line will be one audio stream analysed by the loudness library.\n";
     help += "\tPattern of each line is:\n";
-    help += "\t[inputFile]=STREAM_ID\n";
+    help += "\t[inputFile]=STREAM_INDEX.CHANNEL_INDEX\n";
     help += "Command line options\n";
     help += "\t--help: display this help\n";
     help += "\t--output: filename of the XML report\n";
