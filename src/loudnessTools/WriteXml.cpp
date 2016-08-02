@@ -27,7 +27,7 @@ WriteXml::~WriteXml()
     xmlFile.close();
 }
 
-void WriteXml::writeResults(const char* channelType, Loudness::analyser::LoudnessAnalyser& analyser)
+void WriteXml::writeResults(const std::string& channelType, Loudness::analyser::LoudnessAnalyser& analyser)
 {
     xmlFile << "<Program filename=\"";
     size_t i;
