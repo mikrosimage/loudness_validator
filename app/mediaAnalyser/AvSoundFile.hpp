@@ -74,7 +74,6 @@ private:
 
     // to check audio before analyse
     std::vector<size_t> _inputNbChannels;
-    std::vector<size_t> _inputNbSamples;
     std::vector<size_t> _inputSampleRate;
 
     // for io
