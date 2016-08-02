@@ -211,7 +211,6 @@ ELoudnessResult LoudnessAnalyser::isIntegratedLoudnessValid()
 
 ELoudnessResult LoudnessAnalyser::isIntegratedLoudnessRangeValid()
 {
-    float loudnessRange = p_process->getRangeMax() - p_process->getRangeMin();
     if(isShortProgram()) // short program
     {
         return eNoImportance;
@@ -220,6 +219,7 @@ ELoudnessResult LoudnessAnalyser::isIntegratedLoudnessRangeValid()
     {
         if(std::isnan(s_levels.maximalLoudnessRange) && std::isnan(s_levels.minimalLoudnessRange))
             return eNoImportance;
+        const float loudnessRange = p_process->getRangeMax() - p_process->getRangeMin();
         if(!std::isnan(s_levels.maximalLoudnessRange) && loudnessRange > s_levels.maximalLoudnessRange)
             return eNotValidResult;
         else
