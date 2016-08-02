@@ -17,7 +17,6 @@ env:
   global:
     - GTEST_INSTALL=${TRAVIS_BUILD_DIR}/install-gtest
     - PLOUD_INSTALL=${TRAVIS_BUILD_DIR}/install-ploud
-    - CI_NODE_TOTAL=2
 
 # This results in a 2×2 build matrix.
 # Where the variables are: os / compiler
@@ -48,7 +47,7 @@ before_script:
 
 script:
   # Build and run tests
-  - scons -j${CI_NODE_TOTAL} --mode=release --coverage --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} --qt-suffix=qt4 --ebu-test-essences=ebu_test_essences test
+  - scons --mode=release --coverage --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} --qt-suffix=qt4 --ebu-test-essences=ebu_test_essences test
 
 after_success:
   # Generate and upload coverage to coveralls
