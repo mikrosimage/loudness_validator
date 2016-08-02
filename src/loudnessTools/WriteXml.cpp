@@ -27,7 +27,7 @@ WriteXml::~WriteXml()
     xmlFile.close();
 }
 
-void WriteXml::writeResults(const char* channelType, Loudness::analyser::LoudnessAnalyser& analyser)
+void WriteXml::writeResults(const std::string& channelType, Loudness::analyser::LoudnessAnalyser& analyser)
 {
     xmlFile << "<Program filename=\"";
     size_t i;
@@ -81,9 +81,10 @@ std::string WriteXml::convertValid(Loudness::analyser::ELoudnessResult result)
             st = "not illegal";
             break;
         case Loudness::analyser::eNoImportance:
+            st = "no importance";
             break;
     }
-    return " status=\'" + st + "'";
+    return "status=\'" + st + "'";
 }
 
 std::string WriteXml::printStandard(Loudness::analyser::EStandard standard)

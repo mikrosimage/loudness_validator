@@ -51,6 +51,8 @@ public:
      */
     void setDurationToAnalyse(const float durationToAnalyse);
 
+    size_t getNbChannelsToAnalyse() const;
+
 private:
     /**
      * @brief Print progress of analysis
@@ -74,7 +76,6 @@ private:
 
     // to check audio before analyse
     std::vector<size_t> _inputNbChannels;
-    std::vector<size_t> _inputNbSamples;
     std::vector<size_t> _inputSampleRate;
 
     // for io

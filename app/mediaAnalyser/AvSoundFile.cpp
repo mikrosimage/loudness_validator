@@ -74,9 +74,7 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
         _inputNbChannels.push_back(nbChannels);
         const size_t sampleRate = audioProperties->getSampleRate();
         _inputSampleRate.push_back(sampleRate);
-        const size_t nbSamples = audioProperties->getNbSamples();
-        _inputNbSamples.push_back(nbSamples);
-        _totalNbSamplesToAnalyse += nbSamples * nbChannels;
+        _totalNbSamplesToAnalyse += audioProperties->getNbSamples();
 
         // Update output of reader
         reader->updateOutput(sampleRate, nbChannels, "fltp");
@@ -211,4 +209,14 @@ void AvSoundFile::setDurationToAnalyse(const float durationToAnalyse)
 {
     if(durationToAnalyse > 0)
         _forceDurationToAnalyse = durationToAnalyse;
+}
+
+size_t AvSoundFile::getNbChannelsToAnalyse() const
+{
+    size_t nbChannelsToAnalyse = 0;
+    for(std::vector<size_t>::const_iterator it = _inputNbChannels.begin(); it != _inputNbChannels.end(); ++it)
+    {
+        nbChannelsToAnalyse += *it;
+    }
+    return nbChannelsToAnalyse;
 }

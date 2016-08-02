@@ -19,7 +19,7 @@ public:
 
     ~WriteXml();
 
-    void writeResults(const char* channelType, Loudness::analyser::LoudnessAnalyser& analyser);
+    void writeResults(const std::string& channelType, Loudness::analyser::LoudnessAnalyser& analyser);
 
 private:
     void openXMLFile(const std::string& xmlFilename);

@@ -50,7 +50,7 @@ void printHelp()
     help += "CONFIG.TXT\n";
     help += "\tEach line will be one audio stream analysed by the loudness library.\n";
     help += "\tPattern of each line is:\n";
-    help += "\t[inputFile]=STREAM_ID\n";
+    help += "\t[inputFile]=STREAM_INDEX.CHANNEL_INDEX\n";
     help += "Command line options\n";
     help += "\t--help: display this help\n";
     help += "\t--output: filename of the XML report\n";
@@ -66,13 +66,21 @@ int main(int argc, char** argv)
     std::string outputProgressionName;
     float durationToAnalyse = 0;
 
+    // Check required arguments
+    if(argc < 2)
+    {
+        std::cout << "completeAnalyser requires a media filename" << std::endl;
+        std::cout << "Use option --help to display help" << std::endl;
+        return (-1);
+    }
+
     std::vector<std::string> arguments;
     for(int argument = 1; argument < argc; ++argument)
     {
         arguments.push_back(argv[argument]);
     }
 
-    for(size_t argument = 1; argument < arguments.size(); ++argument)
+    for(size_t argument = 0; argument < arguments.size(); ++argument)
     {
         if(arguments.at(argument) == "--help")
         {
@@ -115,20 +123,8 @@ int main(int argc, char** argv)
                 return 1;
             }
         }
-        // unknown argument
-        else
-        {
-            printHelp();
-            return 1;
-        }
-    }
-
-    // Check required arguments
-    if(argc < 2)
-    {
-        std::cout << "completeAnalyser requires a media filename" << std::endl;
-        std::cout << "Use option --help to display help" << std::endl;
-        return (-1);
+        // unknown option
+        continue;
     }
 
     avtranscoder::preloadCodecsAndFormats();
@@ -138,14 +134,14 @@ int main(int argc, char** argv)
     {
         // Get list of files / streamIndex to analyse
         std::vector<AudioElement> arrayToAnalyse = parseConfigFile(arguments.at(0));
-        AvSoundFile soudFile(arrayToAnalyse);
-        soudFile.setProgressionFile(outputProgressionName);
-        soudFile.setDurationToAnalyse(durationToAnalyse);
+        AvSoundFile soundFile(arrayToAnalyse);
+        soundFile.setProgressionFile(outputProgressionName);
+        soundFile.setDurationToAnalyse(durationToAnalyse);
 
         // Analyse loudness according to EBU R-128
         Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
         Loudness::analyser::LoudnessAnalyser analyser(level);
-        soudFile.analyse(analyser);
+        soundFile.analyse(analyser);
 
         // Print analyse
         analyser.printPloudValues();
@@ -157,7 +153,10 @@ int main(int argc, char** argv)
             mediaFilenames.push_back(arrayToAnalyse.at(i)._inputFile);
         }
         Loudness::tools::WriteXml writerXml(outputXMLReportName, mediaFilenames);
-        writerXml.writeResults("unknown", analyser);
+        std::stringstream ss;
+        ss << soundFile.getNbChannelsToAnalyse();
+        ss << " channels";
+        writerXml.writeResults(ss.str(), analyser);
     }
     catch(const std::exception& e)
     {

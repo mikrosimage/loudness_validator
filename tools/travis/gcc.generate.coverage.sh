@@ -13,4 +13,4 @@ lcov --remove coverage.info '/usr/*' 'install-gtest/*' --output-file coverage.in
 lcov --list coverage.info
 
 # uploads to coveralls
-coveralls-lcov --repo-token hMLpbLSWIHytVQdwhJwz7g03qlRpbhypt coverage.info
+coveralls-lcov --repo-token bHIO8TqTbmtNoLarLh7cvHxC3U0z0RWKF coverage.info
