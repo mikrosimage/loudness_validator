@@ -7,6 +7,7 @@ services:
 
 os:
   - linux
+  - osx
 
 compiler:
   - gcc
@@ -35,13 +36,14 @@ cache:
   apt: true
 
 install:
-  # Get install test ressources
+  # Install dependencies
   - ./tools/travis/install_dependencies.sh
 
   # Install coverage tools
   - ./tools/travis/gcc.install.coverage.sh
 
 before_script:
+  # Install test ressources
   - ./tools/travis/install_ressources.sh
 
 script:
