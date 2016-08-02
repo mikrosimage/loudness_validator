@@ -83,7 +83,7 @@ std::string WriteXml::convertValid(Loudness::analyser::ELoudnessResult result)
         case Loudness::analyser::eNoImportance:
             break;
     }
-    return " status=\'" + st + "'";
+    return "status=\'" + st + "'";
 }
 
 std::string WriteXml::printStandard(Loudness::analyser::EStandard standard)
