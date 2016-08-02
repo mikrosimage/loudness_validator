@@ -153,7 +153,10 @@ int main(int argc, char** argv)
             mediaFilenames.push_back(arrayToAnalyse.at(i)._inputFile);
         }
         Loudness::tools::WriteXml writerXml(outputXMLReportName, mediaFilenames);
-        writerXml.writeResults("unknown", analyser);
+        std::stringstream ss;
+        ss << soundFile.getNbChannelsToAnalyse();
+        ss << " channels";
+        writerXml.writeResults(ss.str(), analyser);
     }
     catch(const std::exception& e)
     {

@@ -51,6 +51,8 @@ public:
      */
     void setDurationToAnalyse(const float durationToAnalyse);
 
+    size_t getNbChannelsToAnalyse() const;
+
 private:
     /**
      * @brief Print progress of analysis

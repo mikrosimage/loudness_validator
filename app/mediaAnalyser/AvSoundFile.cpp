@@ -210,3 +210,13 @@ void AvSoundFile::setDurationToAnalyse(const float durationToAnalyse)
     if(durationToAnalyse > 0)
         _forceDurationToAnalyse = durationToAnalyse;
 }
+
+size_t AvSoundFile::getNbChannelsToAnalyse() const
+{
+    size_t nbChannelsToAnalyse = 0;
+    for(std::vector<size_t>::const_iterator it = _inputNbChannels.begin(); it != _inputNbChannels.end(); ++it)
+    {
+        nbChannelsToAnalyse += *it;
+    }
+    return nbChannelsToAnalyse;
+}
