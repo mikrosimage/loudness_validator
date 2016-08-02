@@ -134,14 +134,14 @@ int main(int argc, char** argv)
     {
         // Get list of files / streamIndex to analyse
         std::vector<AudioElement> arrayToAnalyse = parseConfigFile(arguments.at(0));
-        AvSoundFile soudFile(arrayToAnalyse);
-        soudFile.setProgressionFile(outputProgressionName);
-        soudFile.setDurationToAnalyse(durationToAnalyse);
+        AvSoundFile soundFile(arrayToAnalyse);
+        soundFile.setProgressionFile(outputProgressionName);
+        soundFile.setDurationToAnalyse(durationToAnalyse);
 
         // Analyse loudness according to EBU R-128
         Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
         Loudness::analyser::LoudnessAnalyser analyser(level);
-        soudFile.analyse(analyser);
+        soundFile.analyse(analyser);
 
         // Print analyse
         analyser.printPloudValues();
