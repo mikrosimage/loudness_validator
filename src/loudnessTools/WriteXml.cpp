@@ -81,6 +81,7 @@ std::string WriteXml::convertValid(Loudness::analyser::ELoudnessResult result)
             st = "not illegal";
             break;
         case Loudness::analyser::eNoImportance:
+            st = "no importance";
             break;
     }
     return "status=\'" + st + "'";
