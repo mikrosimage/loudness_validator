@@ -170,7 +170,7 @@ enum ELoudnessResult
     eValidResult = 0,                 ///< a compliant result
     eNotValidResult = 1,              ///< not a valid result
     eNotValidResultButNotIllegal = 2, ///< warning value result
-    eNoImportance = 3                 ///< when levels are set to LOUDNESS_NAN, disable levels checks
+    eNoImportance = 3                 ///< no importance according to the specification (see LOUDNESS_NAN value)
 };
 
 class Process;
@@ -204,7 +204,6 @@ public:
 
     /**
      * Return if the program is a Short Program or a Long Program ( > 2'00 )
-     * \param integratedLoudnessValue Integrated Loudness (same as the Program Loudness) in LUFS
     **/
     bool isShortProgram();
 
@@ -322,7 +321,7 @@ public:
 protected:
     std::auto_ptr<Process> p_process;
     size_t s_durationInSamples;
-    size_t s_frequency;
+    size_t s_frequency; ///< sample rate
     LoudnessLevels s_levels;
 };
 }
