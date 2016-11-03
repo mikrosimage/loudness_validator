@@ -52,7 +52,10 @@ before_script:
 
 script:
   # Build and run tests
-  - scons --mode=release --coverage --avtranscoder=${AVTRANSCODER_INSTALL} --ffmpeg=${FFMPEG_INSTALL} --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} --qt-suffix=qt4 --ebu-test-essences=ebu_test_essences test
+  - scons --mode=release --coverage --qt-suffix=qt4 --gtest=${GTEST_INSTALL} --ebu-test-essences=ebu_test_essences test
+  # Install and run manual tests
+  - scons --mode=release --coverage --avtranscoder=${AVTRANSCODER_INSTALL} --ffmpeg=${FFMPEG_INSTALL} --qt-suffix=qt4 --install-sandbox=${PLOUD_INSTALL}
+  - ./tools/travis/test_mediaAnalyser.sh
 
 after_success:
   # Generate and upload coverage to coveralls
