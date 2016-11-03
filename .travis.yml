@@ -15,6 +15,7 @@ compiler:
 
 env:
   global:
+    - EBU_PATH=${TRAVIS_BUILD_DIR}/ebu_test_essences
     - GTEST_INSTALL=${TRAVIS_BUILD_DIR}/install-gtest
     - PLOUD_INSTALL=${TRAVIS_BUILD_DIR}/install-ploud
     - FFMPEG_VERSION=2.7.6
@@ -38,6 +39,12 @@ addons:
 cache:
   # Caching Ubuntu packages
   apt: true
+  # Caching other directories
+  directories:
+  - ${EBU_PATH}
+  - ${GTEST_INSTALL}
+  - ${FFMPEG_INSTALL}
+  - ${AVTRANSCODER_INSTALL}
 
 install:
   # Install dependencies
