@@ -104,20 +104,23 @@ if 'loudnessAnalyserLibStatic' in locals() and \
 
     avtranscoder_root = GetOption('avtranscoder')
     avtranscoder_include = ''
-    avtranscoder_lib = ''
+    avtranscoder_lib_path = ''
     if avtranscoder_root:
         avtranscoder_include = os.path.join( avtranscoder_root, 'include' )
-        avtranscoder_lib = os.path.join( avtranscoder_root, 'lib' )
+        avtranscoder_lib_path = os.path.join( avtranscoder_root, 'lib' )
 
     ffmpeg_root = GetOption('ffmpeg')
     ffmpeg_include = ''
-    ffmpeg_libs = ''
+    ffmpeg_libs_path = []
     if ffmpeg_root:
         ffmpeg_include = os.path.join( ffmpeg_root, 'include' )
         if env['PLATFORM'] == 'win32':
-            ffmpeg_libs = os.path.join( ffmpeg_root, 'bin' )
+            ffmpeg_libs_path.append(os.path.join( ffmpeg_root, 'bin' ))
         else:
-            ffmpeg_libs = [os.path.join( ffmpeg_root, 'lib' ), os.path.join( ffmpeg_root, 'lib64' )]
+            ffmpeg_libs_path.append(os.path.join( ffmpeg_root, 'lib' ))
+            ffmpeg_lib64 = os.path.join( ffmpeg_root, 'lib64' )
+            if os.path.exists(ffmpeg_lib64):
+                ffmpeg_libs_path.append(ffmpeg_lib64)
 
     # Check libavtranscoder
     avtranscoderEnv = env.Clone()
@@ -128,8 +131,8 @@ if 'loudnessAnalyserLibStatic' in locals() and \
             ffmpeg_include,
         ],
         LIBPATH = [
-            avtranscoder_lib,
-            ffmpeg_libs,
+            avtranscoder_lib_path,
+            ffmpeg_libs_path,
         ],
     )
 
