@@ -16,7 +16,7 @@ fi
 
 # Install avtranscoder
 if [[ ! -d "${AVTRANSCODER_INSTALL}/*" ]]; then
-    export ARCHIVE_FILE=avtranscoder-linux-gcc-ffmpeg-${FFMPEG_VERSION}.tgz
+    export ARCHIVE_FILE=avtranscoder-${TRAVIS_OS_NAME}-gcc-ffmpeg-${FFMPEG_VERSION}.tgz
     wget https://github.com/avTranscoder/avTranscoder/releases/download/v${AVTRANSCODER_VERSION}/${ARCHIVE_FILE}
     tar xzf ${ARCHIVE_FILE} -C ${TRAVIS_BUILD_DIR}
     rm ${ARCHIVE_FILE}
