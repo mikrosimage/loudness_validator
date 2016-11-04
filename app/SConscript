@@ -142,6 +142,11 @@ if 'loudnessAnalyserLibStatic' in locals() and \
     if env['PLATFORM'] == 'win32':
         avtranscoder_version = GetOption('avtranscoderVersion')
         avtranscoderLib += '-' + avtranscoder_version
+    ffmpegLibs = []
+    for path in ffmpeg_libs_path:
+        for file in os.listdir(path):
+            if file.endswith(('.so', '.dll')):
+                ffmpegLibs.append(file)
 
     if conf.CheckCXXHeader('AvTranscoder/common.hpp'):
         avtranscoderEnv = conf.Finish()
@@ -153,6 +158,7 @@ if 'loudnessAnalyserLibStatic' in locals() and \
                     loudnessAnalyserLibStatic,
                     loudnessToolsLibStatic,
                     avtranscoderLib,
+                    ffmpegLibs
             ]
         )
 
