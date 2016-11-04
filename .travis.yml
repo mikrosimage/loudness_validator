@@ -15,9 +15,14 @@ compiler:
 
 env:
   global:
+    - EBU_PATH=${TRAVIS_BUILD_DIR}/ebu_test_essences
     - GTEST_INSTALL=${TRAVIS_BUILD_DIR}/install-gtest
     - PLOUD_INSTALL=${TRAVIS_BUILD_DIR}/install-ploud
-    - CI_NODE_TOTAL=2
+    - FFMPEG_VERSION=2.7.6
+    - FFMPEG_INSTALL=${TRAVIS_BUILD_DIR}/install-dependency
+    - AVTRANSCODER_VERSION=0.11.0
+    - AVTRANSCODER_INSTALL=${TRAVIS_BUILD_DIR}/install-avtranscoder
+
 
 # This results in a 2×2 build matrix.
 # Where the variables are: os / compiler
@@ -34,6 +39,12 @@ addons:
 cache:
   # Caching Ubuntu packages
   apt: true
+  # Caching other directories
+  directories:
+  - ${EBU_PATH}
+  - ${GTEST_INSTALL}
+  - ${FFMPEG_INSTALL}
+  - ${AVTRANSCODER_INSTALL}
 
 install:
   # Install dependencies
@@ -48,7 +59,10 @@ before_script:
 
 script:
   # Build and run tests
-  - scons -j${CI_NODE_TOTAL} --mode=release --coverage --gtest=${GTEST_INSTALL} --install-sandbox=${PLOUD_INSTALL} --qt-suffix=qt4 --ebu-test-essences=ebu_test_essences test
+  - scons --mode=release --coverage --qt-suffix=qt4 --gtest=${GTEST_INSTALL} --ebu-test-essences=ebu_test_essences test
+  # Install and run manual tests
+  - scons --mode=release --coverage --avtranscoder=${AVTRANSCODER_INSTALL} --ffmpeg=${FFMPEG_INSTALL} --qt-suffix=qt4 --install-sandbox=${PLOUD_INSTALL}
+  - if [ ${TRAVIS_OS_NAME} = "linux" ]; then ./tools/travis/test_mediaAnalyser.sh; fi
 
 after_success:
   # Generate and upload coverage to coveralls

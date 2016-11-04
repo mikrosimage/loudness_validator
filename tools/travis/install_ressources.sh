@@ -6,7 +6,9 @@ set -e
 set -x
 
 # Install test ressources
-EBU_SET=ebu-loudness-test-setv04.zip
-wget https://tech.ebu.ch/files/live/sites/tech/files/shared/testmaterial/$EBU_SET --no-check-certificate
-unzip $EBU_SET -d ebu_test_essences
-rm $EBU_SET
+if [[ ! -d "${EBU_PATH}/*" ]]; then
+    export EBU_SET=ebu-loudness-test-setv04.zip
+    wget https://tech.ebu.ch/files/live/sites/tech/files/shared/testmaterial/$EBU_SET --no-check-certificate
+    unzip -o $EBU_SET -d $EBU_PATH
+    rm $EBU_SET
+fi

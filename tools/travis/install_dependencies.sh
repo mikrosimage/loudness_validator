@@ -6,11 +6,21 @@ set -e
 set -x
 
 # Install GTest framework
-git clone https://github.com/google/googletest.git
-cd googletest
-cmake . -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL}
-make -k
-make install
+if [[ ! -d "${GTEST_INSTALL}/*" ]]; then
+    git clone https://github.com/google/googletest.git
+    cd googletest
+    cmake . -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL}
+    make -k
+    make install
+fi
+
+# Install avtranscoder
+if [[ ! -d "${AVTRANSCODER_INSTALL}/*" ]]; then
+    export ARCHIVE_FILE=avtranscoder-${TRAVIS_OS_NAME}-gcc-ffmpeg-${FFMPEG_VERSION}.tgz
+    wget https://github.com/avTranscoder/avTranscoder/releases/download/v${AVTRANSCODER_VERSION}/${ARCHIVE_FILE}
+    tar xzf ${ARCHIVE_FILE} -C ${TRAVIS_BUILD_DIR}
+    rm ${ARCHIVE_FILE}
+fi
 
 # Install additional dependencies in case of osx environment
 if [ ${TRAVIS_OS_NAME} = "osx" ]; then
