@@ -145,7 +145,7 @@ if 'loudnessAnalyserLibStatic' in locals() and \
     ffmpegLibs = []
     for path in ffmpeg_libs_path:
         for file in os.listdir(path):
-            if file.endswith(('.so', '.dll')):
+            if file.endswith(('.so', '.dylib', '.dll')):
                 ffmpegLibs.append(os.path.splitext(file)[0])
 
     if conf.CheckCXXHeader('AvTranscoder/common.hpp'):
