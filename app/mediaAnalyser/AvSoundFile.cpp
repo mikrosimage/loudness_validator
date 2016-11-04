@@ -166,8 +166,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
         size_t nbInputChannelAdded = 0;
         for(size_t fileIndex = 0; fileIndex < _audioReader.size(); ++fileIndex)
         {
-            avtranscoder::AudioFrame* dstFrame =
-                static_cast<avtranscoder::AudioFrame*>(_audioReader.at(fileIndex)->readNextFrame());
+            avtranscoder::IFrame* dstFrame = _audioReader.at(fileIndex)->readNextFrame();
 
             // empty frame: go to the end of process
             if(dstFrame == NULL)
@@ -182,7 +181,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
             {
                 audioBuffer[channelToAdd] = (float*)(dstFrame->getData()[inputChannel]);
                 ++inputChannel;
-                nbSamplesRead += dstFrame->getNbSamplesPerChannel();
+                nbSamplesRead += dstFrame->getAVFrame().nb_samples;
             }
             nbInputChannelAdded += _inputNbChannels.at(fileIndex);
         }
