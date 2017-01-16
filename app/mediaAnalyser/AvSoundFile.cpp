@@ -71,7 +71,7 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
         // Get data from audio stream
         const avtranscoder::AudioProperties* audioProperties = reader->getSourceAudioProperties();
         const int nbChannels = channelIndex == -1 ? audioProperties->getNbChannels() : 1;
-        _inputNbChannels.push_back(nbChannels);
+        _inputNbChannels.push_back(std::min(nbChannels, 5)); // skip LRE
         const size_t sampleRate = audioProperties->getSampleRate();
         _inputSampleRate.push_back(sampleRate);
         _totalNbSamplesToAnalyse += audioProperties->getNbSamples();
