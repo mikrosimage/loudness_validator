@@ -146,7 +146,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 
     // open file to print duration
     std::ofstream outputFile;
-    if(!_progressionFileName.empty())
+    if(! _progressionFileName.empty())
     {
         outputFile.open(_progressionFileName.c_str());
         _outputStream = &outputFile;
@@ -198,7 +198,8 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
     }
 
     // Close progression file
-    outputFile.close();
+    if(! _progressionFileName.empty())
+        outputFile.close();
 
     // free audio buffer
     delete audioBuffer;
