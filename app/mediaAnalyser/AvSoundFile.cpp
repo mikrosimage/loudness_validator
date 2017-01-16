@@ -202,7 +202,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
         outputFile.close();
 
     // free audio buffer
-    delete audioBuffer;
+    delete[] audioBuffer;
 }
 
 void AvSoundFile::setDurationToAnalyse(const float durationToAnalyse)
