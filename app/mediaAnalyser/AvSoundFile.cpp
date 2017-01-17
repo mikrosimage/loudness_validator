@@ -71,7 +71,7 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
         // Get data from audio stream
         const avtranscoder::AudioProperties* audioProperties = reader->getSourceAudioProperties();
         const int nbChannels = channelIndex == -1 ? audioProperties->getNbChannels() : 1;
-        _inputNbChannels.push_back(nbChannels);
+        _inputNbChannels.push_back(std::min(nbChannels, 5)); // skip LRE
         const size_t sampleRate = audioProperties->getSampleRate();
         _inputSampleRate.push_back(sampleRate);
         _totalNbSamplesToAnalyse += audioProperties->getNbSamples();
@@ -146,7 +146,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 
     // open file to print duration
     std::ofstream outputFile;
-    if(!_progressionFileName.empty())
+    if(! _progressionFileName.empty())
     {
         outputFile.open(_progressionFileName.c_str());
         _outputStream = &outputFile;
@@ -198,10 +198,11 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
     }
 
     // Close progression file
-    outputFile.close();
+    if(! _progressionFileName.empty())
+        outputFile.close();
 
     // free audio buffer
-    delete audioBuffer;
+    delete[] audioBuffer;
 }
 
 void AvSoundFile::setDurationToAnalyse(const float durationToAnalyse)
