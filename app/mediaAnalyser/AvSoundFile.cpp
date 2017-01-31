@@ -117,16 +117,17 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 
 AvSoundFile::~AvSoundFile()
 {
+	// Remove the readers before the inputFiles to correctly close the codecs
+	for(std::vector<avtranscoder::AudioReader*>::iterator it = _audioReader.begin(); it != _audioReader.end(); ++it)
+    {
+        delete(*it);
+    }
     for(std::vector<std::pair<avtranscoder::InputFile*, bool> >::iterator it = _inputFiles.begin(); it != _inputFiles.end();
         ++it)
     {
         // if the input file was allocated
         if(it->second)
             delete it->first;
-    }
-    for(std::vector<avtranscoder::AudioReader*>::iterator it = _audioReader.begin(); it != _audioReader.end(); ++it)
-    {
-        delete(*it);
     }
 }
 
