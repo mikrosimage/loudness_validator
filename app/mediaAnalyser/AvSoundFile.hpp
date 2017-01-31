@@ -10,31 +10,12 @@
 #include <iostream>
 
 /**
- * @brief Struct to describe an audio element to read and analyse.
- */
-struct AudioElement
-{
-public:
-    AudioElement(const std::string& inputFile, const size_t streamIndex, const int channelIndex = -1)
-        : _inputFile(inputFile)
-        , _streamIndex(streamIndex)
-        , _channelIndex(channelIndex)
-    {
-    }
-
-public:
-    std::string _inputFile;
-    size_t _streamIndex;
-    int _channelIndex; //< -1 if all channels
-};
-
-/**
  * @brief Read and analyse the given audio elements.
  */
 class AvSoundFile
 {
 public:
-    AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse);
+    AvSoundFile(const std::vector<avtranscoder::InputStreamDesc>& arrayToAnalyse);
     ~AvSoundFile();
 
     void analyse(Loudness::analyser::LoudnessAnalyser& analyser);
@@ -79,11 +60,6 @@ private:
     std::vector<size_t> _inputSampleRate;
 
     // for io
-    std::vector<std::string> _inputFilenames;
-    /**
-     * The boolean indicates if the InputFile is allocated by the class (has ownership)
-     */
-    std::vector<std::pair<avtranscoder::InputFile*, bool> > _inputFiles;
     std::vector<avtranscoder::AudioReader*> _audioReader;
 
     // To print the progession to a stream

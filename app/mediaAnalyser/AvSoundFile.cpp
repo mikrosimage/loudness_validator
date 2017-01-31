@@ -25,56 +25,31 @@ bool AvSoundFile::isEndOfAnalysis()
     return _cumulOfSamplesAnalysed >= _totalNbSamplesToAnalyse;
 }
 
-AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
+AvSoundFile::AvSoundFile(const std::vector<avtranscoder::InputStreamDesc>& arrayToAnalyse)
     : _nbChannelsToAnalyse(0)
     , _totalNbSamplesToAnalyse(0)
     , _cumulOfSamplesAnalysed(0)
+    , _inputNbChannels()
+    , _inputSampleRate()
+    , _audioReader()
     , _outputStream(&std::cout)
     , _progressionFileName()
     , _forceDurationToAnalyse(0)
 {
-    for(size_t fileIndex = 0; fileIndex < arrayToAnalyse.size(); ++fileIndex)
+    for(std::vector<avtranscoder::InputStreamDesc>::const_iterator it = arrayToAnalyse.begin(); it != arrayToAnalyse.end(); ++it)
     {
-        const std::string filename(arrayToAnalyse.at(fileIndex)._inputFile);
-        const size_t streamIndex = arrayToAnalyse.at(fileIndex)._streamIndex;
-        const int channelIndex = arrayToAnalyse.at(fileIndex)._channelIndex;
-
-        // Analyse input file
-        avtranscoder::InputFile* inputFile = NULL;
-        std::vector<std::string>::iterator iterFilename =
-            std::find(_inputFilenames.begin(), _inputFilenames.end(), filename);
-        const bool isAlreadyAllocated = (iterFilename != _inputFilenames.end());
-        if(isAlreadyAllocated)
-        {
-            // get existing InputFile
-            const size_t filenameIndex = std::distance(_inputFilenames.begin(), iterFilename);
-            inputFile = _inputFiles.at(filenameIndex).first;
-        }
-        else
-        {
-            // create new InputFile
-            inputFile = new avtranscoder::InputFile(filename);
-
-            // display file properties
-            // std::cout << *inputFile;
-
-            // add to list of filename
-            _inputFilenames.push_back(filename);
-        }
-        _inputFiles.push_back(std::make_pair(inputFile, !isAlreadyAllocated));
-
         // Create reader to convert to float planar
-        avtranscoder::AudioReader* reader = new avtranscoder::AudioReader(*inputFile, streamIndex, channelIndex);
+        avtranscoder::AudioReader* reader = new avtranscoder::AudioReader(*it);
         reader->continueWithGenerator();
         _audioReader.push_back(reader);
 
         // Get data from audio stream
         const avtranscoder::AudioProperties* audioProperties = reader->getSourceAudioProperties();
-        const int nbChannels = channelIndex == -1 ? audioProperties->getNbChannels() : 1;
+        const int nbChannels = it->_channelIndexArray.empty() ? audioProperties->getNbChannels() : it->_channelIndexArray.size();
         _inputNbChannels.push_back(std::min(nbChannels, 5)); // skip LRE
         const size_t sampleRate = audioProperties->getSampleRate();
         _inputSampleRate.push_back(sampleRate);
-        _totalNbSamplesToAnalyse += audioProperties->getNbSamples();
+        _totalNbSamplesToAnalyse += audioProperties->getNbSamples() * nbChannels;
 
         // Update output of reader
         reader->updateOutput(sampleRate, nbChannels, "fltp");
@@ -117,17 +92,9 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 
 AvSoundFile::~AvSoundFile()
 {
-	// Remove the readers before the inputFiles to correctly close the codecs
 	for(std::vector<avtranscoder::AudioReader*>::iterator it = _audioReader.begin(); it != _audioReader.end(); ++it)
     {
         delete(*it);
-    }
-    for(std::vector<std::pair<avtranscoder::InputFile*, bool> >::iterator it = _inputFiles.begin(); it != _inputFiles.end();
-        ++it)
-    {
-        // if the input file was allocated
-        if(it->second)
-            delete it->first;
     }
 }
 

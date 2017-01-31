@@ -7,9 +7,9 @@
 #include <utility>
 #include <fstream>
 
-std::vector<AudioElement> parseConfigFile(const std::string& configFilename)
+std::vector<avtranscoder::InputStreamDesc> parseConfigFile(const std::string& configFilename)
 {
-    std::vector<AudioElement> result;
+    std::vector<avtranscoder::InputStreamDesc> result;
 
     std::ifstream configFile(configFilename.c_str(), std::ifstream::in);
 
@@ -32,7 +32,19 @@ std::vector<AudioElement> parseConfigFile(const std::string& configFilename)
             if(separator == '.')
                 ss >> channelIndex;
 
-            result.push_back(AudioElement(filename, streamIndex, channelIndex));
+            bool newInputDescAdded = false;
+            // if we already have an input description with the same filename/streamIndex, add only the new channelIndex
+            for(std::vector<avtranscoder::InputStreamDesc>::iterator it = result.begin(); it != result.end(); ++it)
+            {
+                if(it->_filename == filename && it->_streamIndex == streamIndex)
+                {
+                    it->_channelIndexArray.push_back(channelIndex);
+                    newInputDescAdded = true;
+                    break;
+                }
+            }
+            if(! newInputDescAdded)
+                result.push_back(avtranscoder::InputStreamDesc(filename, streamIndex, channelIndex));
         }
     }
 
@@ -133,7 +145,7 @@ int main(int argc, char** argv)
     try
     {
         // Get list of files / streamIndex to analyse
-        std::vector<AudioElement> arrayToAnalyse = parseConfigFile(arguments.at(0));
+        std::vector<avtranscoder::InputStreamDesc> arrayToAnalyse = parseConfigFile(arguments.at(0));
         AvSoundFile soundFile(arrayToAnalyse);
         soundFile.setProgressionFile(outputProgressionName);
         soundFile.setDurationToAnalyse(durationToAnalyse);
@@ -150,7 +162,7 @@ int main(int argc, char** argv)
         std::vector<std::string> mediaFilenames;
         for(size_t i = 0; i < arrayToAnalyse.size(); ++i)
         {
-            mediaFilenames.push_back(arrayToAnalyse.at(i)._inputFile);
+            mediaFilenames.push_back(arrayToAnalyse.at(i)._filename);
         }
         Loudness::tools::WriteXml writerXml(outputXMLReportName, mediaFilenames);
         std::stringstream ss;
