@@ -5,7 +5,7 @@ EnsureSConsVersion( 2, 3, 0 )
 # Versions
 loudnessAssessmentVersionMajor = "1"
 loudnessAssessmentVersionMinor = "3"
-loudnessAssessmentVersionMicro = "7"
+loudnessAssessmentVersionMicro = "8"
 
 loudnessAssessmentVersion = [
     loudnessAssessmentVersionMajor,
