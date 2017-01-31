@@ -25,7 +25,7 @@ bool AvSoundFile::isEndOfAnalysis()
     return _cumulOfSamplesAnalysed >= _totalNbSamplesToAnalyse;
 }
 
-AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
+AvSoundFile::AvSoundFile(const std::vector<avtranscoder::InputStreamDesc>& arrayToAnalyse)
     : _nbChannelsToAnalyse(0)
     , _totalNbSamplesToAnalyse(0)
     , _cumulOfSamplesAnalysed(0)
@@ -36,20 +36,16 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
     , _progressionFileName()
     , _forceDurationToAnalyse(0)
 {
-    for(size_t fileIndex = 0; fileIndex < arrayToAnalyse.size(); ++fileIndex)
+    for(std::vector<avtranscoder::InputStreamDesc>::const_iterator it = arrayToAnalyse.begin(); it != arrayToAnalyse.end(); ++it)
     {
-        const std::string filename(arrayToAnalyse.at(fileIndex)._inputFile);
-        const size_t streamIndex = arrayToAnalyse.at(fileIndex)._streamIndex;
-        const int channelIndex = arrayToAnalyse.at(fileIndex)._channelIndex;
-
         // Create reader to convert to float planar
-        avtranscoder::AudioReader* reader = new avtranscoder::AudioReader(avtranscoder::InputStreamDesc(filename, streamIndex, channelIndex));
+        avtranscoder::AudioReader* reader = new avtranscoder::AudioReader(*it);
         reader->continueWithGenerator();
         _audioReader.push_back(reader);
 
         // Get data from audio stream
         const avtranscoder::AudioProperties* audioProperties = reader->getSourceAudioProperties();
-        const int nbChannels = channelIndex == -1 ? audioProperties->getNbChannels() : 1;
+        const int nbChannels = it->_channelIndexArray.empty() ? audioProperties->getNbChannels() : it->_channelIndexArray.size();
         _inputNbChannels.push_back(std::min(nbChannels, 5)); // skip LRE
         const size_t sampleRate = audioProperties->getSampleRate();
         _inputSampleRate.push_back(sampleRate);
