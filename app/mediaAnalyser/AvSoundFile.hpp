@@ -79,11 +79,6 @@ private:
     std::vector<size_t> _inputSampleRate;
 
     // for io
-    std::vector<std::string> _inputFilenames;
-    /**
-     * The boolean indicates if the InputFile is allocated by the class (has ownership)
-     */
-    std::vector<std::pair<avtranscoder::InputFile*, bool> > _inputFiles;
     std::vector<avtranscoder::AudioReader*> _audioReader;
 
     // To print the progession to a stream

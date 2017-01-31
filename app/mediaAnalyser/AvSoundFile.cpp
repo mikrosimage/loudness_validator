@@ -29,6 +29,9 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
     : _nbChannelsToAnalyse(0)
     , _totalNbSamplesToAnalyse(0)
     , _cumulOfSamplesAnalysed(0)
+    , _inputNbChannels()
+    , _inputSampleRate()
+    , _audioReader()
     , _outputStream(&std::cout)
     , _progressionFileName()
     , _forceDurationToAnalyse(0)
@@ -39,32 +42,8 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
         const size_t streamIndex = arrayToAnalyse.at(fileIndex)._streamIndex;
         const int channelIndex = arrayToAnalyse.at(fileIndex)._channelIndex;
 
-        // Analyse input file
-        avtranscoder::InputFile* inputFile = NULL;
-        std::vector<std::string>::iterator iterFilename =
-            std::find(_inputFilenames.begin(), _inputFilenames.end(), filename);
-        const bool isAlreadyAllocated = (iterFilename != _inputFilenames.end());
-        if(isAlreadyAllocated)
-        {
-            // get existing InputFile
-            const size_t filenameIndex = std::distance(_inputFilenames.begin(), iterFilename);
-            inputFile = _inputFiles.at(filenameIndex).first;
-        }
-        else
-        {
-            // create new InputFile
-            inputFile = new avtranscoder::InputFile(filename);
-
-            // display file properties
-            // std::cout << *inputFile;
-
-            // add to list of filename
-            _inputFilenames.push_back(filename);
-        }
-        _inputFiles.push_back(std::make_pair(inputFile, !isAlreadyAllocated));
-
         // Create reader to convert to float planar
-        avtranscoder::AudioReader* reader = new avtranscoder::AudioReader(*inputFile, streamIndex, channelIndex);
+        avtranscoder::AudioReader* reader = new avtranscoder::AudioReader(avtranscoder::InputStreamDesc(filename, streamIndex, channelIndex));
         reader->continueWithGenerator();
         _audioReader.push_back(reader);
 
@@ -117,17 +96,9 @@ AvSoundFile::AvSoundFile(const std::vector<AudioElement>& arrayToAnalyse)
 
 AvSoundFile::~AvSoundFile()
 {
-	// Remove the readers before the inputFiles to correctly close the codecs
 	for(std::vector<avtranscoder::AudioReader*>::iterator it = _audioReader.begin(); it != _audioReader.end(); ++it)
     {
         delete(*it);
-    }
-    for(std::vector<std::pair<avtranscoder::InputFile*, bool> >::iterator it = _inputFiles.begin(); it != _inputFiles.end();
-        ++it)
-    {
-        // if the input file was allocated
-        if(it->second)
-            delete it->first;
     }
 }
 
