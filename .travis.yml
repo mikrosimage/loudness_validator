@@ -20,7 +20,7 @@ env:
     - PLOUD_INSTALL=${TRAVIS_BUILD_DIR}/install-ploud
     - FFMPEG_VERSION=2.7.6
     - FFMPEG_INSTALL=${TRAVIS_BUILD_DIR}/install-dependency
-    - AVTRANSCODER_VERSION=0.11.0
+    - AVTRANSCODER_VERSION=0.12.0
     - AVTRANSCODER_INSTALL=${TRAVIS_BUILD_DIR}/install-avtranscoder
 
 
