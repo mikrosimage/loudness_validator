@@ -49,7 +49,7 @@ AvSoundFile::AvSoundFile(const std::vector<avtranscoder::InputStreamDesc>& array
         _inputNbChannels.push_back(std::min(nbChannels, 5)); // skip LRE
         const size_t sampleRate = audioProperties->getSampleRate();
         _inputSampleRate.push_back(sampleRate);
-        _totalNbSamplesToAnalyse += audioProperties->getNbSamples();
+        _totalNbSamplesToAnalyse += audioProperties->getNbSamples() * nbChannels;
 
         // Update output of reader
         reader->updateOutput(sampleRate, nbChannels, "fltp");
