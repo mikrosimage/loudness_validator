@@ -1,4 +1,5 @@
 #include "AvSoundFile.hpp"
+#include "AvCorrector.hpp"
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 #include <loudnessTools/WriteXml.hpp>
@@ -59,16 +60,21 @@ void printHelp()
     help += "Usage\n";
     help += "\tmedia-analyser CONFIG.TXT [--output XMLReportName][--progressionInFile "
             "progressionName][--forceDurationToAnalyse durationToAnalyse][--help]\n";
+    help += "\tmedia-analyser CONFIG.TXT --correction gain [--correctionOutput outputFilesName]\n";
     help += "CONFIG.TXT\n";
     help += "\tEach line will be one audio stream analysed by the loudness library.\n";
     help += "\tPattern of each line is:\n";
     help += "\t[inputFile]=STREAM_INDEX.CHANNEL_INDEX\n";
     help += "Command line options\n";
     help += "\t--help: display this help\n";
+    help += "\tANALYSE:\n";
     help += "\t--output: filename of the XML report\n";
     help += "\t--progressionInFile: to print the progression in a file instead of in console\n";
     help += "\t--forceDurationToAnalyse: to force loudness analysis on a specific duration (in seconds). By default this is "
             "the duration of the input.\n";
+    help += "\tCORRECTION:\n";
+    help += "\t--correction: process streams correction with the specified gain, generating one output file for each input file\n";
+    help += "\t--correctionOutput: name of the corrected streams output files, formatted as follows: <output-name>_<input-index>.wav \n";
     std::cout << help << std::endl;
 }
 
@@ -77,6 +83,10 @@ int main(int argc, char** argv)
     std::string outputXMLReportName("PLoud.xml");
     std::string outputProgressionName;
     float durationToAnalyse = 0;
+
+    bool correction = false;
+    float gain;
+    std::string correctionOutputName;
 
     // Check required arguments
     if(argc < 2)
@@ -135,6 +145,23 @@ int main(int argc, char** argv)
                 return 1;
             }
         }
+        else if(arguments.at(argument) == "--correction")
+        {
+            correction = true;
+            gain = std::atof(arguments.at(++argument).c_str());
+        }
+        else if(arguments.at(argument) == "--correctionOutput")
+        {
+            try
+            {
+                correctionOutputName = arguments.at(++argument);
+            }
+            catch(...)
+            {
+                printHelp();
+                return 1;
+            }
+        }
         // unknown option
         continue;
     }
@@ -146,29 +173,40 @@ int main(int argc, char** argv)
     {
         // Get list of files / streamIndex to analyse
         std::vector<avtranscoder::InputStreamDesc> arrayToAnalyse = parseConfigFile(arguments.at(0));
-        AvSoundFile soundFile(arrayToAnalyse);
-        soundFile.setProgressionFile(outputProgressionName);
-        soundFile.setDurationToAnalyse(durationToAnalyse);
 
-        // Analyse loudness according to EBU R-128
-        Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
-        Loudness::analyser::LoudnessAnalyser analyser(level);
-        soundFile.analyse(analyser);
-
-        // Print analyse
-        analyser.printPloudValues();
-
-        // Write XML
-        std::vector<std::string> mediaFilenames;
-        for(size_t i = 0; i < arrayToAnalyse.size(); ++i)
+        if(correction)
         {
-            mediaFilenames.push_back(arrayToAnalyse.at(i)._filename);
+            AvCorrector corrector(arrayToAnalyse, correctionOutputName);
+            corrector.correct(gain);
+            std::cout << "Correction with gain " << gain << " done." << std::endl;
         }
-        Loudness::tools::WriteXml writerXml(outputXMLReportName, mediaFilenames);
-        std::stringstream ss;
-        ss << soundFile.getNbChannelsToAnalyse();
-        ss << " channels";
-        writerXml.writeResults(ss.str(), analyser);
+        else
+        {
+            AvSoundFile soundFile(arrayToAnalyse);
+            soundFile.setProgressionFile(outputProgressionName);
+            soundFile.setDurationToAnalyse(durationToAnalyse);
+
+            // Analyse loudness according to EBU R-128
+            Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
+            Loudness::analyser::LoudnessAnalyser analyser(level);
+            soundFile.analyse(analyser);
+
+            // Print analyse
+            analyser.printPloudValues();
+
+            // Write XML
+            std::vector<std::string> mediaFilenames;
+            for(size_t i = 0; i < arrayToAnalyse.size(); ++i)
+            {
+                mediaFilenames.push_back(arrayToAnalyse.at(i)._filename);
+            }
+            Loudness::tools::WriteXml writerXml(outputXMLReportName, mediaFilenames);
+            std::stringstream ss;
+            ss << soundFile.getNbChannelsToAnalyse();
+            ss << " channels";
+            writerXml.writeResults(ss.str(), analyser);
+        }
+
     }
     catch(const std::exception& e)
     {
