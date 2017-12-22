@@ -6,24 +6,27 @@
 #include <AvTranscoder/filter/FilterGraph.hpp>
 #include <AvTranscoder/codec/AudioCodec.hpp>
 
-AvCorrector::AvCorrector(const std::vector<avtranscoder::InputStreamDesc>& arrayToCorrect)
+AvCorrector::AvCorrector(const std::vector<avtranscoder::InputStreamDesc>& arrayToCorrect, const std::string& correctionOutputName)
     : _totalNbSamplesToCorrect(0)
     , _cumulOfSamplesCorrected(0)
     , _inputNbChannels()
     , _inputSampleRate()
     , _currentReaderSamplesMaxValue()
     , _audioReader()
+    , _correctedStreamDescs()
 {
-    for(std::vector<avtranscoder::InputStreamDesc>::const_iterator it = arrayToCorrect.begin(); it != arrayToCorrect.end(); ++it)
+    for (int i = 0; i < arrayToCorrect.size(); ++i)
     {
+        const avtranscoder::InputStreamDesc inputStreamDesc = arrayToCorrect.at(i);
         // Create reader to convert to float planar
-        avtranscoder::AudioReader* reader = new avtranscoder::AudioReader(*it);
+        avtranscoder::AudioReader* reader = new avtranscoder::AudioReader(inputStreamDesc);
         reader->continueWithGenerator();
         _audioReader.push_back(reader);
 
         // Get data from audio stream
         const avtranscoder::AudioProperties* audioProperties = reader->getSourceAudioProperties();
-        const int nbChannels = it->_channelIndexArray.empty() ? audioProperties->getNbChannels() : it->_channelIndexArray.size();
+        const int nbChannels = inputStreamDesc._channelIndexArray.empty() ?
+                               audioProperties->getNbChannels() : inputStreamDesc._channelIndexArray.size();
         _inputNbChannels.push_back(nbChannels);
         const size_t sampleRate = audioProperties->getSampleRate();
         _inputSampleRate.push_back(sampleRate);
@@ -33,6 +36,27 @@ AvCorrector::AvCorrector(const std::vector<avtranscoder::InputStreamDesc>& array
         _totalNbSamplesToCorrect += nbSamples;
 
         reader->updateOutput(sampleRate, nbChannels, audioProperties->getSampleFormatName());
+
+        std::stringstream outputStreamFileName;
+        if(!correctionOutputName.empty())
+        {
+            outputStreamFileName << correctionOutputName << "_" << i << ".wav";
+        }
+        else
+        {
+            outputStreamFileName << inputStreamDesc._filename.substr(0, inputStreamDesc._filename.size() - 4)
+                                 << "_corrected_" << i << ".wav";
+        }
+        avtranscoder::InputStreamDesc outputStreamDesc(outputStreamFileName.str(), 0);
+        _correctedStreamDescs.push_back(outputStreamDesc);
+    }
+}
+
+AvCorrector::~AvCorrector()
+{
+    for(std::vector<avtranscoder::AudioReader*>::iterator it = _audioReader.begin(); it != _audioReader.end(); ++it)
+    {
+        delete(*it);
     }
 }
 
@@ -50,9 +74,7 @@ void AvCorrector::correct(const float gain)
         avtranscoder::AudioEncoder* encoder = new avtranscoder::AudioEncoder(inputAudioProperties->getCodecName());
         encoder->setupAudioEncoder(audioFrameDesc);
 
-        std::stringstream outputStreamFileName;
-        outputStreamFileName << "Corrected_" << i << ".wav";
-        avtranscoder::OutputFile* outputFile = new avtranscoder::OutputFile(outputStreamFileName.str());
+        avtranscoder::OutputFile* outputFile = new avtranscoder::OutputFile(_correctedStreamDescs.at(i)._filename);
         outputFile->addAudioStream(encoder->getAudioCodec());
         outputFile->beginWrap();
 

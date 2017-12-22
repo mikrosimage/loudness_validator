@@ -11,9 +11,11 @@ union Sample {
 class AvCorrector
 {
 public:
-    AvCorrector(const std::vector<avtranscoder::InputStreamDesc>& arrayToCorrect);
+    AvCorrector(const std::vector<avtranscoder::InputStreamDesc>& arrayToCorrect, const std::string& correctionOutputName = "");
+    ~AvCorrector();
 
     void correct(const float gain);
+    std::vector<avtranscoder::InputStreamDesc> getOutputStreamDescs() { return _correctedStreamDescs; }
 
 private:
     int getSampleMaxValue(const std::string& sampleFormat);
@@ -37,6 +39,7 @@ private:
 
     // for io
     std::vector<avtranscoder::AudioReader*> _audioReader;
+    std::vector<avtranscoder::InputStreamDesc> _correctedStreamDescs;
 };
 
 #endif
