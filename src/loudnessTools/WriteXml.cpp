@@ -39,6 +39,7 @@ void WriteXml::writeResults(const std::string& channelType, Loudness::analyser::
 
     xmlFile << "\" " << printStandard(analyser.getStandard()) << " " << convertValid(analyser.isValidProgram()) << " "
             << "channelsType=\"" << channelType << "\" "
+            << "correctionGain=\"" << analyser.getCorrectionGain() << "\" "
             << "date=\"" << getDate() << "\">\n";
     xmlFile << "\t<ProgramLoudness " << convertValid(analyser.isIntegratedLoudnessValid()) << ">"
             << analyser.getIntegratedLoudness() << "</ProgramLoudness>\n";
