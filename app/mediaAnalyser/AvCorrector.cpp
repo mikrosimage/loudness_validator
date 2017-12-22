@@ -14,6 +14,8 @@ AvCorrector::AvCorrector(const std::vector<avtranscoder::InputStreamDesc>& array
     , _currentReaderSamplesMaxValue()
     , _audioReader()
     , _correctedStreamDescs()
+    , _outputStream(&std::cout)
+    , _progressionFileName()
 {
     for (int i = 0; i < arrayToCorrect.size(); ++i)
     {
@@ -62,6 +64,14 @@ AvCorrector::~AvCorrector()
 
 void AvCorrector::correct(const float gain)
 {
+    // open file to print duration
+    std::ofstream outputFile;
+    if(! _progressionFileName.empty())
+    {
+        outputFile.open(_progressionFileName.c_str());
+        _outputStream = &outputFile;
+    }
+
     for (int i = 0; i < _audioReader.size(); ++i)
     {
         avtranscoder::AudioReader* reader = _audioReader.at(i);
@@ -122,12 +132,28 @@ void AvCorrector::correct(const float gain)
 
             count += correctedSamples;
             _cumulOfSamplesCorrected += correctedSamples;
+            printProgress();
         }
 
         outputFile->endWrap();
         delete encoder;
         delete outputFile;
     }
+}
+
+void AvCorrector::printProgress()
+{
+    const int p = (float)_cumulOfSamplesCorrected / _totalNbSamplesToCorrect * 100;
+
+    // print progression to file
+    if(!_progressionFileName.empty())
+    {
+        _outputStream->seekp(0);
+        *_outputStream << p;
+    }
+    // print progression to console
+    else
+        *_outputStream << "[" << std::setw(3) << p << "%]\r" << std::flush;
 }
 
 int AvCorrector::getSampleMaxValue(const std::string& sampleFormat)

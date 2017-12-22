@@ -66,16 +66,17 @@ void printHelp()
     help += "Usage\n";
     help += "\tmedia-analyser CONFIG.TXT [--output XMLReportName][--progressionInFile "
             "progressionName][--forceDurationToAnalyse durationToAnalyse][--help]\n";
-    help += "\tmedia-analyser CONFIG.TXT --correction gain [--correctionOutput outputFilesName]\n";
+    help += "\tmedia-analyser CONFIG.TXT --correction gain [--correctionOutput outputFilesName]"
+            "[--progressionInFile progressionName]\n";
     help += "CONFIG.TXT\n";
     help += "\tEach line will be one audio stream analysed by the loudness library.\n";
     help += "\tPattern of each line is:\n";
     help += "\t[inputFile]=STREAM_INDEX.CHANNEL_INDEX\n";
     help += "Command line options\n";
     help += "\t--help: display this help\n";
+    help += "\t--progressionInFile: to print the progression in a file instead of in console\n";
     help += "\tANALYSE:\n";
     help += "\t--output: filename of the XML report\n";
-    help += "\t--progressionInFile: to print the progression in a file instead of in console\n";
     help += "\t--forceDurationToAnalyse: to force loudness analysis on a specific duration (in seconds). By default this is "
             "the duration of the input.\n";
     help += "\tCORRECTION:\n";
@@ -183,6 +184,7 @@ int main(int argc, char** argv)
         if(correction)
         {
             AvCorrector corrector(arrayToAnalyse, correctionOutputName);
+            corrector.setProgressionFile(outputProgressionName);
             corrector.correct(gain);
             std::cout << "Correction with gain " << gain << " done." << std::endl;
         }

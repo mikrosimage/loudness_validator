@@ -16,9 +16,11 @@ public:
 
     void correct(const float gain);
     std::vector<avtranscoder::InputStreamDesc> getOutputStreamDescs() { return _correctedStreamDescs; }
+    void setProgressionFile(const std::string& progressionFileName) { _progressionFileName = progressionFileName; }
 
 private:
     int getSampleMaxValue(const std::string& sampleFormat);
+    void printProgress();
 
     size_t correctFrame(unsigned char* srcData, unsigned char* dstData, const size_t nbChannels, const size_t nbSamples,
         const size_t bytesPerSample, const float gain);
@@ -36,6 +38,10 @@ private:
     std::vector<size_t> _inputSampleRate;
 
     int _currentReaderSamplesMaxValue;
+
+    // To print the progession to a stream
+    std::ostream* _outputStream;
+    std::string _progressionFileName;
 
     // for io
     std::vector<avtranscoder::AudioReader*> _audioReader;
