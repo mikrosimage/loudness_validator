@@ -33,6 +33,12 @@ std::vector<avtranscoder::InputStreamDesc> parseConfigFile(const std::string& co
             if(separator == '.')
                 ss >> channelIndex;
 
+            if(channelIndex == -1)
+            {
+                result.push_back(avtranscoder::InputStreamDesc(filename, streamIndex));
+                continue;
+            }
+
             bool newInputDescAdded = false;
             // if we already have an input description with the same filename/streamIndex, add only the new channelIndex
             for(std::vector<avtranscoder::InputStreamDesc>::iterator it = result.begin(); it != result.end(); ++it)
