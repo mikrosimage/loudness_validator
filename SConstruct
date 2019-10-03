@@ -74,6 +74,48 @@ AddOption(
     help='Use this option to specify the path to qt library (is case of conflict between several versions for example).'
 )
 
+# Get ADM/EAR install path
+AddOption(
+    '--adm',
+    dest='adm',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local',
+    metavar='DIR',
+    help='Path to root of ITU-R ADM library.'
+)
+AddOption(
+    '--ear',
+    dest='ear',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local',
+    metavar='DIR',
+    help='Path to root of EBU ADM Renderer library.'
+)
+AddOption(
+    '--bw64',
+    dest='bw64',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local',
+    metavar='DIR',
+    help='Path to root of ITU-R BW64 headers.'
+)
+AddOption(
+    '--admrenderer',
+    dest='admrenderer',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local',
+    metavar='DIR',
+    help='Path to root of ADM Audio Renderer.'
+)
+
 # Get ffmpeg install path
 AddOption(
     '--ffmpeg',
