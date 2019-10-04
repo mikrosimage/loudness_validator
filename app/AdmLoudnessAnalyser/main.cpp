@@ -5,7 +5,7 @@
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
-adm::LoudnessMetadata analyseLoudness(const std::unique_ptr<bw64::Bw64Reader>& bw64File, const admrenderer::Renderer& renderer) {
+adm::LoudnessMetadata analyseLoudness(const std::unique_ptr<bw64::Bw64Reader>& bw64File, const admrenderer::Renderer& renderer, const bool displayResult) {
     // Analyse loudness according to EBU R-128
     Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
     Loudness::analyser::LoudnessAnalyser analyser(level);
@@ -46,7 +46,10 @@ adm::LoudnessMetadata analyseLoudness(const std::unique_ptr<bw64::Bw64Reader>& b
     }
     bw64File->seek(0);
 
-    // analyser.printPloudValues();
+    if(displayResult) {
+        analyser.printPloudValues();
+    }
+
     adm::LoudnessMetadata loudnessMetadata;
     loudnessMetadata.set(adm::LoudnessMethod("ITU-R BS.1770"));
     loudnessMetadata.set(adm::LoudnessRecType("EBU R128"));
@@ -99,7 +102,7 @@ int main(int argc, char const *argv[])
         for(auto audioProgramme : audioProgrammes) {
             // std::cout << "### Render audio programme: " << admrenderer::toString(audioProgramme) << std::endl;
             renderer.initAudioProgrammeRendering(audioProgramme);
-            const adm::LoudnessMetadata loudnessMetadata = analyseLoudness(bw64File, renderer);
+            const adm::LoudnessMetadata loudnessMetadata = analyseLoudness(bw64File, renderer, argc == 2);
 
             // Update audio programme
             admDocument->remove(audioProgramme);
