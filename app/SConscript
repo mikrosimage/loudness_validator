@@ -223,10 +223,11 @@ if 'loudnessAnalyserLibStatic' in locals() and \
     conf = Configure(admLoudnessEnv)
 
     if adm_root and ear_root and admrenderer_root and \
-       conf.CheckCXXHeader('adm/adm.hpp') and \
-       conf.CheckCXXHeader('ear/ear.hpp') and \
-       conf.CheckCXXHeader("bw64/bw64.hpp") and \
-       conf.CheckCXXHeader('admrenderer/renderer.hpp'):
+        conf.CheckCXXHeader('adm/adm.hpp') and \
+        conf.CheckCXXHeader('ear/ear.hpp') and \
+        conf.CheckCXXHeader("bw64/bw64.hpp") and \
+        conf.CheckCXXHeader('admrenderer/renderer.hpp'):
+
         admLoudnessEnv = conf.Finish()
 
         admLoudnessAnalyserProgram = admLoudnessEnv.Program(
