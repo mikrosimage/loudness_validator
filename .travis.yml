@@ -32,7 +32,7 @@ addons:
     sources: ['boost-latest']
     packages:
     - scons
-    - libboost1.55-all-dev
+    - libboost1.58-all-dev
     - libsndfile1-dev
     - libqt4-dev
 
