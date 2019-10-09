@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include <admrenderer/adm_helper.hpp>
-#include <admrenderer/renderer.hpp>
+#include <adm_engine/adm_helper.hpp>
+#include <adm_engine/renderer.hpp>
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
-adm::LoudnessMetadata analyseLoudness(const std::unique_ptr<bw64::Bw64Reader>& bw64File, const admrenderer::Renderer& renderer, const bool displayResult) {
+adm::LoudnessMetadata analyseLoudness(const std::unique_ptr<bw64::Bw64Reader>& bw64File, const admengine::Renderer& renderer, const bool displayResult) {
     // Analyse loudness according to EBU R-128
     Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
     Loudness::analyser::LoudnessAnalyser analyser(level);
@@ -17,12 +17,12 @@ adm::LoudnessMetadata analyseLoudness(const std::unique_ptr<bw64::Bw64Reader>& b
     analyser.initAndStart(nbChannelsToAnalyse, sampleRate);
 
     // Create interlaced buffer
-    float readFileBuffer[admrenderer::BLOCK_SIZE * nbInputChannels] = {0.0,}; // nb of samples * nb input channels
+    float readFileBuffer[admengine::BLOCK_SIZE * nbInputChannels] = {0.0,}; // nb of samples * nb input channels
 
     while (!bw64File->eof()) {
         // Read a data block
-        float admRenderBuffer[admrenderer::BLOCK_SIZE * nbChannelsToAnalyse] = {0.0,}; // nb of samples * nb output channels
-        const size_t nbFrames = bw64File->read(readFileBuffer, admrenderer::BLOCK_SIZE);
+        float admRenderBuffer[admengine::BLOCK_SIZE * nbChannelsToAnalyse] = {0.0,}; // nb of samples * nb output channels
+        const size_t nbFrames = bw64File->read(readFileBuffer, admengine::BLOCK_SIZE);
         const size_t renderedSamples = renderer.processBlock(nbFrames, readFileBuffer, admRenderBuffer);
 
 
@@ -68,12 +68,12 @@ void writetoFile(const std::unique_ptr<bw64::Bw64Reader>& inputFile,
                  const std::shared_ptr<adm::Document>& document,
                  const std::shared_ptr<bw64::ChnaChunk>& chnaChunk,
                  const std::string& outputFilePath) {
-    std::shared_ptr<bw64::AxmlChunk> axml = admrenderer::createAxmlChunk(document);
+    std::shared_ptr<bw64::AxmlChunk> axml = admengine::createAxmlChunk(document);
     auto outputFile = bw64::writeFile(outputFilePath, inputFile->channels(), inputFile->sampleRate(), inputFile->bitDepth(), chnaChunk, axml);
-    std::vector<float> buffer(admrenderer::BLOCK_SIZE * inputFile->channels());
+    std::vector<float> buffer(admengine::BLOCK_SIZE * inputFile->channels());
     inputFile->seek(0);
     while (!inputFile->eof()) {
-        auto readFrames = inputFile->read(&buffer[0], admrenderer::BLOCK_SIZE);
+        auto readFrames = inputFile->read(&buffer[0], admengine::BLOCK_SIZE);
         outputFile->write(&buffer[0], readFrames);
     }
     inputFile->seek(0);
@@ -93,14 +93,14 @@ int main(int argc, char const *argv[])
     auto bw64File = bw64::readFile(argv[1]);
     const std::string outputDirectory(".");
     const std::string outputLayout("0+2+0");
-    admrenderer::Renderer renderer(bw64File, outputLayout);
+    admengine::Renderer renderer(bw64File, outputLayout);
 
     auto admDocument = renderer.getDocument();
     auto chnaChunk = renderer.getAdmChnaChunk();
     auto audioProgrammes = renderer.getDocumentAudioProgrammes();
     if(audioProgrammes.size()) {
         for(auto audioProgramme : audioProgrammes) {
-            // std::cout << "### Render audio programme: " << admrenderer::toString(audioProgramme) << std::endl;
+            // std::cout << "### Render audio programme: " << admengine::toString(audioProgramme) << std::endl;
             renderer.initAudioProgrammeRendering(audioProgramme);
             const adm::LoudnessMetadata loudnessMetadata = analyseLoudness(bw64File, renderer, argc == 2);
 
