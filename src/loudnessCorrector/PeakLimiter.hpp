@@ -35,7 +35,15 @@ public:
 
     size_t getSize() const { return _size; }
     size_t getIndex() const { return _index; }
-    size_t incrementAndGetIndex() { return ++_index; }
+    size_t incrementAndGetIndex() {
+        if (++_index >= _size) {
+            _index = 0;
+        }
+        return _index;
+    }
+
+    float* getValues(const size_t& index) { return &_values[index]; }
+    float* getValues() { return getValues(_index); }
 
     void setIndex(const size_t& index) {
         _index = index;
@@ -61,6 +69,7 @@ private:
     size_t _size;
     size_t _index;
     float* _values;
+    std::string _name;
 };
 
 class PeakLimiter {
@@ -99,6 +108,11 @@ public:
 private:
     int applyInterlaced(float* samples, const size_t& nSamplesPerChannel);
 
+    float getSectionMaximum(float* frame);
+
+    void computeGain(const float& maximum);
+    void applyGain(float& value);
+
 private:
 
     float _temporalGainReductionFactor;
@@ -134,6 +148,8 @@ private:
 
     std::vector<size_t> _sectionMaxIndexList;
     size_t _sectionIndex; // position of section in max. buffer (in samples)
+
+    size_t _outputSamplesCounter;
 };
 
 }

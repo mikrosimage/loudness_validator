@@ -28,6 +28,7 @@ PeakLimiter::PeakLimiter(const float& attackMilliSec,
     , _sectionMaximumsMaxValueIndex(0)
     , _positionInSection(0)
     , _sectionIndex(0)
+    , _outputSamplesCounter(0)
 {
     // compute attack time in samples */
     _attackInSamples = (size_t)(_attackInMilliSec * _sampleRate / 1000);
@@ -90,157 +91,170 @@ int PeakLimiter::applyPlanar(const float ** samplesIn, float ** samplesOut, cons
     return result;
 }
 
-int PeakLimiter::applyInterlaced(float * samples, const size_t& nSamples) {
+int PeakLimiter::applyInterlaced(float* samples, const size_t& nSamples) {
+    _outputSamplesCounter = 0;
+    const size_t bufferSize = nSamples * _nbChannels;
+    size_t inputSamplesCounter = 0;
+    size_t positionInDelayBuffer = _delayBuffer.getIndex();
 
-    for (size_t i = 0; i < nSamples; i++) {
-        // get maximum absolute sample value of all channels that are greater in absoulte value to threshold
-        _maximums.set(_threshold);
-        for (size_t j = 0; j < _nbChannels; j++) {
-            size_t position = i * _nbChannels + j;
-            _maximums.set(std::max(_maximums.get(), (float) fabs(samples[position])));
-        }
+    while(_outputSamplesCounter < bufferSize) {
 
-        // search maximum in the current section
-        if (_sectionMaxIndexList.at(_sectionMaximums.getIndex()) == _maximums.getIndex()) {
-            // if we have just changed the sample containing the old maximum value
-            // need to compute the maximum on the whole section
-            _maxValueOfCurrentSection = _maximums.get();
-            for (size_t j = 1; j < _sectionLength; j++) {
-                size_t maximumsIndex = _maximums.getIndex() + j;
-                if (_maximums.get(maximumsIndex) > _maxValueOfCurrentSection) {
-                    _maxValueOfCurrentSection = _maximums.get(maximumsIndex);
-                    _sectionMaxIndexList[_sectionMaximums.getIndex()] = _sectionIndex + j;
-                }
-            }
+        float* frame;
+        if(inputSamplesCounter < bufferSize) {
+            frame = &samples[inputSamplesCounter];
         } else {
-            // just need to compare the new value to the current maximum value
-            if (_maximums.get() > _maxValueOfCurrentSection) {
-                _maxValueOfCurrentSection = _maximums.get();
-                _sectionMaxIndexList[_sectionMaximums.getIndex()] = _maximums.getIndex();
-            }
+            frame = _delayBuffer.getValues();
         }
+        float maximum = getSectionMaximum(frame);
+        computeGain(maximum);
 
-        // find maximum of slow (downsampled) max buffer
-        float maximum = _sectionMaximumsMaxValue;
-        if (_maxValueOfCurrentSection > maximum) {
-            maximum = _maxValueOfCurrentSection;
+        for (size_t c = 0; c < _nbChannels; ++c)
+        {
+            float outputValue = _delayBuffer.get();
+            if(inputSamplesCounter < bufferSize) {
+                const float sampleValue = samples[inputSamplesCounter];
+                _delayBuffer.set(positionInDelayBuffer, sampleValue);
+            }
+
+            if(inputSamplesCounter >= _delayBuffer.getSize()) {
+                applyGain(outputValue);
+                samples[_outputSamplesCounter] = outputValue;
+                _outputSamplesCounter++;
+            }
+
+            inputSamplesCounter++;
+            positionInDelayBuffer = _delayBuffer.incrementAndGetIndex();
         }
-
-        _maximums.incrementAndGetIndex();
-        _positionInSection++;
-
-        // if the current section is finished, or end of _maximums is reached,
-        // store the maximum of this section and open up a new one
-        if ((_positionInSection >= _sectionLength) || (_maximums.getIndex() >= _attackInSamples + 1)) {
-            _positionInSection = 0;
-
-            // get maximum of current section and store it into downsampled buffer (and keep as previous max value)
-            _sectionMaximums.set(_maxValueOfCurrentSection);
-            float previousSectionMaxValue = _sectionMaximums.get();
-            bool needToComputeMaxOfMaximumsOverAllSections = false;
-             // if we reached the index of the max value of the dowsampled buffer (max of maximums)
-            if (_sectionMaximumsMaxValueIndex == _sectionMaximums.getIndex()) {
-                needToComputeMaxOfMaximumsOverAllSections = true;
-            }
-            // increment section index into downsampled buffer
-            if (_sectionMaximums.incrementAndGetIndex() >= _nbSections) {
-                // if we reached the end of downsampled buffer reset index
-                _sectionMaximums.setIndex(0);
-            }
-            if (_sectionMaximumsMaxValueIndex == _sectionMaximums.getIndex()) {
-                // if we now reached the index of the max value of the dowsampled buffer (max of maximums)
-                needToComputeMaxOfMaximumsOverAllSections = true;
-            }
-             // set _maxValueOfCurrentSection with corresponding value in downsampled buffer
-            _maxValueOfCurrentSection = _sectionMaximums.get();
-            // zero out the value representing the new section
-            _sectionMaximums.set(0.0f);
-
-            // compute the maximum over all the section
-            if (needToComputeMaxOfMaximumsOverAllSections) {
-                _sectionMaximumsMaxValue = 0;
-                 // for each section in downsampled buffer, check who's max
-                for (size_t j = 0; j < _nbSections; j++) {
-                    if (_sectionMaximums.get(j) > _sectionMaximumsMaxValue) {
-                        _sectionMaximumsMaxValue = _sectionMaximums.get(j);
-                        _sectionMaximumsMaxValueIndex = j;
-                    }
-                }
-
-            } else if (previousSectionMaxValue > _sectionMaximumsMaxValue) {
-                _sectionMaximumsMaxValue = previousSectionMaxValue;
-                _sectionMaximumsMaxValueIndex = _sectionMaximums.getIndex();
-            }
-
-            // go to next section in max buffer (in samples)
-            _sectionIndex += _sectionLength;
-        }
-
-         // if we reached the end of the max buffer (in samples), reset index
-        if (_maximums.getIndex() >= (_attackInSamples + 1)) {
-            _maximums.setIndex(0);
-            _sectionIndex = 0;
-        }
-
-        // compute needed gain
-        float gain = 0;
-        if (maximum > _threshold) {
-            gain = _threshold / maximum;
-        } else {
-            gain = 1;
-        }
-
-        // avoid overshoot
-        if (gain < _smoothState) { // if gain less than something
-            _fadedGain = std::min(_fadedGain, (gain - 0.1f * (float) _smoothState) * 1.11111111f);
-        } else {
-            _fadedGain = gain;
-        }
-
-        // smoothing gain
-        if (_fadedGain < _smoothState) {
-            // attack case
-            _smoothState = _temporalGainReductionFactor * (_smoothState - _fadedGain) + _fadedGain;
-            // avoid overshoot
-            if (gain > _smoothState) {
-                _smoothState = gain;
-            }
-        } else {
-            // release case
-            _smoothState = _temporalGainRecoveringFactor * (_smoothState - _fadedGain) + _fadedGain;
-        }
-
-        // fill delay line and apply gain
-        for (size_t j = 0; j < _nbChannels; j++) {
-            size_t positionInDelayBuffer = _delayBuffer.getIndex() * _nbChannels + j;
-            size_t positionInSamples = i * _nbChannels + j;
-            float previousDelayValue = _delayBuffer.get(positionInDelayBuffer);
-
-            // store previous sample value
-            _delayBuffer.set(positionInDelayBuffer, samples[positionInSamples]);
-
-             // Apply a gain to the previous delay value, and limit the value.
-            previousDelayValue *= _smoothState;
-            if (previousDelayValue > _threshold) {
-                previousDelayValue = _threshold;
-            }
-            if (previousDelayValue < -_threshold) {
-                previousDelayValue = -_threshold;
-            }
-            if(previousDelayValue == 0) {
-                std::cout << "Delay buffer: 0 at " << positionInDelayBuffer << std::endl;
-            }
-
-            // update output sample buffer with value
-            samples[positionInSamples] = previousDelayValue;
-        }
-
-        // if we reach the attack samples number, reset delayBufferIndex
-        if (_delayBuffer.incrementAndGetIndex() >= _attackInSamples)
-            _delayBuffer.setIndex(0);
     }
 
     return 0;
+}
+
+void PeakLimiter::applyGain(float& value) {
+    // Apply a gain to the previous delay value, and limit the value.
+    value *= _smoothState;
+    if (value > _threshold) {
+        value = _threshold;
+    }
+    if (value < -_threshold) {
+        value = -_threshold;
+    }
+}
+
+float PeakLimiter::getSectionMaximum(float* frame) {
+    // get maximum absolute sample value of all channels that are greater in absoulte value to threshold
+    _maximums.set(_threshold);
+    for (size_t j = 0; j < _nbChannels; j++) {
+        _maximums.set(std::max(_maximums.get(), (float) fabs(frame[j])));
+    }
+
+    // search maximum in the current section
+    if (_sectionMaxIndexList.at(_sectionMaximums.getIndex()) == _maximums.getIndex()) {
+        // if we have just changed the sample containing the old maximum value
+        // need to compute the maximum on the whole section
+        _maxValueOfCurrentSection = _maximums.get();
+        for (size_t j = 1; j < _sectionLength; j++) {
+            size_t maximumsIndex = _maximums.getIndex() + j;
+            if (_maximums.get(maximumsIndex) > _maxValueOfCurrentSection) {
+                _maxValueOfCurrentSection = _maximums.get(maximumsIndex);
+                _sectionMaxIndexList[_sectionMaximums.getIndex()] = _sectionIndex + j;
+            }
+        }
+    } else {
+        // just need to compare the new value to the current maximum value
+        if (_maximums.get() > _maxValueOfCurrentSection) {
+            _maxValueOfCurrentSection = _maximums.get();
+            _sectionMaxIndexList[_sectionMaximums.getIndex()] = _maximums.getIndex();
+        }
+    }
+
+    // find maximum of slow (downsampled) max buffer
+    float maximum = _sectionMaximumsMaxValue;
+    if (_maxValueOfCurrentSection > maximum) {
+        maximum = _maxValueOfCurrentSection;
+    }
+
+    _maximums.incrementAndGetIndex();
+    _positionInSection++;
+    return maximum;
+}
+
+void PeakLimiter::computeGain(const float& maximum) {
+    // if the current section is finished, or end of _maximums is reached,
+    // store the maximum of this section and open up a new one
+    if ((_positionInSection >= _sectionLength) || (_maximums.getIndex() >= _attackInSamples + 1)) {
+        _positionInSection = 0;
+
+        // get maximum of current section and store it into downsampled buffer (and keep as previous max value)
+        _sectionMaximums.set(_maxValueOfCurrentSection);
+        float previousSectionMaxValue = _sectionMaximums.get();
+        bool needToComputeMaxOfMaximumsOverAllSections = false;
+         // if we reached the index of the max value of the dowsampled buffer (max of maximums)
+        if (_sectionMaximumsMaxValueIndex == _sectionMaximums.getIndex()) {
+            needToComputeMaxOfMaximumsOverAllSections = true;
+        }
+        if (_sectionMaximumsMaxValueIndex == _sectionMaximums.incrementAndGetIndex()) {
+            // if we now reached the index of the max value of the dowsampled buffer (max of maximums)
+            needToComputeMaxOfMaximumsOverAllSections = true;
+        }
+         // set _maxValueOfCurrentSection with corresponding value in downsampled buffer
+        _maxValueOfCurrentSection = _sectionMaximums.get();
+        // zero out the value representing the new section
+        _sectionMaximums.set(0.0f);
+
+        // compute the maximum over all the section
+        if (needToComputeMaxOfMaximumsOverAllSections) {
+            _sectionMaximumsMaxValue = 0;
+             // for each section in downsampled buffer, check who's max
+            for (size_t j = 0; j < _nbSections; j++) {
+                if (_sectionMaximums.get(j) > _sectionMaximumsMaxValue) {
+                    _sectionMaximumsMaxValue = _sectionMaximums.get(j);
+                    _sectionMaximumsMaxValueIndex = j;
+                }
+            }
+
+        } else if (previousSectionMaxValue > _sectionMaximumsMaxValue) {
+            _sectionMaximumsMaxValue = previousSectionMaxValue;
+            _sectionMaximumsMaxValueIndex = _sectionMaximums.getIndex();
+        }
+
+        // go to next section in max buffer (in samples)
+        _sectionIndex += _sectionLength;
+    }
+
+     // if we reached the end of the max buffer (in samples), reset index
+    if (_maximums.getIndex() >= (_attackInSamples + 1)) {
+        _maximums.setIndex(0);
+        _sectionIndex = 0;
+    }
+
+    // compute needed gain
+    float gain = 0;
+    if (maximum > _threshold) {
+        gain = _threshold / maximum;
+    } else {
+        gain = 1;
+    }
+
+    // avoid overshoot
+    if (gain < _smoothState) { // if gain less than something
+        _fadedGain = std::min(_fadedGain, (gain - 0.1f * (float) _smoothState) * 1.11111111f);
+    } else {
+        _fadedGain = gain;
+    }
+
+    // smoothing gain
+    if (_fadedGain < _smoothState) {
+        // attack case
+        _smoothState = _temporalGainReductionFactor * (_smoothState - _fadedGain) + _fadedGain;
+        // avoid overshoot
+        if (gain > _smoothState) {
+            _smoothState = gain;
+        }
+    } else {
+        // release case
+        _smoothState = _temporalGainRecoveringFactor * (_smoothState - _fadedGain) + _fadedGain;
+    }
 }
 
 float PeakLimiter::getMaxGainReduction() {
