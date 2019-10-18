@@ -159,12 +159,12 @@ float PeakLimiter::getSectionMaximum(float* frame) {
     if (_sectionMaxIndexList.at(_sectionMaximums.getIndex()) == _maximums.getIndex()) {
         // if we have just changed the sample containing the old maximum value
         // need to compute the maximum on the whole section
-        _maxValueOfCurrentSection = _maximums.get();
+        _maxValueOfCurrentSection = _maximums.get(_sectionIndex);
         for (size_t j = 1; j < _sectionLength; j++) {
-            size_t maximumsIndex = _maximums.getIndex() + j;
+            size_t maximumsIndex = _sectionIndex + j;
             if (_maximums.get(maximumsIndex) > _maxValueOfCurrentSection) {
                 _maxValueOfCurrentSection = _maximums.get(maximumsIndex);
-                _sectionMaxIndexList[_sectionMaximums.getIndex()] = _sectionIndex + j;
+                _sectionMaxIndexList[_sectionMaximums.getIndex()] = maximumsIndex;
             }
         }
     } else {
@@ -219,7 +219,6 @@ void PeakLimiter::computeGain(const float& maximum) {
                     _sectionMaximumsMaxValueIndex = j;
                 }
             }
-
         } else if (previousSectionMaxValue > _sectionMaximumsMaxValue) {
             _sectionMaximumsMaxValue = previousSectionMaxValue;
             _sectionMaximumsMaxValueIndex = _sectionMaximums.getIndex();
@@ -230,8 +229,7 @@ void PeakLimiter::computeGain(const float& maximum) {
     }
 
      // if we reached the end of the max buffer (in samples), reset index
-    if (_maximums.getIndex() >= (_attackInSamples + 1)) {
-        _maximums.setIndex(0);
+    if (_maximums.getIndex() == 0) {
         _sectionIndex = 0;
     }
 
