@@ -56,12 +56,12 @@ PeakLimiter::PeakLimiter(const float& attackMilliSec,
     _temporalGainRecoveringFactor = (float) pow(0.1, 1.0 / (_releaseInMilliSec * _sampleRate / 1000 + 1));
 }
 
-int PeakLimiter::apply(const float * samplesIn, float * samplesOut, const size_t& nSamples) {
+int PeakLimiter::apply(const float* samplesIn, float* samplesOut, const size_t& nSamples) {
     memcpy(samplesOut, samplesIn, nSamples * _nbChannels * sizeof(float));
     return applyInterlaced(samplesOut, nSamples);
 }
 
-int PeakLimiter::applyPlanar(const float ** samplesIn, float ** samplesOut, const size_t& nSamples) {
+int PeakLimiter::applyPlanar(const float** samplesIn, float** samplesOut, const size_t& nSamples) {
     const size_t bufferSize = nSamples * _nbChannels;
     float* interlacedSamplesOut = new float[bufferSize];
 
@@ -93,30 +93,37 @@ int PeakLimiter::applyPlanar(const float ** samplesIn, float ** samplesOut, cons
 
 int PeakLimiter::applyInterlaced(float* samples, const size_t& nSamples) {
     _outputSamplesCounter = 0;
-    const size_t bufferSize = nSamples * _nbChannels;
+    const size_t totalNbSamples = nSamples * _nbChannels;
     size_t inputSamplesCounter = 0;
     size_t positionInDelayBuffer = _delayBuffer.getIndex();
 
-    while(_outputSamplesCounter < bufferSize) {
+    while(_outputSamplesCounter < totalNbSamples) {
 
         float* frame;
-        if(inputSamplesCounter < bufferSize) {
+        if(inputSamplesCounter < totalNbSamples) {
+            // get input frame while there is some
             frame = &samples[inputSamplesCounter];
         } else {
+            // get buffer frame otherwise
             frame = _delayBuffer.getValues();
         }
+
+        // compute peak and gain
         float maximum = getSectionMaximum(frame);
         computeGain(maximum);
 
         for (size_t c = 0; c < _nbChannels; ++c)
         {
+            // get output value from delay buffer
             float outputValue = _delayBuffer.get();
-            if(inputSamplesCounter < bufferSize) {
+            if(inputSamplesCounter < totalNbSamples) {
+                // while we didn't reach the total nb of samples from input, fill the delay buffer
                 const float sampleValue = samples[inputSamplesCounter];
                 _delayBuffer.set(positionInDelayBuffer, sampleValue);
             }
 
             if(inputSamplesCounter >= _delayBuffer.getSize()) {
+                // if the delay buffer has been completely filled once, we can start writing the output samples
                 applyGain(outputValue);
                 samples[_outputSamplesCounter] = outputValue;
                 _outputSamplesCounter++;
