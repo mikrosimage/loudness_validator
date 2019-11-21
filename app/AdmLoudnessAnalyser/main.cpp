@@ -1,123 +1,90 @@
 #include <iostream>
 
-#include <adm_engine/adm_helper.hpp>
-#include <adm_engine/renderer.hpp>
+#include "AdmLoudnessAnalyser.hpp"
 
-#include <loudnessAnalyser/LoudnessAnalyser.hpp>
+// size_t readAndRenderAdmAudioBlock(const std::unique_ptr<bw64::Bw64Reader>& inputFile,
+//                                const admengine::Renderer& renderer,
+//                                float* readFileBuffer,
+//                                float* renderingBuffer) {
+//     const size_t nbFrames = inputFile->read(readFileBuffer, admengine::BLOCK_SIZE);
+//     if(nbFrames == 0)
+//         return 0;
+//     return renderer.processBlock(nbFrames, readFileBuffer, renderingBuffer);
+// }
 
-adm::LoudnessMetadata analyseLoudness(const std::unique_ptr<bw64::Bw64Reader>& bw64File, const admengine::Renderer& renderer, const bool displayResult) {
-    // Analyse loudness according to EBU R-128
-    Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
-    Loudness::analyser::LoudnessAnalyser analyser(level);
-
-    // init
-    const size_t nbChannelsToAnalyse = renderer.getNbOutputChannels();
-    const size_t nbInputChannels = bw64File->channels();
-    const size_t sampleRate = bw64File->sampleRate();
-    analyser.initAndStart(nbChannelsToAnalyse, sampleRate);
-
-    // Create interlaced buffer
-    float readFileBuffer[admengine::BLOCK_SIZE * nbInputChannels] = {0.0,}; // nb of samples * nb input channels
-
-    while (!bw64File->eof()) {
-        // Read a data block
-        float admRenderBuffer[admengine::BLOCK_SIZE * nbChannelsToAnalyse] = {0.0,}; // nb of samples * nb output channels
-        const size_t nbFrames = bw64File->read(readFileBuffer, admengine::BLOCK_SIZE);
-        const size_t renderedSamples = renderer.processBlock(nbFrames, readFileBuffer, admRenderBuffer);
-
-
-        // Create planar buffer of float data
-        float** loudnessInputBuffer = new float*[nbChannelsToAnalyse];
-        for (size_t c = 0; c < nbChannelsToAnalyse; ++c) {
-            loudnessInputBuffer[c] = new float[nbFrames];
-        }
-
-        size_t channel_id = 0;
-        size_t frame_id = 0;
-        for (size_t s = 0; s < renderedSamples; ++s) {
-            channel_id = s % nbChannelsToAnalyse;
-            frame_id = s / nbChannelsToAnalyse;
-            loudnessInputBuffer[channel_id][frame_id] = admRenderBuffer[s];
-        }
-        analyser.processSamples(loudnessInputBuffer, nbFrames);
-
-        // free audio buffer
-        delete[] loudnessInputBuffer;
-    }
-    bw64File->seek(0);
-
-    if(displayResult) {
-        analyser.printPloudValues();
-    }
-
-    adm::LoudnessMetadata loudnessMetadata;
-    loudnessMetadata.set(adm::LoudnessMethod("ITU-R BS.1770"));
-    loudnessMetadata.set(adm::LoudnessRecType("EBU R128"));
-    loudnessMetadata.set(adm::IntegratedLoudness(analyser.getIntegratedLoudness()));
-    loudnessMetadata.set(adm::MaxTruePeak(analyser.getTruePeakValue()));
-    loudnessMetadata.set(adm::MaxMomentary(analyser.getMomentaryLoudness()));
-
-    if(analyser.isShortProgram()) {
-        loudnessMetadata.set(adm::LoudnessRange(analyser.getIntegratedRange()));
-        loudnessMetadata.set(adm::MaxShortTerm(analyser.getMaxShortTermLoudness()));
-    }
-    return loudnessMetadata;
+void displayUsage(const char* application) {
+    std::cout << "Usage: " << application << " INPUT [OPTIONS]" << std::endl;
+    std::cout << std::endl;
+    std::cout << "  INPUT                  BW64/ADM audio file" << std::endl;
+    std::cout << "  OPTIONS:" << std::endl;
+    std::cout << "    -o OUTPUT            Output file with updated ADM with loudness values" << std::endl;
+    std::cout << "    -d --display         Display loudness analyse values" << std::endl;
+    std::cout << "    -c --correction      Enable correction (if an output file is specified)" << std::endl;
+    std::cout << "    -l --limiter         Enable peak limiter (if correction is enabled)" << std::endl;
+    std::cout << "    -e ELEMENT_ID        Select the AudioProgramme to be analysed by ELEMENT_ID" << std::endl;
+    std::cout << std::endl;
 }
-
-void writetoFile(const std::unique_ptr<bw64::Bw64Reader>& inputFile,
-                 const std::shared_ptr<adm::Document>& document,
-                 const std::shared_ptr<bw64::ChnaChunk>& chnaChunk,
-                 const std::string& outputFilePath) {
-    std::shared_ptr<bw64::AxmlChunk> axml = admengine::createAxmlChunk(document);
-    auto outputFile = bw64::writeFile(outputFilePath, inputFile->channels(), inputFile->sampleRate(), inputFile->bitDepth(), chnaChunk, axml);
-    std::vector<float> buffer(admengine::BLOCK_SIZE * inputFile->channels());
-    inputFile->seek(0);
-    while (!inputFile->eof()) {
-        auto readFrames = inputFile->read(&buffer[0], admengine::BLOCK_SIZE);
-        outputFile->write(&buffer[0], readFrames);
-    }
-    inputFile->seek(0);
-}
-
 
 int main(int argc, char const *argv[])
 {
     // std::cout << "Welcome to ADM Loundess Analyser!" << std::endl;
-    if (argc != 2 && argc != 3) {
-        std::cout << "Usage: " << argv[0] << " INPUT [OUTPUT]" << std::endl;
-        std::cout << "   with INPUT   BW64/ADM audio input file" << std::endl;
-        std::cout << "   with OUTPUT  BW64/ADM audio output file (optional)" << std::endl;
-        exit(1);
+    if (argc < 2) {
+        displayUsage(argv[0]);
+        return 1;
     }
 
-    auto bw64File = bw64::readFile(argv[1]);
-    const std::string outputDirectory(".");
-    const std::string outputLayout("0+2+0");
-    admengine::Renderer renderer(bw64File, outputLayout);
+    std::string inputFilePath = argv[1];
+    std::string outputFilePath;
+    std::string elementIdToRender;
+    bool displayValues = false;
+    bool enableCorrection = false;
+    bool enableLimiter = false;
 
-    auto admDocument = renderer.getDocument();
-    auto chnaChunk = renderer.getAdmChnaChunk();
-    auto audioProgrammes = renderer.getDocumentAudioProgrammes();
-    if(audioProgrammes.size()) {
-        for(auto audioProgramme : audioProgrammes) {
-            // std::cout << "### Render audio programme: " << admengine::toString(audioProgramme) << std::endl;
-            renderer.initAudioProgrammeRendering(audioProgramme);
-            const adm::LoudnessMetadata loudnessMetadata = analyseLoudness(bw64File, renderer, argc == 2);
-
-            // Update audio programme
-            admDocument->remove(audioProgramme);
-            audioProgramme->set(loudnessMetadata);
-            admDocument->add(audioProgramme);
+    for (int i = 2; i < argc; ++i) {
+        std::string arg = argv[i];
+        if(arg == "-o") {
+            outputFilePath = argv[++i];
+        } else if(arg == "-e") {
+            elementIdToRender = argv[++i];
+        } else if(arg == "-d" || arg == "--display") {
+            displayValues = true;
+        } else if(arg == "-c" || arg == "--correction") {
+            enableCorrection = true;
+        } else if(arg == "-l" || arg == "--limiter") {
+            enableLimiter = true;
+        } else {
+            std::cerr << "Invalid argument: " << arg << std::endl;
+            displayUsage(argv[0]);
+            return 1;
         }
-    } else {
-        std::cerr << "No ADM audio programme found." << std::endl;
-        exit(1);
     }
 
-    if(argc == 3) {
-        const std::string outputFilePath(argv[2]);
-        // std::cout << "### Write to file: " << outputFilePath << std::endl;
-        writetoFile(bw64File, admDocument, chnaChunk, outputFilePath);
+    if(outputFilePath.empty() && (enableCorrection || enableLimiter)) {
+        std::cerr << "Error: an output file must be specified to enable correction and limiter." << std::endl;
+        displayUsage(argv[0]);
+        return 1;
+    }
+    if(enableLimiter && !enableCorrection) {
+        std::cerr << "Error: correction must be enabled to enable limiter." << std::endl;
+        displayUsage(argv[0]);
+        return 1;
+    }
+
+    std::cout << "Input file:            " << inputFilePath << std::endl;
+    std::cout << "Output file:           " << outputFilePath << std::endl;
+    std::cout << "ADM element to render: " << elementIdToRender << std::endl;
+    std::cout << "Display result:        " << displayValues << std::endl;
+    std::cout << "Correction enabled:    " << enableCorrection << std::endl;
+    std::cout << "Peak limiter enabled:  " << enableLimiter << std::endl;
+
+    const std::string outputLayout("0+2+0");
+
+    try {
+        AdmLoudnessAnalyser analyser(inputFilePath, outputLayout, outputFilePath);
+        analyser.process(displayValues, enableCorrection, enableLimiter);
+    } catch(std::exception e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
     }
     return 0;
 }

@@ -172,7 +172,9 @@ else:
     print('Warning: will not build media loudness analyser application.')
 
 if 'loudnessAnalyserLibStatic' in locals() and \
+    'loudnessCorrectorLibStatic' in locals() and \
     'loudnessToolsLibStatic' in locals() and \
+    'loudnessIOLibStatic' in locals() and \
     env['PLATFORM'] != 'win32': # Windows platform not supported yet.
 
     ### adm-loudness-analyser ###
@@ -232,10 +234,12 @@ if 'loudnessAnalyserLibStatic' in locals() and \
 
         admLoudnessAnalyserProgram = admLoudnessEnv.Program(
             'adm-loudness-analyser',
-            Glob( 'AdmLoudnessAnalyser/main.cpp' ),
+            Glob( 'AdmLoudnessAnalyser/*.cpp' ),
             LIBS = [
                     loudnessAnalyserLibStatic,
+                    loudnessCorrectorLibStatic,
                     loudnessToolsLibStatic,
+                    loudnessIOLibStatic,
                     File(os.path.join( adm_engine_lib_path, 'libadmengine.a' )),
                     File(os.path.join( adm_lib_path, 'libadm.a' )),
                     File(os.path.join( ear_lib_path, 'libear.so' ))
