@@ -108,24 +108,6 @@ void AdmLoudnessAnalyser::process(const bool displayValues, const bool enableCor
     }
 }
 
-void AdmLoudnessAnalyser::displayResult(const Loudness::analyser::ELoudnessResult& result) {
-    std::cout << "Program loundess: ";
-    switch(result) {
-        case Loudness::analyser::ELoudnessResult::eValidResult:
-            std::cout << "Valid" << std::endl;
-            break;
-        case Loudness::analyser::ELoudnessResult::eNotValidResult:
-            std::cout << "Invalid" << std::endl;
-            break;
-        case Loudness::analyser::ELoudnessResult::eNotValidResultButNotIllegal:
-            std::cout << "Invalid but legal" << std::endl;
-            break;
-        case Loudness::analyser::ELoudnessResult::eNoImportance:
-            std::cout << "No importance (according to the specification)" << std::endl;
-            break;
-    }
-}
-
 adm::LoudnessMetadata AdmLoudnessAnalyser::analyseLoudness(const bool displayValues,
                                                            const std::unique_ptr<bw64::Bw64Writer>& correctedFile,
                                                            const bool enableLimiter) {
@@ -241,21 +223,9 @@ adm::LoudnessMetadata AdmLoudnessAnalyser::analyseLoudness(const bool displayVal
         if(displayValues) {
             analyserAfterCorrection.printPloudValues();
         }
+        return getLoudnessMetadata(analyserAfterCorrection);
     }
-
-
-    adm::LoudnessMetadata loudnessMetadata;
-    loudnessMetadata.set(adm::LoudnessMethod("ITU-R BS.1770"));
-    loudnessMetadata.set(adm::LoudnessRecType("EBU R128"));
-    loudnessMetadata.set(adm::IntegratedLoudness(analyser.getIntegratedLoudness()));
-    loudnessMetadata.set(adm::MaxTruePeak(analyser.getTruePeakValue()));
-    loudnessMetadata.set(adm::MaxMomentary(analyser.getMomentaryLoudness()));
-
-    if(analyser.isShortProgram()) {
-        loudnessMetadata.set(adm::LoudnessRange(analyser.getIntegratedRange()));
-        loudnessMetadata.set(adm::MaxShortTerm(analyser.getMaxShortTermLoudness()));
-    }
-    return loudnessMetadata;
+    return getLoudnessMetadata(analyser);
 }
 
 void AdmLoudnessAnalyser::convertInterlacedToPlanarBuffer(float* interlaced, const size_t nbSamples, float** planar, const size_t nbChannels, const size_t nbFrames) {
@@ -270,4 +240,37 @@ void AdmLoudnessAnalyser::convertInterlacedToPlanarBuffer(float* interlaced, con
         frame_id = s / nbChannels;
         planar[channel_id][frame_id] = interlaced[s];
     }
+}
+
+void AdmLoudnessAnalyser::displayResult(const Loudness::analyser::ELoudnessResult& result) {
+    std::cout << "Program loundess: ";
+    switch(result) {
+        case Loudness::analyser::ELoudnessResult::eValidResult:
+            std::cout << "Valid" << std::endl;
+            break;
+        case Loudness::analyser::ELoudnessResult::eNotValidResult:
+            std::cout << "Invalid" << std::endl;
+            break;
+        case Loudness::analyser::ELoudnessResult::eNotValidResultButNotIllegal:
+            std::cout << "Invalid but legal" << std::endl;
+            break;
+        case Loudness::analyser::ELoudnessResult::eNoImportance:
+            std::cout << "No importance (according to the specification)" << std::endl;
+            break;
+    }
+}
+
+adm::LoudnessMetadata AdmLoudnessAnalyser::getLoudnessMetadata(Loudness::analyser::LoudnessAnalyser& analyser) {
+    adm::LoudnessMetadata loudnessMetadata;
+    loudnessMetadata.set(adm::LoudnessMethod("ITU-R BS.1770"));
+    loudnessMetadata.set(adm::LoudnessRecType("EBU R128"));
+    loudnessMetadata.set(adm::IntegratedLoudness(analyser.getIntegratedLoudness()));
+    loudnessMetadata.set(adm::MaxTruePeak(analyser.getTruePeakValue()));
+    loudnessMetadata.set(adm::MaxMomentary(analyser.getMomentaryLoudness()));
+
+    if(analyser.isShortProgram()) {
+        loudnessMetadata.set(adm::LoudnessRange(analyser.getIntegratedRange()));
+        loudnessMetadata.set(adm::MaxShortTerm(analyser.getMaxShortTermLoudness()));
+    }
+    return loudnessMetadata;
 }

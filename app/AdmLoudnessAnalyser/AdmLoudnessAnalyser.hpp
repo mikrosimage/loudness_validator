@@ -21,6 +21,7 @@ private:
 
     void convertInterlacedToPlanarBuffer(float* interlaced, const size_t nbSamples, float** planar, const size_t nbChannels, const size_t nbFrames);
     void displayResult(const Loudness::analyser::ELoudnessResult& result);
+    adm::LoudnessMetadata getLoudnessMetadata(Loudness::analyser::LoudnessAnalyser& analyser);
 
 private:
     const std::string _inputFilePath;
