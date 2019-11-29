@@ -18,12 +18,6 @@ public:
         , _values(NULL)
     {}
 
-    SampleBuffer(const size_t& length)
-        : SampleBuffer()
-    {
-        init(length);
-    }
-
     void init(const size_t& length) {
         _size = length;
         _index = 0;
@@ -84,6 +78,7 @@ public:
 
     /// Apply limiter to interlaced buffer
     int apply(const float* samplesIn, float* samplesOut, const size_t& nSamplesPerChannel);
+    // int applyWithDelayCompensation(const float * samplesIn, float * samplesOut, const size_t& nSamples, const size_t& fileOffset = 0);
     /// Apply limiter to planar buffer
     int applyPlanar(const float** samplesIn, float** samplesOut, const size_t& nSamplesPerChannel);
 
@@ -107,6 +102,7 @@ public:
 
 private:
     int applyInterlaced(float* samples, const size_t& nSamplesPerChannel);
+    // int applyInterlacedWithDelayCompensation(float* samples, const size_t& nSamples, const size_t& fileOffset);
 
     float getSectionMaximum(float* frame);
 
