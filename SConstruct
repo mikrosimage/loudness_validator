@@ -106,14 +106,14 @@ AddOption(
     help='Path to root of ITU-R BW64 headers.'
 )
 AddOption(
-    '--admrenderer',
-    dest='admrenderer',
+    '--adm-engine',
+    dest='adm-engine',
     type='string',
     nargs=1,
     action='store',
     default='/usr/local',
     metavar='DIR',
-    help='Path to root of ADM Audio Renderer.'
+    help='Path to root of ADM Engine.'
 )
 
 # Get ffmpeg install path

@@ -172,7 +172,9 @@ else:
     print('Warning: will not build media loudness analyser application.')
 
 if 'loudnessAnalyserLibStatic' in locals() and \
+    'loudnessCorrectorLibStatic' in locals() and \
     'loudnessToolsLibStatic' in locals() and \
+    'loudnessIOLibStatic' in locals() and \
     env['PLATFORM'] != 'win32': # Windows platform not supported yet.
 
     ### adm-loudness-analyser ###
@@ -195,12 +197,12 @@ if 'loudnessAnalyserLibStatic' in locals() and \
     if bw64_include is None:
         bw64_include = ''
 
-    admrenderer_root = GetOption('admrenderer')
-    admrenderer_include = ''
-    admrenderer_lib_path = ''
-    if admrenderer_root:
-        admrenderer_include = os.path.join( admrenderer_root, 'include' )
-        admrenderer_lib_path = os.path.join( admrenderer_root, 'lib' )
+    adm_engine_root = GetOption('adm-engine')
+    adm_engine_include = ''
+    adm_engine_lib_path = ''
+    if adm_engine_root:
+        adm_engine_include = os.path.join( adm_engine_root, 'include' )
+        adm_engine_lib_path = os.path.join( adm_engine_root, 'lib' )
 
 
     # Check libs
@@ -211,32 +213,34 @@ if 'loudnessAnalyserLibStatic' in locals() and \
             adm_include,
             ear_include,
             bw64_include,
-            admrenderer_include,
+            adm_engine_include,
         ],
         LIBPATH = [
             adm_lib_path,
             ear_lib_path,
-            admrenderer_lib_path,
+            adm_engine_lib_path,
         ],
     )
 
     conf = Configure(admLoudnessEnv)
 
-    if adm_root and ear_root and admrenderer_root and \
+    if adm_root and ear_root and adm_engine_root and \
         conf.CheckCXXHeader('adm/adm.hpp') and \
         conf.CheckCXXHeader('ear/ear.hpp') and \
         conf.CheckCXXHeader("bw64/bw64.hpp") and \
-        conf.CheckCXXHeader('admrenderer/renderer.hpp'):
+        conf.CheckCXXHeader('adm_engine/renderer.hpp'):
 
         admLoudnessEnv = conf.Finish()
 
         admLoudnessAnalyserProgram = admLoudnessEnv.Program(
             'adm-loudness-analyser',
-            Glob( 'AdmLoudnessAnalyser/main.cpp' ),
+            Glob( 'AdmLoudnessAnalyser/*.cpp' ),
             LIBS = [
                     loudnessAnalyserLibStatic,
+                    loudnessCorrectorLibStatic,
                     loudnessToolsLibStatic,
-                    File(os.path.join( admrenderer_lib_path, 'libadmrenderer.a' )),
+                    loudnessIOLibStatic,
+                    File(os.path.join( adm_engine_lib_path, 'libadmengine.a' )),
                     File(os.path.join( adm_lib_path, 'libadm.a' )),
                     File(os.path.join( ear_lib_path, 'libear.so' ))
             ]
@@ -245,7 +249,7 @@ if 'loudnessAnalyserLibStatic' in locals() and \
         env.Alias( 'install', env.Install( 'bin', admLoudnessAnalyserProgram ) )
 
     else:
-        print('Warning: libadm, libear or libbw64 missing, will not build adm-loudness-analyser application')
+        print('Warning: libadm, libear, libbw64 or libadmengine missing, will not build adm-loudness-analyser application')
         conf.Finish()
 
 else:
