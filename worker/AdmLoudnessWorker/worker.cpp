@@ -40,17 +40,18 @@ int analyse(const std::string& inputFilePath,
       return 1;
   }
 
+  const std::string outputLayout("0+2+0");
+
   std::cout << "Input file:            " << inputFilePath << std::endl;
+  std::cout << "Output layout:         " << outputLayout << std::endl;
   std::cout << "Output file:           " << outputFilePath << std::endl;
   std::cout << "ADM element to render: " << elementIdToRender << std::endl;
   std::cout << "Display result:        " << displayValues << std::endl;
   std::cout << "Correction enabled:    " << enableCorrection << std::endl;
   std::cout << "Peak limiter enabled:  " << enableLimiter << std::endl;
 
-  const std::string outputLayout("0+2+0");
-
   try {
-      Loudness::admanalyser::AdmLoudnessAnalyser analyser(inputFilePath, outputLayout, outputFilePath);
+      Loudness::admanalyser::AdmLoudnessAnalyser analyser(inputFilePath, outputLayout, outputFilePath, elementIdToRender);
       analyser.process(displayValues, enableCorrection, enableLimiter);
   } catch(std::exception e) {
       std::cerr << "Error: " << e.what() << std::endl;
@@ -180,7 +181,7 @@ typedef int* (*CheckError)();
  */
 int process(JobParameters job, GetParameterValueCallback parametersValueGetter, CheckError checkError, Logger logger) {
     // Print message through the Rust internal logger
-    logger("Start C Worker process...");
+    logger("Start ADM loudness analyser worker process...");
 
     // Retrieve job parameter value
     char* inputFilePath = parametersValueGetter(job, "input");

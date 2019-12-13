@@ -249,7 +249,7 @@ void AdmLoudnessAnalyser::convertInterlacedToPlanarBuffer(float* interlaced, con
 }
 
 void AdmLoudnessAnalyser::displayResult(const Loudness::analyser::ELoudnessResult& result) {
-    std::cout << "Program loundess: ";
+    std::cout << "Program loudness: ";
     switch(result) {
         case Loudness::analyser::ELoudnessResult::eValidResult:
             std::cout << "Valid" << std::endl;
