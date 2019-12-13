@@ -68,21 +68,22 @@ extern "C" {
  * Get worker name
  */
 char* get_name() {
-	return (char*)"adm_loudness_worker";
+	return (char*)"ADM Loudness Worker";
 }
 
 /**
  * Get worker short description
  */
 char* get_short_description() {
-	return (char*)"ADM loudness worker";
+	return (char*)"Processes BW64/ADM audio file rendering and loudness analyse.";
 }
 
 /**
  * Get worker long description
  */
 char* get_description() {
-	return (char*)"This worker processes ADM rendering and loudness analyse from specified BW64/ADM audio file.";
+	return (char*)"This worker processes ADM rendering and loudness analyse from specified BW64/ADM audio file. \
+It can also process loudness correction, with an optional peak limiter.";
 }
 
 /**
