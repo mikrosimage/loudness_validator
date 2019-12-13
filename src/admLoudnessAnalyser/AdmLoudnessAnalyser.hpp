@@ -5,6 +5,11 @@
 
 #include <loudnessAnalyser/LoudnessAnalyser.hpp>
 
+namespace Loudness
+{
+namespace admanalyser
+{
+
 class AdmLoudnessAnalyser {
 public:
     AdmLoudnessAnalyser(const std::string& inputFilePath,
@@ -31,5 +36,9 @@ private:
     const std::string _outputFilePath;
     const std::string _audioProgrammeIdToRender;
 };
+
+}
+
+}
 
 #endif

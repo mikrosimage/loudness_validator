@@ -7,6 +7,12 @@
 
 #include <chrono>
 
+namespace Loudness
+{
+
+namespace admanalyser
+{
+
 AdmLoudnessAnalyser::AdmLoudnessAnalyser(const std::string& inputFilePath,
                                          const std::string& outputLayout,
                                          const std::string& outputFilePath,
@@ -215,7 +221,7 @@ adm::LoudnessMetadata AdmLoudnessAnalyser::analyseLoudness(const bool displayVal
             // free audio buffer
             delete[] loudnessInputBuffer;
 
-            const size_t  writtenSamples = correctedFile->write(writeBuffer, nbFrames);
+            correctedFile->write(writeBuffer, nbFrames);
         }
         delete[] writeBuffer;
 
@@ -273,4 +279,8 @@ adm::LoudnessMetadata AdmLoudnessAnalyser::getLoudnessMetadata(Loudness::analyse
         loudnessMetadata.set(adm::MaxShortTerm(analyser.getMaxShortTermLoudness()));
     }
     return loudnessMetadata;
+}
+
+}
+
 }

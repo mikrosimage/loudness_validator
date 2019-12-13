@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "AdmLoudnessAnalyser.hpp"
+#include <admLoudnessAnalyser/AdmLoudnessAnalyser.hpp>
 
 // size_t readAndRenderAdmAudioBlock(const std::unique_ptr<bw64::Bw64Reader>& inputFile,
 //                                const admengine::Renderer& renderer,
@@ -80,7 +80,7 @@ int main(int argc, char const *argv[])
     const std::string outputLayout("0+2+0");
 
     try {
-        AdmLoudnessAnalyser analyser(inputFilePath, outputLayout, outputFilePath);
+        Loudness::admanalyser::AdmLoudnessAnalyser analyser(inputFilePath, outputLayout, outputFilePath);
         analyser.process(displayValues, enableCorrection, enableLimiter);
     } catch(std::exception e) {
         std::cerr << "Error: " << e.what() << std::endl;
