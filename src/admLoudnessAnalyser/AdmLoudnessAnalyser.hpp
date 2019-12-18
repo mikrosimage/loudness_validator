@@ -14,10 +14,11 @@ class AdmLoudnessAnalyser {
 public:
     AdmLoudnessAnalyser(const std::string& inputFilePath,
                         const std::string& outputLayout,
+                        const std::map<std::string, float>& elementGainsMapping = {},
                         const std::string& outputFilePath = "",
                         const std::string& audioProgrammeIdToRender = "");
 
-    void process(const bool displayValues, const bool enableCorrection, const bool enableLimiter = true);
+    std::shared_ptr<adm::Document> process(const bool displayValues, const bool enableCorrection, const bool enableLimiter = true);
 
 private:
     adm::LoudnessMetadata analyseLoudness(const bool displayValues,
@@ -33,7 +34,7 @@ private:
     const std::unique_ptr<bw64::Bw64Reader> _inputFile;
     admengine::Renderer _renderer;
 
-    const std::string _outputFilePath;
+    const std::string _outputPath;
     const std::string _audioProgrammeIdToRender;
 };
 
