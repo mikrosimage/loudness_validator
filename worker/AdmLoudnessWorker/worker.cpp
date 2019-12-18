@@ -6,6 +6,12 @@
 #include <iostream>
 
 #include <admLoudnessAnalyser/AdmLoudnessAnalyser.hpp>
+#include <adm_engine/parser.hpp>
+
+void assignStringtoPointer(const std::string& str, char* pointer) {
+  std::copy(str.begin(), str.end(), pointer);
+  pointer[str.size()] = '\0';
+}
 
 std::map<std::string, float> parseElementGains(const std::string& elementGainsStr) {
   std::map<std::string, float> elementGains;
@@ -58,6 +64,7 @@ int analyse(const std::string& inputFilePath,
             const char* outputPathStr,
             const char* elementIdToRenderStr,
             const char* elementGainsCStr,
+            char* output_message,
             const bool displayValues = false,
             const bool enableCorrection = false,
             const bool enableLimiter = false) {
@@ -68,12 +75,14 @@ int analyse(const std::string& inputFilePath,
   if(outputPath.empty() && enableCorrection) {
     const std::string errorMessage = "An output file must be specified to enable correction.";
     std::cerr << "Error: " << errorMessage << std::endl;
+    assignStringtoPointer(errorMessage, output_message);
     displayUsage();
     return 1;
   }
   if(enableLimiter && !enableCorrection) {
     const std::string errorMessage = "Correction must be enabled to enable limiter.";
     std::cerr << "Error: " << errorMessage << std::endl;
+    assignStringtoPointer(errorMessage, output_message);
     displayUsage();
     return 1;
   }
@@ -95,11 +104,15 @@ int analyse(const std::string& inputFilePath,
   }
 
   try {
-      Loudness::admanalyser::AdmLoudnessAnalyser analyser(inputFilePath, outputLayout, outputFilePath, elementIdToRender);
-      analyser.process(displayValues, enableCorrection, enableLimiter);
-  } catch(std::exception e) {
-      std::cerr << "Error: " << e.what() << std::endl;
-      return 1;
+    Loudness::admanalyser::AdmLoudnessAnalyser analyser(inputFilePath, outputLayout, elementGains, outputPath, elementIdToRender);
+    const std::shared_ptr<adm::Document> admDocument = analyser.process(displayValues, enableCorrection, enableLimiter);
+    const std::string admDocumentAsString = admengine::getAdmDocumentAsString(admDocument);
+    assignStringtoPointer(admDocumentAsString, output_message);
+  } catch(const std::exception& e) {
+    const std::string error(e.what());
+    std::cerr << "Error: " << error << std::endl;
+    assignStringtoPointer(error, output_message);
+    return 1;
   }
   return 0;
 }
@@ -224,7 +237,7 @@ typedef int* (*CheckError)();
  * @param checkError               Check error callback
  * @param logger                   Rust logger callback
  */
-int process(JobParameters job, GetParameterValueCallback parametersValueGetter, CheckError checkError, Logger logger) {
+int process(JobParameters job, GetParameterValueCallback parametersValueGetter, CheckError checkError, Logger logger, char* output_message) {
     // Print message through the Rust internal logger
     logger("Start ADM loudness analyser worker process...");
 
@@ -247,7 +260,7 @@ int process(JobParameters job, GetParameterValueCallback parametersValueGetter, 
     bool enableCorrection = enableCorrectionStr && strcmp(enableCorrectionStr,"true") == 0;
     bool enableLimiter = enableLimiterStr && strcmp(enableLimiterStr,"true") == 0;
 
-    return analyse(inputFilePath, outputFilePath, elementIdToRender, elementGainsCStr, displayValues, enableCorrection, enableLimiter);
+    return analyse(inputFilePath, outputFilePath, elementIdToRender, elementGainsCStr, output_message, displayValues, enableCorrection, enableLimiter);
 }
 
 #ifdef __cplusplus
