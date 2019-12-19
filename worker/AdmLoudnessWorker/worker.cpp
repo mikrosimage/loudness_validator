@@ -72,6 +72,16 @@ int analyse(const std::string& inputFilePath,
   const std::string outputPath = (outputPathStr)? outputPathStr : "";
   const std::string elementIdToRender = (elementIdToRenderStr)? elementIdToRenderStr : "";
 
+  if(Loudness::admanalyser::AdmLoudnessAnalyser::getPathType(inputFilePath) != Loudness::admanalyser::EPathType::file) {
+    std::stringstream errorMessage;
+    errorMessage << "Specified input file does not exist or is not a regular file: ";
+    errorMessage << inputFilePath;
+    std::cerr << "Error: " << errorMessage.str() << std::endl;
+    assignStringtoPointer(errorMessage.str(), output_message);
+    displayUsage();
+    return 1;
+  }
+
   if(outputPath.empty() && enableCorrection) {
     const std::string errorMessage = "An output file must be specified to enable correction.";
     std::cerr << "Error: " << errorMessage << std::endl;

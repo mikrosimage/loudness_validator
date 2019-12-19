@@ -56,6 +56,12 @@ int main(int argc, char const *argv[])
     bool enableCorrection = false;
     bool enableLimiter = false;
 
+    if(Loudness::admanalyser::AdmLoudnessAnalyser::getPathType(inputFilePath) != Loudness::admanalyser::EPathType::file) {
+        std::cerr << "Invalid argument: specified input file '" << inputFilePath << "' does not exist or is not a regular file." << std::endl << std::endl;
+        displayUsage(argv[0]);
+        return 1;
+    }
+
     if(mode == "analyse") {
         for (int i = 3; i < argc; ++i) {
             std::string arg = argv[i];

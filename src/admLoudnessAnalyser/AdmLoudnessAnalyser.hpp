@@ -10,6 +10,12 @@ namespace Loudness
 namespace admanalyser
 {
 
+enum EPathType {
+    unknown = 0,
+    file,
+    directory
+};
+
 class AdmLoudnessAnalyser {
 public:
     AdmLoudnessAnalyser(const std::string& inputFilePath,
@@ -19,6 +25,7 @@ public:
                         const std::string& audioProgrammeIdToRender = "");
 
     std::shared_ptr<adm::Document> process(const bool displayValues, const bool enableCorrection, const bool enableLimiter = true);
+    static EPathType getPathType(const std::string& path);
 
 private:
     adm::LoudnessMetadata analyseLoudness(const bool displayValues,

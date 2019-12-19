@@ -18,13 +18,7 @@ namespace admanalyser
 
 struct stat s;
 
-enum EPathType {
-    unknown = 0,
-    file,
-    directory
-};
-
-EPathType getPathType(const std::string& path) {
+EPathType AdmLoudnessAnalyser::getPathType(const std::string& path) {
     if(stat(path.c_str(), &s) == 0)
     {
         if( s.st_mode & S_IFDIR ) {
