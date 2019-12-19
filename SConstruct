@@ -116,6 +116,13 @@ AddOption(
     help='Path to root of ADM Engine.'
 )
 
+AddOption(
+    '--adm-loudness-worker',
+    dest='build-adm-loudness-worker',
+    action='store_true',
+    help='Build ADM loudness worker.'
+)
+
 # Get ffmpeg install path
 AddOption(
     '--ffmpeg',
@@ -286,3 +293,4 @@ VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
 SConscript( 'src/SConscript', variant_dir = 'build/' + buildMode + '/src' )
 SConscript( 'app/SConscript', variant_dir = 'build/' + buildMode + '/app' )
 SConscript( 'test/SConscript', variant_dir = 'build/' + buildMode + '/test' )
+SConscript( 'worker/SConscript', variant_dir = 'build/' + buildMode + '/worker' )

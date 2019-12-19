@@ -1,88 +1,135 @@
 #include <iostream>
 
-#include "AdmLoudnessAnalyser.hpp"
-
-// size_t readAndRenderAdmAudioBlock(const std::unique_ptr<bw64::Bw64Reader>& inputFile,
-//                                const admengine::Renderer& renderer,
-//                                float* readFileBuffer,
-//                                float* renderingBuffer) {
-//     const size_t nbFrames = inputFile->read(readFileBuffer, admengine::BLOCK_SIZE);
-//     if(nbFrames == 0)
-//         return 0;
-//     return renderer.processBlock(nbFrames, readFileBuffer, renderingBuffer);
-// }
+#include <admLoudnessAnalyser/AdmLoudnessAnalyser.hpp>
+#include <adm_engine/parser.hpp>
 
 void displayUsage(const char* application) {
-    std::cout << "Usage: " << application << " INPUT [OPTIONS]" << std::endl;
+    std::cout << "Usage: " << application << " MODE INPUT [OPTIONS]" << std::endl;
     std::cout << std::endl;
-    std::cout << "  INPUT                  BW64/ADM audio file" << std::endl;
+    std::cout << "  MODE   analyse           Enable loudness analyse" << std::endl;
+    std::cout << "         correction        Enable loudness analyse and correction" << std::endl;
+    std::cout << std::endl;
+    std::cout << "  INPUT                    BW64/ADM audio file" << std::endl;
+    std::cout << std::endl;
     std::cout << "  OPTIONS:" << std::endl;
-    std::cout << "    -o OUTPUT            Output file with updated ADM with loudness values" << std::endl;
-    std::cout << "    -d --display         Display loudness analyse values" << std::endl;
-    std::cout << "    -c --correction      Enable correction (if an output file is specified)" << std::endl;
-    std::cout << "    -l --limiter         Enable peak limiter (if correction is enabled)" << std::endl;
-    std::cout << "    -e ELEMENT_ID        Select the AudioProgramme to be analysed by ELEMENT_ID" << std::endl;
+    std::cout << "    Common options:" << std::endl;
+    std::cout << "      -d --display         Display loudness analyse values" << std::endl;
+    std::cout << "      -e ELEMENT_ID        Select the AudioProgramme to be rendered and analysed (and corrected) by ELEMENT_ID" << std::endl;
+    std::cout << "      -g ELEMENT_ID=GAIN   GAIN value (in dB) to apply to ADM element defined by its ELEMENT_ID at ADM rendering" << std::endl;
     std::cout << std::endl;
+    std::cout << "    Analyse mode options:" << std::endl;
+    std::cout << "      -o OUTPUT            Output file with updated ADM with loudness values" << std::endl;
+    std::cout << std::endl;
+    std::cout << "    Correction mode options:" << std::endl;
+    std::cout << "      -o OUTPUT            Output directory where ADM rendered and loudness corrected files will be written" << std::endl;
+    std::cout << "      -l --limiter         Enable peak limiter (if correction is enabled)" << std::endl;
+    std::cout << std::endl;
+}
+
+std::map<std::string, float> parseElementGains(const std::vector<std::string>& elementGainsPairs) {
+    std::map<std::string, float> elementGains;
+    for(const std::string& gainPair : elementGainsPairs) {
+        const size_t splitPos = gainPair.find("=");
+        const std::string elemId = gainPair.substr(0, splitPos);
+        const std::string gainDbStr = gainPair.substr(splitPos + 1, gainPair.size());
+        elementGains[elemId] = pow(10.0, std::atof(gainDbStr.c_str()) / 20.0);
+        std::cout << "Gain:                  " << elementGains[elemId] << " (" << gainDbStr << " dB) applied to " << elemId << std::endl;
+    }
+    return elementGains;
 }
 
 int main(int argc, char const *argv[])
 {
     // std::cout << "Welcome to ADM Loundess Analyser!" << std::endl;
-    if (argc < 2) {
+    if (argc < 3) {
         displayUsage(argv[0]);
         return 1;
     }
 
-    std::string inputFilePath = argv[1];
-    std::string outputFilePath;
+    const std::string mode = argv[1];
+    const std::string inputFilePath = argv[2];
+
+    std::string outputPath; // file or directory
     std::string elementIdToRender;
+    std::vector<std::string> elementGainsPairs;
     bool displayValues = false;
     bool enableCorrection = false;
     bool enableLimiter = false;
 
-    for (int i = 2; i < argc; ++i) {
-        std::string arg = argv[i];
-        if(arg == "-o") {
-            outputFilePath = argv[++i];
-        } else if(arg == "-e") {
-            elementIdToRender = argv[++i];
-        } else if(arg == "-d" || arg == "--display") {
-            displayValues = true;
-        } else if(arg == "-c" || arg == "--correction") {
-            enableCorrection = true;
-        } else if(arg == "-l" || arg == "--limiter") {
-            enableLimiter = true;
-        } else {
-            std::cerr << "Invalid argument: " << arg << std::endl;
-            displayUsage(argv[0]);
-            return 1;
-        }
-    }
-
-    if(outputFilePath.empty() && (enableCorrection || enableLimiter)) {
-        std::cerr << "Error: an output file must be specified to enable correction and limiter." << std::endl;
+    if(Loudness::admanalyser::AdmLoudnessAnalyser::getPathType(inputFilePath) != Loudness::admanalyser::EPathType::file) {
+        std::cerr << "Invalid argument: specified input file '" << inputFilePath << "' does not exist or is not a regular file." << std::endl << std::endl;
         displayUsage(argv[0]);
         return 1;
     }
-    if(enableLimiter && !enableCorrection) {
-        std::cerr << "Error: correction must be enabled to enable limiter." << std::endl;
+
+    if(mode == "analyse") {
+        for (int i = 3; i < argc; ++i) {
+            std::string arg = argv[i];
+            if(arg == "-o") {
+                outputPath = argv[++i];
+            } else if(arg == "-e") {
+                elementIdToRender = argv[++i];
+            } else if(arg == "-d" || arg == "--display") {
+                displayValues = true;
+            } else if(arg == "-g") {
+                elementGainsPairs.push_back(argv[++i]);
+            } else {
+                std::cerr << "Invalid argument: " << arg << std::endl;
+                displayUsage(argv[0]);
+                return 1;
+            }
+        }
+
+    } else if(mode == "correction") {
+        enableCorrection = true;
+
+        for (int i = 3; i < argc; ++i) {
+            std::string arg = argv[i];
+            if(arg == "-o") {
+                outputPath = argv[++i];
+            } else if(arg == "-e") {
+                elementIdToRender = argv[++i];
+            } else if(arg == "-d" || arg == "--display") {
+                displayValues = true;
+            } else if(arg == "-l" || arg == "--limiter") {
+                enableLimiter = true;
+            } else if(arg == "-g") {
+                elementGainsPairs.push_back(argv[++i]);
+            } else {
+                std::cerr << "Invalid argument: " << arg << std::endl;
+                displayUsage(argv[0]);
+                return 1;
+            }
+        }
+
+        if(outputPath.empty()) {
+            std::cerr << "Error: an output directory must be specified to enable correction." << std::endl << std::endl;
+            displayUsage(argv[0]);
+            return 1;
+        }
+
+    } else {
+        std::cerr << "Error: unknown mode: " << mode << std::endl << std::endl;
         displayUsage(argv[0]);
         return 1;
     }
 
     std::cout << "Input file:            " << inputFilePath << std::endl;
-    std::cout << "Output file:           " << outputFilePath << std::endl;
-    std::cout << "ADM element to render: " << elementIdToRender << std::endl;
-    std::cout << "Display result:        " << displayValues << std::endl;
-    std::cout << "Correction enabled:    " << enableCorrection << std::endl;
-    std::cout << "Peak limiter enabled:  " << enableLimiter << std::endl;
+    std::cout << "Output path:           " << (outputPath.empty()? "-" : outputPath) << std::endl;
+    std::cout << "ADM element to render: " << (elementIdToRender.empty()? "-" : elementIdToRender) << std::endl;
+    std::cout << "Display result:        " << (displayValues? "true" : "false") << std::endl;
+    std::cout << "Correction enabled:    " << (enableCorrection? "true" : "false") << std::endl;
+    if(enableCorrection) {
+        std::cout << "Peak limiter enabled:  " << (enableLimiter? "true" : "false") << std::endl;
+    }
 
     const std::string outputLayout("0+2+0");
+    std::map<std::string, float> elementGains = parseElementGains(elementGainsPairs);
 
     try {
-        AdmLoudnessAnalyser analyser(inputFilePath, outputLayout, outputFilePath);
+        Loudness::admanalyser::AdmLoudnessAnalyser analyser(inputFilePath, outputLayout, elementGains, outputPath, elementIdToRender);
         analyser.process(displayValues, enableCorrection, enableLimiter);
-    } catch(std::exception e) {
+    } catch(const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }
