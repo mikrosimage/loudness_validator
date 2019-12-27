@@ -263,7 +263,7 @@ if env['PLATFORM'] == "darwin":
 
 # Add compile flags
 if env['CC'] == 'gcc':
-    env.Append( CXXFLAGS = ['-Wall', '-fPIC'] )
+    env.Append( CXXFLAGS = ['-Wall', '-fPIC', '-std=c++11'] )
     if GetOption('coverage'):
         env['CXXFLAGS'].extend( ['-fprofile-arcs', '-ftest-coverage'] )
         env.Append( LINKFLAGS = ['-fprofile-arcs'] )
