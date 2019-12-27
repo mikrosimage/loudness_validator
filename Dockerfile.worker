@@ -7,6 +7,7 @@ RUN apt-get update && \
       make \
       cmake \
       libboost-dev \
+      libsndfile-dev \
       libyaml-cpp-dev \
       scons
 

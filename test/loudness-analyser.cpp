@@ -279,31 +279,31 @@ INSTANTIATE_TEST_CASE_P(EbuTestEssences, CaseLoudnessAnalysis, ::testing::Values
  */
 TEST_P(CaseLoudnessAnalysis, Test)
 {
-    if(!isnan(_file.getIntegratedLoudness()))
+    if(!std::isnan(_file.getIntegratedLoudness()))
     {
         ASSERT_NEAR(_loudness.getIntegratedLoudness(), _file.getIntegratedLoudness(), 0.1);
     }
-    if(!isnan(_file.getIntegratedRange()))
+    if(!std::isnan(_file.getIntegratedRange()))
     {
         ASSERT_NEAR(_loudness.getIntegratedRange(), _file.getIntegratedRange(), 1.0);
     }
-    if(!isnan(_file.getMaxShortTermLoudness()))
+    if(!std::isnan(_file.getMaxShortTermLoudness()))
     {
         ASSERT_NEAR(_loudness.getMaxShortTermLoudness(), _file.getMaxShortTermLoudness(), 0.1);
     }
-    if(!isnan(_file.getMinShortTermLoudness()))
+    if(!std::isnan(_file.getMinShortTermLoudness()))
     {
         ASSERT_NEAR(_loudness.getMinShortTermLoudness(), _file.getMinShortTermLoudness(), 0.1);
     }
-    if(!isnan(_file.getMomentaryLoudness()))
+    if(!std::isnan(_file.getMomentaryLoudness()))
     {
         ASSERT_NEAR(_loudness.getMomentaryLoudness(), _file.getMomentaryLoudness(), 0.1);
     }
-    if(!isnan(_file.getTruePeakValue()))
+    if(!std::isnan(_file.getTruePeakValue()))
     {
         ASSERT_NEAR(_loudness.getTruePeakValue(), _file.getTruePeakValue(), 0.1);
     }
-    if(!isnan(_file.getTruePeakInDbTP()))
+    if(!std::isnan(_file.getTruePeakInDbTP()))
     {
         ASSERT_GT(_loudness.getTruePeakInDbTP(), _file.getTruePeakInDbTP() - 0.4);
         ASSERT_LT(_loudness.getTruePeakInDbTP(), _file.getTruePeakInDbTP() + 0.2);
