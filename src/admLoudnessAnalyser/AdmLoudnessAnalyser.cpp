@@ -44,7 +44,8 @@ AdmLoudnessAnalyser::AdmLoudnessAnalyser(const std::string& inputFilePath,
     , _inputFile(bw64::readFile(_inputFilePath))
     , _renderer(_inputFile, outputLayout, ".", elementGainsMapping, audioProgrammeIdToRender)
     , _outputPath(outputPath)
-    , _audioProgrammeIdToRender(audioProgrammeIdToRender) {
+    , _audioProgrammeIdToRender(audioProgrammeIdToRender)
+    , _outputPathsList() {
 
 }
 
@@ -137,6 +138,7 @@ std::shared_ptr<adm::Document> AdmLoudnessAnalyser::process(const bool displayVa
                     message << "Could not remove temporary file: " << correctedFilePath;
                     throw std::runtime_error(message.str());
                 }
+                _outputPathsList.push_back(outputFilePath.str());
             }
         }
 
@@ -155,6 +157,7 @@ std::shared_ptr<adm::Document> AdmLoudnessAnalyser::process(const bool displayVa
                 readFrames = _inputFile->read(&buffer[0], admengine::BLOCK_SIZE);
                 outputFile->write(&buffer[0], readFrames);
             }
+            _outputPathsList.push_back(_outputPath);
         }
         return admDocument;
     } else {

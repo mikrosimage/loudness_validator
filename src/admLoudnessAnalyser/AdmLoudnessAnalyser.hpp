@@ -26,7 +26,7 @@ public:
 
     std::shared_ptr<adm::Document> process(const bool displayValues, const bool enableCorrection, const bool enableLimiter = true);
     static EPathType getPathType(const std::string& path);
-
+    std::vector<std::string> getOutputPaths() { return _outputPathsList; }
 private:
     adm::LoudnessMetadata analyseLoudness(const bool displayValues,
                                           const std::unique_ptr<bw64::Bw64Writer>& outputFile,
@@ -43,6 +43,8 @@ private:
 
     const std::string _outputPath;
     const std::string _audioProgrammeIdToRender;
+
+    std::vector<std::string> _outputPathsList;
 };
 
 }
