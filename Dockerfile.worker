@@ -52,7 +52,7 @@ WORKDIR /loudness_validator
 
 RUN scons --adm-loudness-worker
 
-FROM mediacloudai/c_amqp_worker:v0.2.0
+FROM mediacloudai/c_amqp_worker:v0.3.0
 
 COPY --from=builder /usr/local/lib/ /app/loudness_validator/lib/
 COPY --from=builder /loudness_validator/build/release/app/bin/adm-loudness-analyser /app/loudness_validator/bin/adm-loudness-analyser

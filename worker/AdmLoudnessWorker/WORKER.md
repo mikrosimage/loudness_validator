@@ -83,7 +83,7 @@ The worker can handle AMQP message under JSON format. Here are some usage exampl
         {
           "id": "output",
           "type": "string",
-          "value": "/path/to/output/bw64_adm.wav"
+          "value": "/path/to/output/directory"
         },
         {
           "id": "element_id",
@@ -105,7 +105,7 @@ The worker can handle AMQP message under JSON format. Here are some usage exampl
     ```
 
 
- * Analyse specified ADM element loudness, display result details, apply gain correction if necessary with peak limiter, and write updated ADM with the computed loudness values into an output file:
+ * Analyse specified ADM element loudness, display result details, apply gain correction if necessary with peak limiter, and write the updated ADM with the computed loudness values into an output file:
     ```json
     {
       "job_id": 123,
@@ -113,12 +113,12 @@ The worker can handle AMQP message under JSON format. Here are some usage exampl
         {
           "id": "input",
           "type": "string",
-          "value": "/home/valentin/Musique/documentaire/documentaire-extract.wav"
+          "value": "/path/to/bw64_adm.wav"
         },
         {
           "id": "output",
           "type": "string",
-          "value": "/home/valentin/Musique/documentaire/worker"
+          "value": "/path/to/output/directory"
         },
         {
           "id": "element_id",
@@ -143,4 +143,49 @@ The worker can handle AMQP message under JSON format. Here are some usage exampl
       ]
     }
     ```
-
+ * Analyse specified ADM element loudness applying gains to specified ADM elements, display result details, apply gain correction if necessary with peak limiter, and write the updated ADM with the computed loudness values into an output file:
+    ```json
+    {
+      "job_id": 123,
+      "parameters": [
+        {
+          "id": "input",
+          "type": "string",
+          "value": "/path/to/bw64_adm.wav"
+        },
+        {
+          "id": "output",
+          "type": "string",
+          "value": "/path/to/output/directory"
+        },
+        {
+          "id": "element_id",
+          "type": "string",
+          "value": "APR_1002"
+        },
+        {
+          "id": "display",
+          "type": "boolean",
+          "value": true
+        },
+        {
+          "id": "correction",
+          "type": "boolean",
+          "value": true
+        },
+        {
+          "id": "limiter",
+          "type": "boolean",
+          "value": true
+        },
+        {
+          "id": "gain_mapping",
+          "type": "array_of_strings",
+          "value": [
+            "ACO_1003=3.0",
+            "ACO_1004=-4.5"
+          ]
+        }
+      ]
+    }
+    ```
