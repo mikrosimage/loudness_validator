@@ -107,7 +107,7 @@ int analyse(const std::string& inputFilePath,
     const std::vector<std::string> processOutputPaths = analyser.getOutputPaths();
     output_paths[0] = (const char **)malloc(sizeof(int) * processOutputPaths.size() + 1);
     for(size_t i = 0; i < processOutputPaths.size(); i++) {
-      set_str_on_ptr(&output_paths[0][i], outputPath.c_str());
+      set_str_on_ptr(&output_paths[0][i], processOutputPaths[i].c_str());
     }
     output_paths[0][processOutputPaths.size()] = 0;
 
