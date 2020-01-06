@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <map>
 #include <ctime>
 
 namespace Loudness
@@ -33,9 +34,9 @@ void WriteXml::writeResults(const std::string& channelType, Loudness::analyser::
     size_t i;
     for(i = 0; i < srcAudioFilenames.size() - 1; ++i)
     {
-        xmlFile << srcAudioFilenames.at(i).c_str() << " - ";
+        xmlFile << replaceXmlSpecialCharacters(srcAudioFilenames.at(i)).c_str() << " - ";
     }
-    xmlFile << srcAudioFilenames.at(i).c_str();
+    xmlFile << replaceXmlSpecialCharacters(srcAudioFilenames.at(i)).c_str();
 
     xmlFile << "\" " << printStandard(analyser.getStandard()) << " " << convertValid(analyser.isValidProgram()) << " "
             << "channelsType=\"" << channelType << "\" "
@@ -119,6 +120,26 @@ std::string WriteXml::writeValues(std::vector<float> datas)
         ss << *it << ", ";
     ss << datas.at(datas.size() - 1);
     return ss.str();
+}
+
+const std::map<std::string, std::string> xmlSpecialCharactersMap = {
+    {"&", "&amp;"},
+    {"<", "&lt;"},
+    {">", "&gt;"},
+    {"\"", "&quot;"},
+    {"\'", "&apos;"}
+};
+
+std::string WriteXml::replaceXmlSpecialCharacters(const std::string& text) {
+    std::map<std::string, int>::iterator it;
+    for(it = xmlSpecialCharactersMap.begin(); it != xmlSpecialCharactersMap.end(); it++) {
+        size_t position = 0;
+        while((position = str.find(it->first, position)) != std::string::npos) {
+            str.replace(position, it->first.length(), it->second);
+            position += it->second.length();
+        }
+    }
+    return str;
 }
 
 std::string WriteXml::getDate()

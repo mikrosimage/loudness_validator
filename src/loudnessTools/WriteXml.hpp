@@ -26,6 +26,7 @@ private:
     std::string convertValid(Loudness::analyser::ELoudnessResult result);
     std::string printStandard(Loudness::analyser::EStandard standard);
     std::string writeValues(std::vector<float> datas);
+    std::string replaceXmlSpecialCharacters(const std::string& text);
     std::string getDate();
 
     std::ofstream xmlFile;
