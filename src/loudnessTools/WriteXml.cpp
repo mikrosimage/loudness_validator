@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <map>
 #include <ctime>
 
 namespace Loudness
@@ -122,7 +121,7 @@ std::string WriteXml::writeValues(std::vector<float> datas)
     return ss.str();
 }
 
-const std::map<std::string, std::string> xmlSpecialCharactersMap = {
+const std::string xmlSpecialCharacters[5][2] = {
     {"&", "&amp;"},
     {"<", "&lt;"},
     {">", "&gt;"},
@@ -130,16 +129,17 @@ const std::map<std::string, std::string> xmlSpecialCharactersMap = {
     {"\'", "&apos;"}
 };
 
-std::string WriteXml::replaceXmlSpecialCharacters(const std::string& text) {
-    std::map<std::string, int>::iterator it;
-    for(it = xmlSpecialCharactersMap.begin(); it != xmlSpecialCharactersMap.end(); it++) {
+std::string WriteXml::replaceXmlSpecialCharacters(std::string& text) {
+    for (int i = 0; i < 5; ++i) {
         size_t position = 0;
-        while((position = str.find(it->first, position)) != std::string::npos) {
-            str.replace(position, it->first.length(), it->second);
-            position += it->second.length();
+        const std::string specChar = xmlSpecialCharacters[i][0];
+        const std::string code = xmlSpecialCharacters[i][1];
+        while((position = text.find(specChar, position)) != std::string::npos) {
+            text.replace(position, specChar.length(), code);
+            position += code.length();
         }
     }
-    return str;
+    return text;
 }
 
 std::string WriteXml::getDate()
