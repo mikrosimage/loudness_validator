@@ -1,0 +1,107 @@
+Import( 'env' )
+Import( 'loudnessAssessmentVersionStr' )
+Import( 'loudnessAnalyserLibStatic' )
+Import( 'loudnessCorrectorLibStatic' )
+Import( 'loudnessToolsLibStatic' )
+Import( 'loudnessIOLibStatic' )
+
+import os
+
+### ADM Loudness Analyser ###
+
+adm_root = GetOption('adm')
+adm_include = ''
+adm_lib_path = ''
+if adm_root:
+    adm_include = os.path.join( adm_root, 'include' )
+    adm_lib_path = os.path.join( adm_root, 'lib' )
+
+ear_root = GetOption('ear')
+ear_include = ''
+ear_lib_path = ''
+if ear_root:
+    ear_include = os.path.join( ear_root, 'include' )
+    ear_lib_path = os.path.join( ear_root, 'lib' )
+
+bw64_include = GetOption('bw64')
+if bw64_include is None:
+    bw64_include = ''
+
+adm_engine_root = GetOption('adm-engine')
+adm_engine_include = ''
+adm_engine_lib_path = ''
+if adm_engine_root:
+    adm_engine_include = os.path.join( adm_engine_root, 'include' )
+    adm_engine_lib_path = os.path.join( adm_engine_root, 'lib' )
+
+# Check libs
+admLoudnessAnalyserEnv = env.Clone()
+
+admLoudnessAnalyserEnv.Append(
+    CPPPATH = [
+        adm_include,
+        ear_include,
+        bw64_include,
+        adm_engine_include,
+    ],
+    LIBPATH = [
+        adm_lib_path,
+        ear_lib_path,
+        adm_engine_lib_path,
+    ],
+)
+
+conf = Configure(admLoudnessAnalyserEnv)
+
+if adm_root and ear_root and adm_engine_root and \
+    conf.CheckCXXHeader('adm/adm.hpp') and \
+    conf.CheckCXXHeader('ear/ear.hpp') and \
+    conf.CheckCXXHeader("bw64/bw64.hpp") and \
+    conf.CheckCXXHeader('adm_engine/renderer.hpp'):
+
+    admLoudnessAnalyserEnv = conf.Finish()
+
+    admLoudnessAnalyserLibName = 'admloudnessanalyser'
+
+    # add version number to the name of the shared library if Windows platform
+    if env['PLATFORM'] == 'win32':
+        admLoudnessAnalyserLibName += '-' + loudnessAssessmentVersionStr
+
+    admLoudnessAnalyserSrc = Glob( '*.cpp' )
+
+    admLoudnessAnalyserDeps = [
+        loudnessAnalyserLibStatic,
+        loudnessCorrectorLibStatic,
+        loudnessToolsLibStatic,
+        loudnessIOLibStatic,
+        File(os.path.join( adm_engine_lib_path, 'libadmengine.a' )),
+        File(os.path.join( adm_lib_path, 'libadm.a' )),
+        File(os.path.join( ear_lib_path, 'libear.so' ))
+    ]
+
+    admLoudnessAnalyserLib = admLoudnessAnalyserEnv.SharedLibrary(
+        target = admLoudnessAnalyserLibName,
+        source = admLoudnessAnalyserSrc,
+        LIBS = admLoudnessAnalyserDeps,
+    )
+
+    admLoudnessAnalyserLibStatic = admLoudnessAnalyserEnv.StaticLibrary(
+        target = admLoudnessAnalyserLibName,
+        source = admLoudnessAnalyserSrc,
+        LIBS = admLoudnessAnalyserDeps,
+    )
+
+    # Install admLoudnessAnalyser libs
+    admLoudnessAnalyserEnv.Alias( 'install', admLoudnessAnalyserEnv.InstallVersionedLib( 'lib', admLoudnessAnalyserLib ) )
+    admLoudnessAnalyserEnv.Alias( 'install', admLoudnessAnalyserEnv.Install( 'lib', admLoudnessAnalyserLibStatic ) )
+
+    # Install admLoudnessAnalyser headers
+    admLoudnessAnalyserHeaders = Glob( '*.hpp' )
+    admLoudnessAnalyserEnv.Alias( 'install', admLoudnessAnalyserEnv.Install( 'include/admloudnessanalyser', admLoudnessAnalyserHeaders ) )
+
+    Export( 'admLoudnessAnalyserLibStatic' )
+    Export( 'admLoudnessAnalyserLib' )
+
+else:
+    print('Warning: libadm, libear, libbw64 or libadmengine missing, will not build admloudnessanalyser library')
+    conf.Finish()

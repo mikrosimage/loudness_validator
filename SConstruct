@@ -74,6 +74,55 @@ AddOption(
     help='Use this option to specify the path to qt library (is case of conflict between several versions for example).'
 )
 
+# Get ADM/EAR install path
+AddOption(
+    '--adm',
+    dest='adm',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local',
+    metavar='DIR',
+    help='Path to root of ITU-R ADM library.'
+)
+AddOption(
+    '--ear',
+    dest='ear',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local',
+    metavar='DIR',
+    help='Path to root of EBU ADM Renderer library.'
+)
+AddOption(
+    '--bw64',
+    dest='bw64',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local',
+    metavar='DIR',
+    help='Path to root of ITU-R BW64 headers.'
+)
+AddOption(
+    '--adm-engine',
+    dest='adm-engine',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local',
+    metavar='DIR',
+    help='Path to root of ADM Engine.'
+)
+
+AddOption(
+    '--adm-loudness-worker',
+    dest='build-adm-loudness-worker',
+    action='store_true',
+    help='Build ADM loudness worker.'
+)
+
 # Get ffmpeg install path
 AddOption(
     '--ffmpeg',
@@ -214,7 +263,7 @@ if env['PLATFORM'] == "darwin":
 
 # Add compile flags
 if env['CC'] == 'gcc':
-    env.Append( CXXFLAGS = ['-Wall', '-fPIC'] )
+    env.Append( CXXFLAGS = ['-Wall', '-fPIC', '-std=c++11'] )
     if GetOption('coverage'):
         env['CXXFLAGS'].extend( ['-fprofile-arcs', '-ftest-coverage'] )
         env.Append( LINKFLAGS = ['-fprofile-arcs'] )
@@ -244,3 +293,4 @@ VariantDir( 'build/' + buildMode + '/app', 'app', duplicate = 0 )
 SConscript( 'src/SConscript', variant_dir = 'build/' + buildMode + '/src' )
 SConscript( 'app/SConscript', variant_dir = 'build/' + buildMode + '/app' )
 SConscript( 'test/SConscript', variant_dir = 'build/' + buildMode + '/test' )
+SConscript( 'worker/SConscript', variant_dir = 'build/' + buildMode + '/worker' )

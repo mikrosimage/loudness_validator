@@ -1,0 +1,111 @@
+
+Import( 'env' )
+Import( '*' )
+
+import os
+
+enable_adm_loudness_worker_build = GetOption("build-adm-loudness-worker")
+
+if enable_adm_loudness_worker_build:
+    if 'loudnessAnalyserLibStatic' in locals() and \
+       'loudnessCorrectorLibStatic' in locals() and \
+       'loudnessToolsLibStatic' in locals() and \
+       'loudnessIOLibStatic' in locals() and \
+       'admLoudnessAnalyserLib' in locals() and \
+       env['PLATFORM'] != 'win32':
+
+        ### ADM loudness worker ###
+        adm_root = GetOption('adm')
+        adm_include = ''
+        adm_lib_path = ''
+        if adm_root:
+            adm_include = os.path.join( adm_root, 'include' )
+            adm_lib_path = os.path.join( adm_root, 'lib' )
+
+        ear_root = GetOption('ear')
+        ear_include = ''
+        ear_lib_path = ''
+        if ear_root:
+            ear_include = os.path.join( ear_root, 'include' )
+            ear_lib_path = os.path.join( ear_root, 'lib' )
+
+        bw64_include = GetOption('bw64')
+        if bw64_include is None:
+            bw64_include = ''
+
+        adm_engine_root = GetOption('adm-engine')
+        adm_engine_include = ''
+        adm_engine_lib_path = ''
+        if adm_engine_root:
+            adm_engine_include = os.path.join( adm_engine_root, 'include' )
+            adm_engine_lib_path = os.path.join( adm_engine_root, 'lib' )
+
+
+        # Check libs
+        admLoudnessWorkerEnv = env.Clone()
+
+        admLoudnessWorkerEnv.Append(
+            CPPPATH = [
+                adm_include,
+                ear_include,
+                bw64_include,
+                adm_engine_include,
+            ],
+            LIBPATH = [
+                adm_lib_path,
+                ear_lib_path,
+                adm_engine_lib_path,
+            ],
+        )
+
+        conf = Configure(admLoudnessWorkerEnv)
+
+        if adm_root and ear_root and adm_engine_root and \
+            conf.CheckCXXHeader('adm/adm.hpp') and \
+            conf.CheckCXXHeader('ear/ear.hpp') and \
+            conf.CheckCXXHeader("bw64/bw64.hpp") and \
+            conf.CheckCXXHeader('adm_engine/renderer.hpp'):
+
+            admLoudnessWorkerEnv = conf.Finish()
+
+            admLoudnessWorkerLibName = 'admloudnessworker'
+            # add version number to the name of the shared library if Windows platform
+            if env['PLATFORM'] == 'win32':
+                admLoudnessWorkerLibName += '-' + loudnessAssessmentVersionStr
+
+            admLoudnessWorkerSrc = Glob( 'AdmLoudnessWorker/*.cpp' )
+
+            admLoudnessWorkerDeps = [
+                loudnessAnalyserLibStatic,
+                loudnessCorrectorLibStatic,
+                loudnessToolsLibStatic,
+                loudnessIOLibStatic,
+                admLoudnessAnalyserLib,
+                File(os.path.join( adm_engine_lib_path, 'libadmengine.a' )),
+                File(os.path.join( adm_lib_path, 'libadm.a' )),
+                File(os.path.join( ear_lib_path, 'libear.so' ))
+            ]
+
+            admLoudnessWorkerLib = admLoudnessWorkerEnv.SharedLibrary(
+                target = admLoudnessWorkerLibName,
+                source = admLoudnessWorkerSrc,
+                LIBS = admLoudnessWorkerDeps,
+            )
+
+            admLoudnessWorkerLibStatic = admLoudnessWorkerEnv.StaticLibrary(
+                target = 'admloudnessworker',
+                source = admLoudnessWorkerSrc,
+                LIBS = admLoudnessWorkerDeps,
+            )
+
+            # Install
+            env.Alias( 'install', env.InstallVersionedLib( 'lib', admLoudnessWorkerLib ) )
+            env.Alias( 'install', env.Install( 'lib', admLoudnessWorkerLibStatic ) )
+
+            Export( 'admLoudnessWorkerLibStatic' )
+        else:
+            print('Warning: libadm, libear, libbw64 or libadmengine missing, will not build adm-loudness-worker library.')
+            conf.Finish()
+
+    else:
+        print('Warning: will not build ADM loudness worker library.')
