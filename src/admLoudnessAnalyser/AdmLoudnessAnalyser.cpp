@@ -1,6 +1,7 @@
 
 #include "AdmLoudnessAnalyser.hpp"
 
+#include <adm_engine/utils.hpp>
 #include <adm_engine/adm_helper.hpp>
 #include <adm_engine/parser.hpp>
 
@@ -107,7 +108,7 @@ std::shared_ptr<adm::Document> AdmLoudnessAnalyser::process(const bool displayVa
                 std::shared_ptr<adm::Document> outputAdmDocument = adm::Document::create();
                 admengine::copyAudioProgramme(outputAdmDocument, audioProgramme);
 
-                const std::string programmeTitle = audioProgramme->get<adm::AudioProgrammeName>().get();
+                const std::string programmeTitle = admengine::replaceSpecialCharacters(audioProgramme->get<adm::AudioProgrammeName>().get());
 
                 std::stringstream outputFilePath;
                 outputFilePath << _outputPath << "/";
