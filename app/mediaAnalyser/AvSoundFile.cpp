@@ -5,6 +5,10 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include <AvTranscoder/encoder/AudioEncoder.hpp>
+#include <AvTranscoder/file/OutputFile.hpp>
+#include <AvTranscoder/transform/AudioTransform.hpp>
+
 void AvSoundFile::printProgress()
 {
     const int p = (float)_cumulOfSamplesAnalysed / _totalNbSamplesToAnalyse * 100;
@@ -174,6 +178,143 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
     // Close progression file
     if(! _progressionFileName.empty())
         outputFile.close();
+
+    // free audio buffer
+    delete[] audioBuffer;
+}
+
+void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const float gain)
+{
+    // update number of samples to analyse
+    if(_forceDurationToAnalyse)
+    {
+        // set total number of samples to analyse
+        _totalNbSamplesToAnalyse = getTotalNbSamplesToAnalyse();
+    }
+
+    // open file to print duration
+    std::ofstream progressOutputFile;
+    if(! _progressionFileName.empty())
+    {
+        progressOutputFile.open(_progressionFileName.c_str());
+        _outputStream = &progressOutputFile;
+    }
+
+    // init
+    analyser.initAndStart(_nbChannelsToAnalyse, _inputSampleRate.at(0));
+
+    // Create planar buffer of float data
+    float** audioBuffer = new float*[_nbChannelsToAnalyse];
+
+    // Initialize output encoder
+    int totalInputNbChannels = 0;
+    for(size_t i = 0; i < _inputNbChannels.size(); ++i)
+        totalInputNbChannels += _inputNbChannels.at(i);
+
+    avtranscoder::AudioFrameDesc outputAudioFrameDesc(48000, totalInputNbChannels, "s32");
+    avtranscoder::AudioEncoder* encoder = new avtranscoder::AudioEncoder("pcm_s24le");
+    encoder->setupAudioEncoder(outputAudioFrameDesc);
+
+    avtranscoder::OutputFile* outputFile = new avtranscoder::OutputFile("output.wav");
+    outputFile->addAudioStream(encoder->getAudioCodec());
+    outputFile->beginWrap();
+
+    // reset counters
+    _cumulOfSamplesAnalysed = 0;
+
+    bool emptyFrameDecoded = false;
+    while(!isEndOfAnalysis())
+    {
+        // Read audio data from source streams
+        size_t nbSamplesRead = 0;
+        size_t nbInputChannelAdded = 0;
+        for(size_t fileIndex = 0; fileIndex < _audioReader.size(); ++fileIndex)
+        {
+            avtranscoder::IFrame* srcFrame = _audioReader.at(fileIndex)->readNextFrame();
+
+            // empty frame: go to the end of process
+            if(srcFrame == NULL)
+            {
+                emptyFrameDecoded = true;
+                break;
+            }
+
+            size_t inputChannel = 0;
+            for(size_t channelToAdd = nbInputChannelAdded;
+                channelToAdd < nbInputChannelAdded + _inputNbChannels.at(fileIndex); ++channelToAdd)
+            {
+                audioBuffer[channelToAdd] = (float*)(srcFrame->getData()[inputChannel]);
+                ++inputChannel;
+                nbSamplesRead += srcFrame->getAVFrame().nb_samples;
+            }
+            nbInputChannelAdded += _inputNbChannels.at(fileIndex);
+        }
+
+        if(emptyFrameDecoded)
+            break;
+
+        // Apply gain
+        const size_t nbSamplesInOneFrame = nbSamplesRead / nbInputChannelAdded;
+        for(size_t channel = 0; channel < _nbChannelsToAnalyse; channel++)
+        {
+            // float* inData = &audioBuffer[channel][0];
+            for(size_t sample = 0; sample < nbSamplesInOneFrame; sample++)
+            {
+                audioBuffer[channel][sample] = audioBuffer[channel][sample] * gain;
+            }
+        }
+
+        // Convert corrected frame
+        avtranscoder::AudioFrameDesc correctAudioFrameDesc(48000, totalInputNbChannels, "fltp");
+        avtranscoder::AudioFrame* correctedAudioFrame = new avtranscoder::AudioFrame(correctAudioFrameDesc, false);
+        correctedAudioFrame->setNbSamplesPerChannel(nbSamplesInOneFrame);
+        correctedAudioFrame->allocateData();
+
+        float* inlineBuffer = new float[nbSamplesRead];
+        size_t sampleCounter = 0;
+        for(size_t sample = 0; sample < nbSamplesInOneFrame; sample++)
+        {
+            for(size_t channel = 0; channel < _nbChannelsToAnalyse; channel++)
+            {
+                    inlineBuffer[sampleCounter++] = audioBuffer[channel][sample];
+            }
+        }
+
+        unsigned char* rawData = reinterpret_cast<unsigned char*>(&inlineBuffer[0]);
+        correctedAudioFrame->assignBuffer(&rawData[0]);
+
+        avtranscoder::AudioFrame* outputFrame = new avtranscoder::AudioFrame(outputAudioFrameDesc, false);
+        outputFrame->setNbSamplesPerChannel(nbSamplesInOneFrame);
+        outputFrame->allocateData();
+
+        avtranscoder::AudioTransform audioTransform;
+        audioTransform.convert(*correctedAudioFrame, *outputFrame);
+
+        // Write corrected frame
+        avtranscoder::CodedData data;
+        encoder->encodeFrame(*outputFrame, data);
+        outputFile->wrap(data, 0);
+
+        // Analyse loudness
+        analyser.processSamples(audioBuffer, nbSamplesInOneFrame);
+
+        // Progress
+        _cumulOfSamplesAnalysed += nbSamplesRead;
+        printProgress();
+
+        delete rawData;
+        delete outputFrame;
+        delete correctedAudioFrame;
+    }
+
+    outputFile->endWrap();
+
+    delete encoder;
+    delete outputFile;
+
+    // Close progression file
+    if(! _progressionFileName.empty())
+        progressOutputFile.close();
 
     // free audio buffer
     delete[] audioBuffer;
