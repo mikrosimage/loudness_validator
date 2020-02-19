@@ -112,6 +112,31 @@ size_t AvSoundFile::getTotalNbSamplesToAnalyse()
     return newTotalNbSamplesToAnalyse;
 }
 
+bool AvSoundFile::fillAudioBuffer(float** audioBuffer, size_t& nbSamplesRead, size_t& nbInputChannelAdded)
+{
+    for(size_t fileIndex = 0; fileIndex < _audioReader.size(); ++fileIndex)
+    {
+        avtranscoder::IFrame* dstFrame = _audioReader.at(fileIndex)->readNextFrame();
+
+        // empty frame: go to the end of process
+        if(dstFrame == NULL)
+        {
+            return false;
+        }
+
+        size_t inputChannel = 0;
+        for(size_t channelToAdd = nbInputChannelAdded;
+            channelToAdd < nbInputChannelAdded + _inputNbChannels.at(fileIndex); ++channelToAdd)
+        {
+            audioBuffer[channelToAdd] = (float*)(dstFrame->getData()[inputChannel]);
+            ++inputChannel;
+            nbSamplesRead += dstFrame->getAVFrame().nb_samples;
+        }
+        nbInputChannelAdded += _inputNbChannels.at(fileIndex);
+    }
+    return true;
+}
+
 void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 {
     // update number of samples to analyse
@@ -136,34 +161,12 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
     float** audioBuffer = new float*[_nbChannelsToAnalyse];
 
     // Analyze audio streams
-    bool emptyFrameDecoded = false;
     while(!isEndOfAnalysis())
     {
+        // Decode audio streams
         size_t nbSamplesRead = 0;
         size_t nbInputChannelAdded = 0;
-        // Decode audio streams
-        for(size_t fileIndex = 0; fileIndex < _audioReader.size(); ++fileIndex)
-        {
-            avtranscoder::IFrame* dstFrame = _audioReader.at(fileIndex)->readNextFrame();
-
-            // empty frame: go to the end of process
-            if(dstFrame == NULL)
-            {
-                emptyFrameDecoded = true;
-                break;
-            }
-
-            size_t inputChannel = 0;
-            for(size_t channelToAdd = nbInputChannelAdded;
-                channelToAdd < nbInputChannelAdded + _inputNbChannels.at(fileIndex); ++channelToAdd)
-            {
-                audioBuffer[channelToAdd] = (float*)(dstFrame->getData()[inputChannel]);
-                ++inputChannel;
-                nbSamplesRead += dstFrame->getAVFrame().nb_samples;
-            }
-            nbInputChannelAdded += _inputNbChannels.at(fileIndex);
-        }
-        if(emptyFrameDecoded)
+        if(!fillAudioBuffer(audioBuffer, nbSamplesRead, nbInputChannelAdded))
             break;
 
         // Analyse loudness
@@ -222,42 +225,18 @@ void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const 
     // reset counters
     _cumulOfSamplesAnalysed = 0;
 
-    bool emptyFrameDecoded = false;
     while(!isEndOfAnalysis())
     {
-        // Read audio data from source streams
+        // Decode audio streams
         size_t nbSamplesRead = 0;
         size_t nbInputChannelAdded = 0;
-        for(size_t fileIndex = 0; fileIndex < _audioReader.size(); ++fileIndex)
-        {
-            avtranscoder::IFrame* srcFrame = _audioReader.at(fileIndex)->readNextFrame();
-
-            // empty frame: go to the end of process
-            if(srcFrame == NULL)
-            {
-                emptyFrameDecoded = true;
-                break;
-            }
-
-            size_t inputChannel = 0;
-            for(size_t channelToAdd = nbInputChannelAdded;
-                channelToAdd < nbInputChannelAdded + _inputNbChannels.at(fileIndex); ++channelToAdd)
-            {
-                audioBuffer[channelToAdd] = (float*)(srcFrame->getData()[inputChannel]);
-                ++inputChannel;
-                nbSamplesRead += srcFrame->getAVFrame().nb_samples;
-            }
-            nbInputChannelAdded += _inputNbChannels.at(fileIndex);
-        }
-
-        if(emptyFrameDecoded)
+        if(!fillAudioBuffer(audioBuffer, nbSamplesRead, nbInputChannelAdded))
             break;
 
         // Apply gain
         const size_t nbSamplesInOneFrame = nbSamplesRead / nbInputChannelAdded;
         for(size_t channel = 0; channel < _nbChannelsToAnalyse; channel++)
         {
-            // float* inData = &audioBuffer[channel][0];
             for(size_t sample = 0; sample < nbSamplesInOneFrame; sample++)
             {
                 audioBuffer[channel][sample] = audioBuffer[channel][sample] * gain;
@@ -272,9 +251,9 @@ void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const 
 
         float* inlineBuffer = new float[nbSamplesRead];
         size_t sampleCounter = 0;
-        for(size_t sample = 0; sample < nbSamplesInOneFrame; sample++)
+        for(size_t channel = 0; channel < _nbChannelsToAnalyse; channel++)
         {
-            for(size_t channel = 0; channel < _nbChannelsToAnalyse; channel++)
+            for(size_t sample = 0; sample < nbSamplesInOneFrame; sample++)
             {
                     inlineBuffer[sampleCounter++] = audioBuffer[channel][sample];
             }
@@ -302,9 +281,8 @@ void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const 
         _cumulOfSamplesAnalysed += nbSamplesRead;
         printProgress();
 
-        delete rawData;
+        delete inlineBuffer;
         delete outputFrame;
-        delete correctedAudioFrame;
     }
 
     outputFile->endWrap();

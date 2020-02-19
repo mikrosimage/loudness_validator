@@ -55,6 +55,13 @@ private:
      */
     size_t getTotalNbSamplesToAnalyse();
 
+    /**
+     * @brief Fill input audio buffer with data from audio readers, and increment the
+     * number of read channels and the total number of samples read (every read channels).
+     * @return whether the audiobuffer could be filled
+     */
+    bool fillAudioBuffer(float** audioBuffer, size_t& nbSamplesRead, size_t& nbInputChannelAdded);
+
 private:
     // for loudness analyser
     size_t _nbChannelsToAnalyse;
