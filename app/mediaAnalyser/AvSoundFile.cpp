@@ -191,7 +191,7 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
     delete[] audioBuffer;
 }
 
-void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const float gain)
+void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const std::string& outputFilePath, const float gain)
 {
     // update number of samples to analyse
     if(_forceDurationToAnalyse)
@@ -223,7 +223,7 @@ void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const 
     avtranscoder::AudioEncoder* encoder = new avtranscoder::AudioEncoder(CODEC_NAME_24_BITS);
     encoder->setupAudioEncoder(outputAudioFrameDesc);
 
-    avtranscoder::OutputFile* outputFile = new avtranscoder::OutputFile("output.wav");
+    avtranscoder::OutputFile* outputFile = new avtranscoder::OutputFile(outputFilePath);
     outputFile->addAudioStream(encoder->getAudioCodec());
     outputFile->beginWrap();
 

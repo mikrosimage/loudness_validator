@@ -19,7 +19,7 @@ public:
     ~AvSoundFile();
 
     void analyse(Loudness::analyser::LoudnessAnalyser& analyser);
-    void correct(Loudness::analyser::LoudnessAnalyser& analyser, const float gain);
+    void correct(Loudness::analyser::LoudnessAnalyser& analyser, const std::string& outputFilePath, const float gain);
 
     /**
      * @brief Set the output filename of the progress file.
