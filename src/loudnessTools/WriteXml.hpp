@@ -19,7 +19,7 @@ public:
 
     ~WriteXml();
 
-    void writeResults(const std::string& channelType, Loudness::analyser::LoudnessAnalyser& analyser);
+    void writeResults(const std::string& channelType, Loudness::analyser::LoudnessAnalyser& analyser, const float correctionGain = 1.0);
 
 private:
     void openXMLFile(const std::string& xmlFilename);
@@ -28,6 +28,7 @@ private:
     std::string writeValues(std::vector<float> datas);
     std::string replaceXmlSpecialCharacters(std::string& text);
     std::string getDate();
+    std::string getGainAsDb(const float gain);
 
     std::ofstream xmlFile;
     std::vector<std::string> srcAudioFilenames;
