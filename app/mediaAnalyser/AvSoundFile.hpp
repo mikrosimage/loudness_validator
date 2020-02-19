@@ -47,6 +47,13 @@ private:
      */
     bool isEndOfAnalysis();
 
+    /**
+     * @brief Compute the total number of samples to analyse from the several inputs
+     * sample rate, the number of channels and the expected duration.
+     * @return the number of samples to analyse
+     */
+    size_t getTotalNbSamplesToAnalyse();
+
 private:
     // for loudness analyser
     size_t _nbChannelsToAnalyse;

@@ -98,18 +98,23 @@ AvSoundFile::~AvSoundFile()
     }
 }
 
+size_t AvSoundFile::getTotalNbSamplesToAnalyse()
+{
+    size_t newTotalNbSamplesToAnalyse = 0;
+    for(size_t i = 0; i < _inputSampleRate.size(); i++)
+    {
+        newTotalNbSamplesToAnalyse += _forceDurationToAnalyse * _inputSampleRate.at(i) * _inputNbChannels.at(i);
+    }
+    return newTotalNbSamplesToAnalyse;
+}
+
 void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
 {
     // update number of samples to analyse
     if(_forceDurationToAnalyse)
     {
-        size_t newTotalNbSamplesToAnalyse = 0;
-        for(size_t i = 0; i < _inputSampleRate.size(); i++)
-        {
-            newTotalNbSamplesToAnalyse += _forceDurationToAnalyse * _inputSampleRate.at(i) * _inputNbChannels.at(i);
-        }
         // set total number of samples to analyse
-        _totalNbSamplesToAnalyse = newTotalNbSamplesToAnalyse;
+        _totalNbSamplesToAnalyse = getTotalNbSamplesToAnalyse();
     }
 
     // open file to print duration
@@ -126,12 +131,13 @@ void AvSoundFile::analyse(Loudness::analyser::LoudnessAnalyser& analyser)
     // Create planar buffer of float data
     float** audioBuffer = new float*[_nbChannelsToAnalyse];
 
+    // Analyze audio streams
     bool emptyFrameDecoded = false;
-    // Decode audio streams
     while(!isEndOfAnalysis())
     {
         size_t nbSamplesRead = 0;
         size_t nbInputChannelAdded = 0;
+        // Decode audio streams
         for(size_t fileIndex = 0; fileIndex < _audioReader.size(); ++fileIndex)
         {
             avtranscoder::IFrame* dstFrame = _audioReader.at(fileIndex)->readNextFrame();
