@@ -198,7 +198,7 @@ int main(int argc, char** argv)
         std::stringstream ss;
         ss << soundFile.getNbChannelsToAnalyse();
         ss << " channels";
-        writerXml.writeResults(ss.str(), analyser);
+        writerXml.writeResults(ss.str(), analyser, (correction)? gain : 1.0);
     }
     catch(const std::exception& e)
     {
