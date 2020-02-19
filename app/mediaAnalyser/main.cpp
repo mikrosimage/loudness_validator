@@ -6,6 +6,7 @@
 #include <vector>
 #include <utility>
 #include <fstream>
+#include <cmath>
 
 std::vector<avtranscoder::InputStreamDesc> parseConfigFile(const std::string& configFilename)
 {
@@ -179,7 +180,6 @@ int main(int argc, char** argv)
         if(correction && std::fabs(1.0 - gain) > 0.001)
         {
             std::cout << "Correction with gain " << gain << std::endl;
-            Loudness::analyser::LoudnessLevels level = Loudness::analyser::LoudnessLevels::Loudness_EBU_R128();
             AvSoundFile correctedSoundFile(arrayToAnalyse);
             correctedSoundFile.setProgressionFile(outputProgressionName);
             correctedSoundFile.setDurationToAnalyse(durationToAnalyse);
