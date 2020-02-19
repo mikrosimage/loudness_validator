@@ -62,6 +62,22 @@ private:
      */
     bool fillAudioBuffer(float** audioBuffer, size_t& nbSamplesRead, size_t& nbInputChannelAdded);
 
+    /**
+     * @brief Apply gain to specified planar audio buffer samples.
+     */
+    void applyGain(float** audioBuffer, const size_t numberOfSamplesPerChannel, const float gain);
+
+    /**
+     * @brief Clip audio sample value to normalized values [-1.0, 1.0].
+     * @return the clipped audio sample value
+     */
+    float clipSample(const float value);
+
+    /**
+     * @brief Convert planar audio samples buffer into interlaced PCM values buffer.
+     */
+    void encodePlanarSamplesToInterlacedPcm(float** planarBuffer, unsigned char* interlacedBuffer, const size_t numberOfSamplesPerChannel);
+
 private:
     // for loudness analyser
     size_t _nbChannelsToAnalyse;

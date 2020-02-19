@@ -9,6 +9,11 @@
 #include <AvTranscoder/file/OutputFile.hpp>
 #include <AvTranscoder/transform/AudioTransform.hpp>
 
+const size_t NB_OF_BYTES_24_BITS = 3;
+const float MAX_VALUE_24_BITS = 8388607.0;
+const std::string CODEC_NAME_24_BITS = "pcm_s24le";
+const std::string SAMPLE_FORMAT_24_BITS = "s32";
+
 void AvSoundFile::printProgress()
 {
     const int p = (float)_cumulOfSamplesAnalysed / _totalNbSamplesToAnalyse * 100;
@@ -214,8 +219,8 @@ void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const 
     for(size_t i = 0; i < _inputNbChannels.size(); ++i)
         totalInputNbChannels += _inputNbChannels.at(i);
 
-    avtranscoder::AudioFrameDesc outputAudioFrameDesc(48000, totalInputNbChannels, "s32");
-    avtranscoder::AudioEncoder* encoder = new avtranscoder::AudioEncoder("pcm_s24le");
+    avtranscoder::AudioFrameDesc outputAudioFrameDesc(_audioReader.at(0)->getOutputSampleRate(), totalInputNbChannels, SAMPLE_FORMAT_24_BITS);
+    avtranscoder::AudioEncoder* encoder = new avtranscoder::AudioEncoder(CODEC_NAME_24_BITS);
     encoder->setupAudioEncoder(outputAudioFrameDesc);
 
     avtranscoder::OutputFile* outputFile = new avtranscoder::OutputFile("output.wav");
@@ -235,43 +240,16 @@ void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const 
 
         // Apply gain
         const size_t nbSamplesInOneFrame = nbSamplesRead / nbInputChannelAdded;
-        for(size_t channel = 0; channel < _nbChannelsToAnalyse; channel++)
-        {
-            for(size_t sample = 0; sample < nbSamplesInOneFrame; sample++)
-            {
-                audioBuffer[channel][sample] = audioBuffer[channel][sample] * gain;
-            }
-        }
+        applyGain(audioBuffer, nbSamplesInOneFrame, gain);
 
         // Convert corrected frame
-        avtranscoder::AudioFrameDesc correctAudioFrameDesc(48000, totalInputNbChannels, "fltp");
-        avtranscoder::AudioFrame* correctedAudioFrame = new avtranscoder::AudioFrame(correctAudioFrameDesc, false);
-        correctedAudioFrame->setNbSamplesPerChannel(nbSamplesInOneFrame);
-        correctedAudioFrame->allocateData();
-
-        float* inlineBuffer = new float[nbSamplesRead];
-        size_t sampleCounter = 0;
-        for(size_t channel = 0; channel < _nbChannelsToAnalyse; channel++)
-        {
-            for(size_t sample = 0; sample < nbSamplesInOneFrame; sample++)
-            {
-                    inlineBuffer[sampleCounter++] = audioBuffer[channel][sample];
-            }
-        }
-
-        unsigned char* rawData = reinterpret_cast<unsigned char*>(&inlineBuffer[0]);
-        correctedAudioFrame->assignBuffer(&rawData[0]);
-
-        avtranscoder::AudioFrame* outputFrame = new avtranscoder::AudioFrame(outputAudioFrameDesc, false);
-        outputFrame->setNbSamplesPerChannel(nbSamplesInOneFrame);
-        outputFrame->allocateData();
-
-        avtranscoder::AudioTransform audioTransform;
-        audioTransform.convert(*correctedAudioFrame, *outputFrame);
+        const size_t rawDataSize = nbSamplesRead * NB_OF_BYTES_24_BITS;
+        unsigned char* rawData = new unsigned char[rawDataSize];
+        encodePlanarSamplesToInterlacedPcm(audioBuffer, rawData, nbSamplesInOneFrame);
 
         // Write corrected frame
         avtranscoder::CodedData data;
-        encoder->encodeFrame(*outputFrame, data);
+        data.copyData(rawData, rawDataSize);
         outputFile->wrap(data, 0);
 
         // Analyse loudness
@@ -281,8 +259,7 @@ void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const 
         _cumulOfSamplesAnalysed += nbSamplesRead;
         printProgress();
 
-        delete inlineBuffer;
-        delete outputFrame;
+        delete rawData;
     }
 
     outputFile->endWrap();
@@ -296,6 +273,45 @@ void AvSoundFile::correct(Loudness::analyser::LoudnessAnalyser& analyser, const 
 
     // free audio buffer
     delete[] audioBuffer;
+}
+
+float AvSoundFile::clipSample(const float value)
+{
+    if (value > 1.f) {
+        return 1.f;
+    }
+    if (value < -1.f) {
+        return -1.f;
+    }
+    return value;
+}
+
+void AvSoundFile::applyGain(float** audioBuffer, const size_t numberOfSamplesPerChannel, const float gain)
+{
+    for(size_t channel = 0; channel < _nbChannelsToAnalyse; channel++)
+    {
+        for(size_t sample = 0; sample < numberOfSamplesPerChannel; sample++)
+        {
+            audioBuffer[channel][sample] = audioBuffer[channel][sample] * gain;
+        }
+    }
+}
+
+void AvSoundFile::encodePlanarSamplesToInterlacedPcm(float** planarBuffer, unsigned char* interlacedBuffer, const size_t numberOfSamplesPerChannel)
+{
+    size_t sampleCounter = 0;
+    for(size_t sample = 0; sample < numberOfSamplesPerChannel; sample++)
+    {
+        for(size_t channel = 0; channel < _nbChannelsToAnalyse; channel++)
+        {
+            const size_t offset = sampleCounter++ * NB_OF_BYTES_24_BITS;
+            const float sampleValueClipped = clipSample(planarBuffer[channel][sample]);
+            const int sampleValue = (int)(sampleValueClipped * MAX_VALUE_24_BITS);
+            interlacedBuffer[offset] = sampleValue & 0xff;
+            interlacedBuffer[offset + 1] = (sampleValue >> 8) & 0xff;
+            interlacedBuffer[offset + 2] = (sampleValue >> 16) & 0xff;
+        }
+    }
 }
 
 void AvSoundFile::setDurationToAnalyse(const float durationToAnalyse)
