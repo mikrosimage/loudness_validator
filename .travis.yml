@@ -50,6 +50,9 @@ cache:
   - ${FFMPEG_INSTALL}
   - ${AVTRANSCODER_INSTALL}
 
+before_install:
+  - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TRAVIS_COMPILER" == "gcc" ]; then eval "CC=gcc-7 && CXX=g++-7"; fi
+
 install:
   # Install dependencies
   - ./tools/travis/install_dependencies.sh
