@@ -29,12 +29,16 @@ env:
 
 addons:
   apt:
-    sources: ['boost-latest']
+    sources: [
+      'boost-latest',
+      'ubuntu-toolchain-r-test'
+    ]
     packages:
     - scons
     - libboost1.58-all-dev
     - libsndfile1-dev
     - libqt4-dev
+    - g++-7
 
 cache:
   # Caching Ubuntu packages
