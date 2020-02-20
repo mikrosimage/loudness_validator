@@ -3,7 +3,6 @@ Import( 'loudnessAssessmentVersionStr' )
 Import( 'loudnessAnalyserLibStatic' )
 Import( 'loudnessCorrectorLibStatic' )
 Import( 'loudnessToolsLibStatic' )
-Import( 'loudnessIOLibStatic' )
 
 import os
 
@@ -73,7 +72,6 @@ if adm_root and ear_root and adm_engine_root and \
         loudnessAnalyserLibStatic,
         loudnessCorrectorLibStatic,
         loudnessToolsLibStatic,
-        loudnessIOLibStatic,
         File(os.path.join( adm_engine_lib_path, 'libadmengine.a' )),
         File(os.path.join( adm_lib_path, 'libadm.a' )),
         File(os.path.join( ear_lib_path, 'libear.so' ))
