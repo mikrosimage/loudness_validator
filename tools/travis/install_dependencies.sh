@@ -9,6 +9,7 @@ set -x
 if [[ ! -d "${GTEST_INSTALL}/*" ]]; then
     git clone https://github.com/google/googletest.git
     cd googletest
+    git checkout release-1.10.0
     cmake . -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL}
     make -k
     make install

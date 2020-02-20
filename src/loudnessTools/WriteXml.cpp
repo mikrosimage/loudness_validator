@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <ctime>
+#include <cmath>
 
 namespace Loudness
 {
@@ -27,7 +28,7 @@ WriteXml::~WriteXml()
     xmlFile.close();
 }
 
-void WriteXml::writeResults(const std::string& channelType, Loudness::analyser::LoudnessAnalyser& analyser)
+void WriteXml::writeResults(const std::string& channelType, Loudness::analyser::LoudnessAnalyser& analyser, const float correctionGain)
 {
     xmlFile << "<Program filename=\"";
     size_t i;
@@ -38,8 +39,12 @@ void WriteXml::writeResults(const std::string& channelType, Loudness::analyser::
     xmlFile << replaceXmlSpecialCharacters(srcAudioFilenames.at(i)).c_str();
 
     xmlFile << "\" " << printStandard(analyser.getStandard()) << " " << convertValid(analyser.isValidProgram()) << " "
-            << "channelsType=\"" << channelType << "\" "
-            << "date=\"" << getDate() << "\">\n";
+            << "channelsType=\"" << channelType << "\" ";
+    if(std::fabs(1.0 - correctionGain) > 0.001)
+    {
+        xmlFile << "correctionGain=\"" << getGainAsDb(correctionGain) << "\" ";
+    }
+    xmlFile << "date=\"" << getDate() << "\">\n";
     xmlFile << "\t<ProgramLoudness " << convertValid(analyser.isIntegratedLoudnessValid()) << ">"
             << analyser.getIntegratedLoudness() << "</ProgramLoudness>\n";
     xmlFile << "\t<LRA " << convertValid(analyser.isIntegratedLoudnessRangeValid()) << ">" << analyser.getIntegratedRange()
@@ -155,5 +160,14 @@ std::string WriteXml::getDate()
         date.assign(buffer);
     return date;
 }
+
+std::string WriteXml::getGainAsDb(const float gain)
+{
+    std::ostringstream ss;
+    ss << 20.0 * std::log10(gain);
+    ss << " dB";
+    return ss.str();
+}
+
 }
 }
