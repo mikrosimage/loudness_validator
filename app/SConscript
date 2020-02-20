@@ -170,7 +170,6 @@ if 'loudnessAnalyserLibStatic' in locals() and \
         print('Warning: avtranscoder not found, will not build media-analyser application')
         conf.Finish()
 
-    print('Will build media-analyser applications.')
 else:
     print('Warning: will not build media loudness analyser application.')
 
