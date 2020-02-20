@@ -7,6 +7,10 @@ set -x
 
 # Install GTest framework
 if [[ ! -d "${GTEST_INSTALL}/*" ]]; then
+    if [ "$TRAVIS_COMPILER" == "gcc" ]; then
+        export CC=/usr/bin/gcc-7
+        export CXX=/usr/bin/g++-7
+    fi
     git clone https://github.com/google/googletest.git
     cd googletest
     cmake . -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL}
