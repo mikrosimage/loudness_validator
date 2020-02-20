@@ -29,16 +29,12 @@ env:
 
 addons:
   apt:
-    sources: [
-      'boost-latest',
-      'ubuntu-toolchain-r-test'
-    ]
+    sources: ['boost-latest']
     packages:
     - scons
     - libboost1.58-all-dev
     - libsndfile1-dev
     - libqt4-dev
-    - g++-7
 
 cache:
   # Caching Ubuntu packages
@@ -49,9 +45,6 @@ cache:
   - ${GTEST_INSTALL}
   - ${FFMPEG_INSTALL}
   - ${AVTRANSCODER_INSTALL}
-
-before_install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TRAVIS_COMPILER" == "gcc" ]; then eval "CC=gcc-7 && CXX=g++-7"; fi
 
 install:
   # Install dependencies

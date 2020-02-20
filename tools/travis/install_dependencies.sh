@@ -5,20 +5,11 @@ set -e
 # Print commands and their arguments as they are executed.
 set -x
 
-# Install additional dependencies in case of osx environment
-if [ ${TRAVIS_OS_NAME} = "osx" ]; then
-    brew update
-    brew install scons lcov libsndfile qt gcc@7
-fi
-
 # Install GTest framework
 if [[ ! -d "${GTEST_INSTALL}/*" ]]; then
-    if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_COMPILER" == "gcc" ]; then
-        export CC=/usr/bin/gcc-7
-        export CXX=/usr/bin/g++-7
-    fi
     git clone https://github.com/google/googletest.git
     cd googletest
+    git checkout release-1.10.0
     cmake . -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL}
     make -k
     make install
@@ -30,4 +21,10 @@ if [[ ! -d "${AVTRANSCODER_INSTALL}/*" ]]; then
     wget https://github.com/avTranscoder/avTranscoder/releases/download/v${AVTRANSCODER_VERSION}/${ARCHIVE_FILE}
     tar xzf ${ARCHIVE_FILE} -C ${TRAVIS_BUILD_DIR}
     rm ${ARCHIVE_FILE}
+fi
+
+# Install additional dependencies in case of osx environment
+if [ ${TRAVIS_OS_NAME} = "osx" ]; then
+    brew update
+    brew install scons lcov libsndfile qt
 fi
