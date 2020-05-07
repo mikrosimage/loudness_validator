@@ -24,17 +24,32 @@ typedef struct Parameter {
 } Parameter;
 
 /**
- * Job parameters handler
+ * Job & channel handler
  */
-typedef void* JobHandle;
+typedef void* Handler;
+
 /**
  * Get job parameter value callback
+ * @param _handler          the job & channel handler
+ * @param _parameter_key    the name of the parameter to get
+ * @return the parameter value
+ * @note   the returned pointer must be freed by user.
  */
-typedef char* (*GetParameterValueCallback)(JobHandle, const char*);
+typedef char* (*GetParameterValueCallback)(Handler _handler, const char* _parameter_key);
+
 /**
  * Rust Logger
+ * @param _level      the log level: 'trace', 'debug', 'info', 'warn' or 'error'
+ * @param _message    the message to log
  */
-typedef void* (*Logger)(const char*, const char*);
+typedef void* (*Logger)(const char* _level, const char* _message);
+
+/**
+ * Progress callback
+ * @param _handler                   the job & channel handler
+ * @param _progression_percentage    the progression percentage (between 0 and 100)
+ */
+typedef void* (*ProgressCallback)(Handler _handler, unsigned char _progression_percentage);
 
 /**
  * Get worker name
@@ -69,13 +84,17 @@ void get_parameters(Parameter* parameters);
 
 /**
  * Worker main process function
- * @param job_handle               Job parameters handler
+ * @param handler                  Handler
  * @param parameters_value_getter  Get job parameter value callback
+ * @param progress_callback        Progress callback
  * @param logger                   Rust Logger
+ * @param message                  Output message pointer
+ * @param output_paths             Output paths pointer
  */
 int process(
-    JobHandle job_handle,
+    Handler handler,
     GetParameterValueCallback parameters_value_getter,
+    ProgressCallback progress_callback,
     Logger logger,
     const char** message,
     const char*** output_paths

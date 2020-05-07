@@ -31,7 +31,7 @@ std::map<std::string, float> parseElementGains(const std::string& elementGainsSt
     const std::string gainDbStr = gainPair.substr(equalPos + 1, gainPair.size()); // "gain"
     elementGains[elemId] = pow(10.0, std::atof(gainDbStr.c_str()) / 20.0);
     std::stringstream gainInfo;
-    gainInfo << "Gain:                  " << elementGains[elemId] << " (" << gainDbStr << " dB) applied to " << elemId << std::endl;
+    gainInfo << "Gain: " << elementGains[elemId] << " (" << gainDbStr << " dB) applied to " << elemId;
     logger("debug", gainInfo.str().c_str());
 
     nextPosition = separatorPos + separator.size();
@@ -46,6 +46,8 @@ int analyse(const std::string& inputFilePath,
             const char* elementIdToRenderStr,
             const char* elementGainsCStr,
             const char** message,
+            const Handler& handler,
+            const ProgressCallback& progress_callback,
             const Logger& logger,
             const char*** output_paths,
             const bool displayValues = false,
@@ -86,6 +88,8 @@ int analyse(const std::string& inputFilePath,
     elementGains = parseElementGains(elementGainsCStr, logger);
   }
 
+  progress_callback(handler, 5);
+
   std::stringstream processInfo;
   processInfo << std::endl;
   processInfo << "Input file:            " << inputFilePath << std::endl;
@@ -118,6 +122,8 @@ int analyse(const std::string& inputFilePath,
     set_str_on_ptr(message, error.c_str());
     return 1;
   }
+
+  progress_callback(handler, 100);
   return 0;
 }
 
@@ -147,8 +153,9 @@ void get_parameters(Parameter* parameters) {
 }
 
 int process(
-    JobHandle job_handle,
+    Handler handler,
     GetParameterValueCallback parameters_value_getter,
+    ProgressCallback progress_callback,
     Logger logger,
     const char** message,
     const char*** output_paths
@@ -157,31 +164,43 @@ int process(
     logger("debug", "Start ADM loudness analyser worker process...");
 
     // Retrieve job parameter value
-    char* inputFilePath = parameters_value_getter(job_handle, "input");
+    char* inputFilePath = parameters_value_getter(handler, "input");
     if(inputFilePath == NULL) {
     	displayUsage(logger);
     	return 1;
     }
 
-    char* outputFilePath = parameters_value_getter(job_handle, "output");
-    char* elementIdToRender = parameters_value_getter(job_handle, "element_id");
-    char* displayValuesStr = parameters_value_getter(job_handle, "display");
-    char* enableCorrectionStr = parameters_value_getter(job_handle, "correction");
-    char* enableLimiterStr = parameters_value_getter(job_handle, "limiter");
-    char* elementGainsCStr = parameters_value_getter(job_handle, "gain_mapping");
+    char* outputFilePath = parameters_value_getter(handler, "output");
+    char* elementIdToRender = parameters_value_getter(handler, "element_id");
+    char* displayValuesStr = parameters_value_getter(handler, "display");
+    char* enableCorrectionStr = parameters_value_getter(handler, "correction");
+    char* enableLimiterStr = parameters_value_getter(handler, "limiter");
+    char* elementGainsCStr = parameters_value_getter(handler, "gain_mapping");
 
     bool displayValues = displayValuesStr && strcmp(displayValuesStr, "true") == 0;
     bool enableCorrection = enableCorrectionStr && strcmp(enableCorrectionStr,"true") == 0;
     bool enableLimiter = enableLimiterStr && strcmp(enableLimiterStr,"true") == 0;
 
-    return analyse(inputFilePath,
+    int ret = analyse(inputFilePath,
                    outputFilePath,
                    elementIdToRender,
                    elementGainsCStr,
                    message,
+                   handler,
+                   progress_callback,
                    logger,
                    output_paths,
                    displayValues,
                    enableCorrection,
                    enableLimiter);
+
+    free(inputFilePath);
+    free(outputFilePath);
+    free(elementIdToRender);
+    free(displayValuesStr);
+    free(enableCorrectionStr);
+    free(enableLimiterStr);
+    free(elementGainsCStr);
+
+    return ret;
 }
