@@ -141,7 +141,7 @@ It can also process loudness correction, with an optional peak limiter.";
 }
 
 char* get_version() {
-	return (char*)"1.3.8";
+	return (char*)"1.4.1";
 }
 
 unsigned int get_parameters_size() {
