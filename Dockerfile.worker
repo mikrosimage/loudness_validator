@@ -68,4 +68,4 @@ ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/app/loudness_validator/lib
 ENV WORKER_LIBRARY_FILE /app/loudness_validator/worker/libadmloudnessworker.so
 ENV PATH $PATH:/app/loudness_validator/bin
 
-CMD c_amqp_worker
+CMD c_mcai_worker_sdk
