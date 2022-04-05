@@ -44,6 +44,12 @@ if(ADM_ENGINE_FOUND)
     target_include_directories(loudness-validator PUBLIC ${BW64_INCLUDE_DIR})
 endif()
 
+install(TARGETS loudness-validator DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(DIRECTORY "${LOUDNESS_VALIDATOR_SRC_PATH}"
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
+        FILES_MATCHING
+        PATTERN "*.hpp")
+
 ## Project executables
 if(SNDFILE_FOUND)
     ## loudness-analyser
@@ -60,6 +66,9 @@ if(SNDFILE_FOUND)
     target_link_libraries(loudness-corrector loudness-validator ${SNDFILE_LIBRARIES})
     target_include_directories(loudness-corrector PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
 
+    install(TARGETS loudness-analyser DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+    install(TARGETS loudness-corrector DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
     if(Qt4_FOUND)
         ## loudness-validator-gui
         file(GLOB_RECURSE LOUDNESS_VALIDATOR_GUI_SRC_FILES "app/LoudnessValidator/*.cpp" "app/LoudnessValidator/*.hpp" "app/LoudnessValidator/*.h")
@@ -67,7 +76,10 @@ if(SNDFILE_FOUND)
 
         target_link_libraries(loudness-validator-gui loudness-validator ${SNDFILE_LIBRARIES} Qt4::QtCore Qt4::QtGui)
         target_include_directories(loudness-validator-gui PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
+
+        install(TARGETS loudness-validator-gui DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
     endif()
+
 endif()
 
 if(FFMPEG_FOUND AND AVTRANSCODER_FOUND)
@@ -81,6 +93,8 @@ if(FFMPEG_FOUND AND AVTRANSCODER_FOUND)
     if(SNDFILE_FOUND)
         target_link_libraries(media-analyser ${SNDFILE_LIBRARIES})
     endif()
+
+    install(TARGETS media-analyser DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
 
 if(ADM_ENGINE_FOUND)
@@ -94,6 +108,8 @@ if(ADM_ENGINE_FOUND)
     if(SNDFILE_FOUND)
         target_link_libraries(adm-loudness-analyser ${SNDFILE_LIBRARIES})
     endif()
+
+    install(TARGETS adm-loudness-analyser DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
 
 ## Unit tests
@@ -101,7 +117,7 @@ find_package(GTest)
 if(GTest_FOUND AND SNDFILE_FOUND)
     enable_testing()
     add_executable(loudness-validator_tests test/loudness-analyser.cpp)
-    target_link_libraries(loudness-validator_tests loudness-validator ${GTEST_LIBRARIES} pthread ${SndFile})
+    target_link_libraries(loudness-validator_tests loudness-validator ${GTEST_LIBRARIES} pthread ${SNDFILE_LIBRARIES})
     target_include_directories(loudness-validator_tests PUBLIC ${LOUDNESS_VALIDATOR_SRC_PATH} ${GTEST_INCLUDE_DIRS})
     add_test(NAME loudness-validator-tests COMMAND loudness-validator_tests)
 else()
