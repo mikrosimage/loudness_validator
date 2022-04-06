@@ -44,6 +44,8 @@ if(ADM_ENGINE_FOUND)
     target_include_directories(loudness-validator PUBLIC ${BW64_INCLUDE_DIR})
 endif()
 
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
 install(TARGETS loudness-validator DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(DIRECTORY "${LOUDNESS_VALIDATOR_SRC_PATH}"
         DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
@@ -114,12 +116,19 @@ endif()
 
 ## Unit tests
 find_package(GTest)
-if(GTest_FOUND AND SNDFILE_FOUND)
+find_path(EBU_TEST_DIRECTORY NAMES seq-3341-1-16bit.wav HINTS ${EBU_TEST_ESSENCES})
+if(GTest_FOUND AND SNDFILE_FOUND AND EBU_TEST_DIRECTORY)
+    message(STATUS "Found EBU test material directory: ${EBU_TEST_DIRECTORY}")
     enable_testing()
     add_executable(loudness-validator_tests test/loudness-analyser.cpp)
     target_link_libraries(loudness-validator_tests loudness-validator ${GTEST_LIBRARIES} pthread ${SNDFILE_LIBRARIES})
     target_include_directories(loudness-validator_tests PUBLIC ${LOUDNESS_VALIDATOR_SRC_PATH} ${GTEST_INCLUDE_DIRS})
+    target_compile_options(loudness-validator_tests PUBLIC -DEBU_TEST_ESSENCES=${EBU_TEST_DIRECTORY})
     add_test(NAME loudness-validator-tests COMMAND loudness-validator_tests)
-else()
-    message("Test dependencies not found!")
+elseif(NOT GTest_FOUND)
+    message(STATUS "GTest not found!")
+elseif(NOT SNDFILE_FOUND)
+    message(STATUS "Test dependencies not found!")
+elseif(NOT EBU_TEST_DIRECTORY)
+    message(WARNING "Test material not found! Set the `EBU_TEST_ESSENCES` variable to indicate the corresponding directory.")
 endif()

@@ -8,7 +8,7 @@ cd loudness_validator
 ```
 
 
-## Build
+## Build with Scons
 
 #### Build all tools in release mode
 ```
@@ -20,14 +20,44 @@ scons
 scons --help
 ```
 
+## Build with CMake
+
+#### Typical build commands
+```
+mkdir build
+cd build
+cmake .. [OPTIONS]
+make
+make install
+```
+With (non-exhaustive but typical) `OPTIONS`:
+```
+  -G "Unix Makefiles"
+  -DCMAKE_BUILD_TYPE=[Debug|Release|...]
+  -DCMAKE_PREFIX_PATH=/path/to/dependencies/install;...
+  -DCMAKE_INSTALL_PREFIX=/path/to/target/install/directory
+  -DEBU_TEST_ESSENCES=/path/to/ebu-loudness-test-material
+  ...
+```
 
 ## Test
 
 C++ tests, based on [GTest](https://github.com/google/googletest) framework, are used to check the loudness analysis with [this EBU test material](https://tech.ebu.ch/files/live/sites/tech/files/shared/testmaterial/ebu-loudness-test-setv04.zip).
 
-#### Run tests
+#### Run tests with Scons
 ```
 scons --ebu-test-essences=/path/to/ebu/test/material test
+```
+
+#### Run tests with CMake
+
+Add the following option to the `cmake` command (if not already set):
+```
+  -DEBU_TEST_ESSENCES=/path/to/ebu-loudness-test-material
+```
+Then run the following command (enabling verbose mode):
+```
+make test ARGS="-V"
 ```
 
 
