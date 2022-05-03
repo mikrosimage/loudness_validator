@@ -7,7 +7,7 @@
 #
 
 find_library(SNDFILE sndfile)
-if(DEFINED SNDFILE)
+if(NOT ${SNDFILE} MATCHES "SNDFILE-NOTFOUND")
     set(SNDFILE_LIBRARIES ${SNDFILE})
     message(STATUS "Found libsndfile: ${SNDFILE_LIBRARIES}")
     set(SNDFILE_FOUND TRUE)
