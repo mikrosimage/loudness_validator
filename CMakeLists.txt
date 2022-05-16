@@ -21,6 +21,15 @@ find_package(AvTranscoder)
 find_package(ADMEngine)
 find_package(Qt4 4.0.0 COMPONENTS QtGui QtCore)
 
+# CPP flags on debug / release mode
+if(MSVC)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /Ox")
+else()
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -fPIC -g")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -fPIC -O3")
+endif()
+
 ## Project library
 set(LOUDNESS_VALIDATOR_SOURCE_FILES ${LOUDNESS_VALIDATOR_SRC_FILES})
 set(LOUDNESS_VALIDATOR_INCLUDE_DIRS ${LOUDNESS_VALIDATOR_SRC_PATH} ${Boost_INCLUDE_DIRS})
