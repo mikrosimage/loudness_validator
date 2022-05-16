@@ -49,6 +49,10 @@ add_library(loudness-validator SHARED ${LOUDNESS_VALIDATOR_SOURCE_FILES})
 target_link_libraries(loudness-validator PUBLIC ${Boost_LIBRARIES})
 target_include_directories(loudness-validator PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
 
+add_library(loudness-validator-static STATIC ${LOUDNESS_VALIDATOR_SOURCE_FILES})
+target_link_libraries(loudness-validator-static PUBLIC ${Boost_LIBRARIES})
+target_include_directories(loudness-validator-static PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
+
 if(ADM_ENGINE_FOUND)
     target_link_libraries(loudness-validator PUBLIC ${ADM_ENGINE_LIBRARIES})
     target_include_directories(loudness-validator PUBLIC ${BW64_INCLUDE_DIR})
@@ -56,7 +60,7 @@ endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-install(TARGETS loudness-validator DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(TARGETS loudness-validator loudness-validator-static DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(DIRECTORY "${LOUDNESS_VALIDATOR_SRC_PATH}"
         DESTINATION "${CMAKE_INSTALL_PREFIX}/include"
         FILES_MATCHING
@@ -68,14 +72,14 @@ if(SNDFILE_FOUND)
     file(GLOB_RECURSE LOUDNESS_ANALYSER_SRC_FILES "app/analyser/*.cpp")
     add_executable(loudness-analyser ${LOUDNESS_ANALYSER_SRC_FILES})
 
-    target_link_libraries(loudness-analyser loudness-validator ${SNDFILE_LIBRARIES})
+    target_link_libraries(loudness-analyser loudness-validator-static ${SNDFILE_LIBRARIES})
     target_include_directories(loudness-analyser PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
 
     ## loudness-corrector
     file(GLOB_RECURSE LOUDNESS_CORRECTOR_SRC_FILES "app/corrector/*.cpp")
     add_executable(loudness-corrector ${LOUDNESS_CORRECTOR_SRC_FILES})
 
-    target_link_libraries(loudness-corrector loudness-validator ${SNDFILE_LIBRARIES})
+    target_link_libraries(loudness-corrector loudness-validator-static ${SNDFILE_LIBRARIES})
     target_include_directories(loudness-corrector PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
 
     install(TARGETS loudness-analyser DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
@@ -86,7 +90,7 @@ if(SNDFILE_FOUND)
         file(GLOB_RECURSE LOUDNESS_VALIDATOR_GUI_SRC_FILES "app/LoudnessValidator/*.cpp" "app/LoudnessValidator/*.hpp" "app/LoudnessValidator/*.h")
         add_executable(loudness-validator-gui ${LOUDNESS_VALIDATOR_GUI_SRC_FILES})
 
-        target_link_libraries(loudness-validator-gui loudness-validator ${SNDFILE_LIBRARIES} Qt4::QtCore Qt4::QtGui)
+        target_link_libraries(loudness-validator-gui loudness-validator-static ${SNDFILE_LIBRARIES} Qt4::QtCore Qt4::QtGui)
         target_include_directories(loudness-validator-gui PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
 
         install(TARGETS loudness-validator-gui DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
@@ -99,7 +103,7 @@ if(FFMPEG_FOUND AND AVTRANSCODER_FOUND)
     file(GLOB_RECURSE LOUDNESS_MEDIA_ANALYSER_SRC_FILES "app/mediaAnalyser/*.cpp" "app/mediaAnalyser/*.hpp")
     add_executable(media-analyser ${LOUDNESS_MEDIA_ANALYSER_SRC_FILES})
 
-    target_link_libraries(media-analyser loudness-validator ${FFMPEG_LIBRARIES} ${AVTRANSCODER_LIBRARY})
+    target_link_libraries(media-analyser loudness-validator-static ${FFMPEG_LIBRARIES} ${AVTRANSCODER_LIBRARY})
     target_include_directories(media-analyser PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS} ${AVTRANSCODER_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIR})
 
     if(SNDFILE_FOUND)
@@ -114,7 +118,7 @@ if(ADM_ENGINE_FOUND)
     file(GLOB_RECURSE ADM_LOUDNESS_ANALYSER_SRC_FILES "app/AdmLoudnessAnalyser/*.cpp" "app/AdmLoudnessAnalyser/*.hpp")
     add_executable(adm-loudness-analyser ${ADM_LOUDNESS_ANALYSER_SRC_FILES})
 
-    target_link_libraries(adm-loudness-analyser loudness-validator ${ADM_ENGINE_LIBRARIES})
+    target_link_libraries(adm-loudness-analyser loudness-validator-static ${ADM_ENGINE_LIBRARIES})
     target_include_directories(adm-loudness-analyser PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
 
     if(SNDFILE_FOUND)
