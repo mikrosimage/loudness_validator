@@ -91,7 +91,7 @@ if(FFMPEG_FOUND AND AVTRANSCODER_FOUND)
     add_executable(media-analyser ${LOUDNESS_MEDIA_ANALYSER_SRC_FILES})
 
     target_link_libraries(media-analyser loudness-validator ${FFMPEG_LIBRARIES} ${AVTRANSCODER_LIBRARY})
-    target_include_directories(media-analyser PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS} ${AVTRANSCODER_INCLUDE_DIR})
+    target_include_directories(media-analyser PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS} ${AVTRANSCODER_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIR})
 
     if(SNDFILE_FOUND)
         target_link_libraries(media-analyser ${SNDFILE_LIBRARIES})
