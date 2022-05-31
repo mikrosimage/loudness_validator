@@ -80,6 +80,7 @@ if(SNDFILE_FOUND)
 
     target_link_libraries(loudness-analyser loudness-validator-static ${SNDFILE_LIBRARIES})
     target_include_directories(loudness-analyser PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
+    set_target_properties(loudness-analyser PROPERTIES OUTPUT_NAME "loudness-analyser-${LOUDNESS_VALIDATOR_VERSION}")
 
     ## loudness-corrector
     file(GLOB_RECURSE LOUDNESS_CORRECTOR_SRC_FILES "app/corrector/*.cpp")
@@ -87,6 +88,7 @@ if(SNDFILE_FOUND)
 
     target_link_libraries(loudness-corrector loudness-validator-static ${SNDFILE_LIBRARIES})
     target_include_directories(loudness-corrector PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
+    set_target_properties(loudness-corrector PROPERTIES OUTPUT_NAME "loudness-corrector-${LOUDNESS_VALIDATOR_VERSION}")
 
     install(TARGETS loudness-analyser DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
     install(TARGETS loudness-corrector DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
@@ -98,6 +100,7 @@ if(SNDFILE_FOUND)
 
         target_link_libraries(loudness-validator-gui loudness-validator-static ${SNDFILE_LIBRARIES} Qt4::QtCore Qt4::QtGui)
         target_include_directories(loudness-validator-gui PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
+        set_target_properties(loudness-validator-gui PROPERTIES OUTPUT_NAME "loudness-validator-gui-${LOUDNESS_VALIDATOR_VERSION}")
 
         install(TARGETS loudness-validator-gui DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
     endif()
@@ -111,6 +114,7 @@ if(FFMPEG_FOUND AND AVTRANSCODER_FOUND)
 
     target_link_libraries(media-analyser loudness-validator-static ${FFMPEG_LIBRARIES} ${AVTRANSCODER_LIBRARY})
     target_include_directories(media-analyser PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS} ${AVTRANSCODER_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIR})
+    set_target_properties(media-analyser PROPERTIES OUTPUT_NAME "media-analyser-${LOUDNESS_VALIDATOR_VERSION}")
 
     if(SNDFILE_FOUND)
         target_link_libraries(media-analyser ${SNDFILE_LIBRARIES})
@@ -126,6 +130,7 @@ if(ADM_ENGINE_FOUND)
 
     target_link_libraries(adm-loudness-analyser loudness-validator-static ${ADM_ENGINE_LIBRARIES})
     target_include_directories(adm-loudness-analyser PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
+    set_target_properties(adm-loudness-analyser PROPERTIES OUTPUT_NAME "adm-loudness-analyser-${LOUDNESS_VALIDATOR_VERSION}")
 
     if(SNDFILE_FOUND)
         target_link_libraries(adm-loudness-analyser ${SNDFILE_LIBRARIES})
