@@ -110,17 +110,17 @@ endif()
 if(FFMPEG_FOUND AND AVTRANSCODER_FOUND)
     ## media-analyser
     file(GLOB_RECURSE LOUDNESS_MEDIA_ANALYSER_SRC_FILES "app/mediaAnalyser/*.cpp" "app/mediaAnalyser/*.hpp")
-    add_executable(media-analyser ${LOUDNESS_MEDIA_ANALYSER_SRC_FILES})
+    add_executable(media-loudness-analyser ${LOUDNESS_MEDIA_ANALYSER_SRC_FILES})
 
-    target_link_libraries(media-analyser loudness-validator-static ${FFMPEG_LIBRARIES} ${AVTRANSCODER_LIBRARY})
-    target_include_directories(media-analyser PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS} ${AVTRANSCODER_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIR})
-    set_target_properties(media-analyser PROPERTIES OUTPUT_NAME "media-analyser-${LOUDNESS_VALIDATOR_VERSION}")
+    target_link_libraries(media-loudness-analyser loudness-validator-static ${FFMPEG_LIBRARIES} ${AVTRANSCODER_LIBRARY})
+    target_include_directories(media-loudness-analyser PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS} ${AVTRANSCODER_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIR})
+    set_target_properties(media-loudness-analyser PROPERTIES OUTPUT_NAME "media-loudness-analyser-${LOUDNESS_VALIDATOR_VERSION}")
 
     if(SNDFILE_FOUND)
-        target_link_libraries(media-analyser ${SNDFILE_LIBRARIES})
+        target_link_libraries(media-loudness-analyser ${SNDFILE_LIBRARIES})
     endif()
 
-    install(TARGETS media-analyser DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+    install(TARGETS media-loudness-analyser DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
 
 if(ADM_ENGINE_FOUND)
