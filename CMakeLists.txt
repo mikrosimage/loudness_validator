@@ -14,12 +14,16 @@ set(LOUDNESS_VALIDATOR_VERSION_MICRO 6)
 set(LOUDNESS_VALIDATOR_VERSION ${LOUDNESS_VALIDATOR_VERSION_MAJOR}.${LOUDNESS_VALIDATOR_VERSION_MINOR}.${LOUDNESS_VALIDATOR_VERSION_MICRO})
 
 ## Project dependencies
-find_path(BOOST_HEADERS REQUIRED boost PATHS accumulators/accumulators.hpp)
 find_package(SndFile)
 find_package(FFmpeg COMPONENTS avcodec avformat avutil swscale swresample avresample)
 find_package(AvTranscoder)
 find_package(ADMEngine)
 find_package(Qt4 4.0.0 COMPONENTS QtGui QtCore)
+
+if(NOT BOOST_HEADERS)
+    find_package(Boost 1.67.0 REQUIRED COMPONENTS filesystem)
+    set(BOOST_HEADERS ${Boost_INCLUDE_DIRS})
+endif()
 
 # CPP flags on debug / release mode
 if(MSVC)
@@ -46,7 +50,7 @@ if(ADM_ENGINE_FOUND)
 endif()
 
 add_library(loudness-validator SHARED ${LOUDNESS_VALIDATOR_SOURCE_FILES})
-target_include_directories(loudness-validator PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS} ${BOOST_HEADERS})
+target_include_directories(loudness-validator PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
 if(WIN32)
     set_target_properties(loudness-validator PROPERTIES OUTPUT_NAME "loudness-validator-${LOUDNESS_VALIDATOR_VERSION}")
 else()
@@ -54,7 +58,7 @@ else()
 endif()
 
 add_library(loudness-validator-static STATIC ${LOUDNESS_VALIDATOR_SOURCE_FILES})
-target_include_directories(loudness-validator-static PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS} ${BOOST_HEADERS})
+target_include_directories(loudness-validator-static PUBLIC ${LOUDNESS_VALIDATOR_INCLUDE_DIRS})
 set_target_properties(loudness-validator-static PROPERTIES OUTPUT_NAME loudness-validator)
 
 if(ADM_ENGINE_FOUND)
